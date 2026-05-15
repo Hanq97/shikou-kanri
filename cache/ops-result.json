@@ -3,7 +3,7 @@
   "action": "context-detect",
   "data": {
     "found": false,
-    "branch": "master",
+    "branch": "feature/f8-auth",
     "featureId": null,
     "developer": null,
     "state": null,
@@ -11,5 +11,5 @@
     "stack": null,
     "variant": null
   },
-  "timestamp": "2026-05-15T10:03:32.971Z"
+  "timestamp": "2026-05-15T15:01:01.585Z"
 }
