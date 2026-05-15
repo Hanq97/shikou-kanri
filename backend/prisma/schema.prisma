@@ -1,0 +1,30 @@
+// Prisma schema for shikou-kanri backend
+// Reference: ADR-004 (Database) — PostgreSQL 16 + extensions
+// Models will be extended as feature workflows progress (F8 Foundation → F1 → F2 → ...)
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto, uuid_ossp(map: "uuid-ossp"), pg_trgm, unaccent]
+}
+
+// =============================================================================
+// Placeholder baseline — F8 Foundation feature workflow will extend
+// =============================================================================
+
+// Skeleton User model. F8 will add: role, 2fa_secret, 2fa_enabled, auth_provider,
+// external_id, password reset flows, etc. per ADR-015 + ADR-016 + Entity Catalog.
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("users")
+}
