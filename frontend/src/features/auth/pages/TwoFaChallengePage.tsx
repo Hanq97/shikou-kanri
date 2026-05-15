@@ -1,4 +1,5 @@
-import { Alert, Button, Form, Input, Typography } from 'antd';
+import { Alert, Button, Form, Input } from 'antd';
+import { ShieldCheck, Timer } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import type { ApiError } from '@/shared/api/types';
@@ -6,8 +7,6 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
-
-const { Text, Link: LinkText } = Typography;
 
 export function TwoFaChallengePage(): JSX.Element {
   const navigate = useNavigate();
@@ -55,6 +54,7 @@ export function TwoFaChallengePage(): JSX.Element {
   }
 
   const expectedLength = useBackupCode ? 10 : 6;
+  const expiringSoon = secondsLeft <= 60;
 
   return (
     <AuthLayout
@@ -74,12 +74,19 @@ export function TwoFaChallengePage(): JSX.Element {
             placeholder={useBackupCode ? '10文字のコード' : '6桁の数字'}
             maxLength={expectedLength}
             autoFocus
-            style={{ fontFamily: 'monospace', fontSize: 18, letterSpacing: 2 }}
+            prefix={<ShieldCheck size={16} className="text-zinc-400" />}
+            className="!font-mono !text-lg !tracking-widest"
           />
         </Form.Item>
 
         {errorMessage && (
-          <Alert type="error" message={errorMessage} closable onClose={() => setErrorMessage(null)} style={{ marginBottom: 16 }} />
+          <Alert
+            type="error"
+            message={errorMessage}
+            closable
+            onClose={() => setErrorMessage(null)}
+            className="!mb-4"
+          />
         )}
 
         <Button
@@ -93,21 +100,28 @@ export function TwoFaChallengePage(): JSX.Element {
           確認
         </Button>
 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <LinkText
+        <div className="text-center mt-4">
+          <button
+            type="button"
             onClick={() => {
               setUseBackupCode((v) => !v);
               setCode('');
               setErrorMessage(null);
             }}
+            className="text-sm text-brand-600 hover:text-brand-700 hover:underline bg-transparent border-0 cursor-pointer p-0"
           >
             {useBackupCode ? '認証コードで確認' : 'バックアップコードを使用'}
-          </LinkText>
+          </button>
         </div>
 
-        <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginTop: 16, fontSize: 12 }}>
-          残り時間: {secondsLeft}秒
-        </Text>
+        <div
+          className={`flex items-center justify-center gap-1.5 mt-4 text-xs ${
+            expiringSoon ? 'text-amber-600' : 'text-zinc-500'
+          }`}
+        >
+          <Timer size={12} />
+          <span>残り時間: {secondsLeft}秒</span>
+        </div>
       </Form>
     </AuthLayout>
   );

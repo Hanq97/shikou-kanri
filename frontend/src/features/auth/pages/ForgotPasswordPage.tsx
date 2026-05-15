@@ -1,12 +1,11 @@
-import { Alert, Button, Form, Input, Typography } from 'antd';
+import { Alert, Button, Form, Input } from 'antd';
+import { ArrowLeft, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authApi } from '@/shared/api/auth.api';
 import { extractApiError } from '@/shared/api/client';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
-
-const { Text } = Typography;
 
 export function ForgotPasswordPage(): JSX.Element {
   const [email, setEmail] = useState('');
@@ -35,9 +34,13 @@ export function ForgotPasswordPage(): JSX.Element {
           message="登録されたメールアドレスの場合、パスワードリセットリンクをお送りしました。メールをご確認ください。"
           showIcon
         />
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <Link to="/login">
-            <Text>ログインに戻る</Text>
+        <div className="text-center mt-6">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-600 hover:text-brand-600 transition-colors"
+          >
+            <ArrowLeft size={14} />
+            ログインに戻る
           </Link>
         </div>
       </AuthLayout>
@@ -59,20 +62,38 @@ export function ForgotPasswordPage(): JSX.Element {
             placeholder="example@towa.example.com"
             autoFocus
             required
+            prefix={<Mail size={16} className="text-zinc-400" />}
           />
         </Form.Item>
 
         {errorMessage && (
-          <Alert type="error" message={errorMessage} closable onClose={() => setErrorMessage(null)} style={{ marginBottom: 16 }} />
+          <Alert
+            type="error"
+            message={errorMessage}
+            closable
+            onClose={() => setErrorMessage(null)}
+            className="!mb-4"
+          />
         )}
 
-        <Button type="primary" htmlType="submit" size="large" block loading={submitting} disabled={!email}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          block
+          loading={submitting}
+          disabled={!email}
+        >
           リセットリンクを送信
         </Button>
 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Link to="/login">
-            <Text type="secondary">ログインに戻る</Text>
+        <div className="text-center mt-4">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-brand-600 transition-colors"
+          >
+            <ArrowLeft size={14} />
+            ログインに戻る
           </Link>
         </div>
       </Form>

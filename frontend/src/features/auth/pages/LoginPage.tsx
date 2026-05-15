@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Form, Input, Typography } from 'antd';
+import { Alert, Button, Form, Input } from 'antd';
+import { Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -8,8 +9,6 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
 import { LoginSchema, type LoginFormValues } from '../schemas/login.schema';
-
-const { Text } = Typography;
 
 export function LoginPage(): JSX.Element {
   const navigate = useNavigate();
@@ -65,6 +64,7 @@ export function LoginPage(): JSX.Element {
                 autoFocus
                 placeholder="example@towa.example.com"
                 autoComplete="email"
+                prefix={<Mail size={16} className="text-zinc-400" />}
               />
             )}
           />
@@ -84,6 +84,7 @@ export function LoginPage(): JSX.Element {
                 size="large"
                 placeholder="パスワード"
                 autoComplete="current-password"
+                prefix={<Lock size={16} className="text-zinc-400" />}
               />
             )}
           />
@@ -95,7 +96,7 @@ export function LoginPage(): JSX.Element {
             message={errorMessage}
             closable
             onClose={() => setErrorMessage(null)}
-            style={{ marginBottom: 16 }}
+            className="!mb-4"
           />
         )}
 
@@ -103,9 +104,12 @@ export function LoginPage(): JSX.Element {
           ログイン
         </Button>
 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Link to="/forgot-password">
-            <Text type="secondary">パスワードを忘れた場合</Text>
+        <div className="text-center mt-4">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-zinc-500 hover:text-brand-600 transition-colors"
+          >
+            パスワードを忘れた場合
           </Link>
         </div>
       </Form>

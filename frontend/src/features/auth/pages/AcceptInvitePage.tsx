@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Descriptions, Form, Input, Result, Spin } from 'antd';
+import { Alert, Button, Form, Input, Result, Spin } from 'antd';
+import { Lock, Mail, UserCog } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -69,7 +70,7 @@ export function AcceptInvitePage(): JSX.Element {
   if (loading) {
     return (
       <AuthLayout>
-        <div style={{ textAlign: 'center', padding: 32 }}>
+        <div className="flex justify-center py-8">
           <Spin size="large" />
         </div>
       </AuthLayout>
@@ -94,11 +95,25 @@ export function AcceptInvitePage(): JSX.Element {
   }
 
   return (
-    <AuthLayout title="アカウントの有効化" subtitle="パスワードを設定してアカウントを有効化してください">
-      <Descriptions size="small" column={1} style={{ marginBottom: 24 }}>
-        <Descriptions.Item label="メールアドレス">{invitation.email}</Descriptions.Item>
-        <Descriptions.Item label="ロール">{ROLE_DISPLAY[invitation.role] ?? invitation.role}</Descriptions.Item>
-      </Descriptions>
+    <AuthLayout
+      title="アカウントの有効化"
+      subtitle="パスワードを設定してアカウントを有効化してください"
+    >
+      {/* Invitation info — modern card style instead of Descriptions */}
+      <div className="bg-zinc-50 border border-zinc-200/70 rounded-lg p-4 mb-6 space-y-2.5">
+        <div className="flex items-center gap-2.5 text-sm">
+          <Mail size={15} className="text-zinc-400 shrink-0" />
+          <span className="text-zinc-500 w-24">メールアドレス</span>
+          <span className="text-zinc-900 font-medium truncate">{invitation.email}</span>
+        </div>
+        <div className="flex items-center gap-2.5 text-sm">
+          <UserCog size={15} className="text-zinc-400 shrink-0" />
+          <span className="text-zinc-500 w-24">ロール</span>
+          <span className="text-zinc-900 font-medium">
+            {ROLE_DISPLAY[invitation.role] ?? invitation.role}
+          </span>
+        </div>
+      </div>
 
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
@@ -109,7 +124,14 @@ export function AcceptInvitePage(): JSX.Element {
           <Controller
             name="password"
             control={control}
-            render={({ field }) => <Input.Password {...field} size="large" autoFocus />}
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                size="large"
+                autoFocus
+                prefix={<Lock size={16} className="text-zinc-400" />}
+              />
+            )}
           />
         </Form.Item>
 
@@ -121,12 +143,24 @@ export function AcceptInvitePage(): JSX.Element {
           <Controller
             name="passwordConfirm"
             control={control}
-            render={({ field }) => <Input.Password {...field} size="large" />}
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                size="large"
+                prefix={<Lock size={16} className="text-zinc-400" />}
+              />
+            )}
           />
         </Form.Item>
 
         {submitError && (
-          <Alert type="error" message={submitError} closable onClose={() => setSubmitError(null)} style={{ marginBottom: 16 }} />
+          <Alert
+            type="error"
+            message={submitError}
+            closable
+            onClose={() => setSubmitError(null)}
+            className="!mb-4"
+          />
         )}
 
         <Button type="primary" htmlType="submit" size="large" block loading={submitting}>

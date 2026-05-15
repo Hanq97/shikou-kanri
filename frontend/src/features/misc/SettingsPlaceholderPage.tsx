@@ -1,8 +1,8 @@
-import { Alert, Button, Card, Layout, Typography } from 'antd';
+import { Alert, Button } from 'antd';
+import { ArrowLeft, Construction } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
-
-const { Title, Text } = Typography;
+import { AppLayout } from '@/shared/components/layout/AppLayout';
 
 interface SettingsPlaceholderPageProps {
   /** Section identifier ('profile' | '2fa' | 'sessions'). */
@@ -15,6 +15,12 @@ const SECTION_TITLE: Record<string, string> = {
   sessions: 'セッション管理',
 };
 
+const SECTION_SUB: Record<string, string> = {
+  profile: 'パスワード変更とプロフィール情報の管理',
+  '2fa': '2要素認証の有効化・無効化、バックアップコードの管理',
+  sessions: 'アクティブなセッションの確認と削除',
+};
+
 export function SettingsPlaceholderPage({ section }: SettingsPlaceholderPageProps): JSX.Element {
   const { user } = useAuth();
   const isForceFlow =
@@ -22,9 +28,15 @@ export function SettingsPlaceholderPage({ section }: SettingsPlaceholderPageProp
     (section === '2fa' && user?.forceTwoFaEnrollment);
 
   return (
-    <Layout style={{ minHeight: '100vh', padding: 24, background: '#f0f2f5' }}>
-      <div style={{ maxWidth: 720, margin: '0 auto' }}>
-        <Title level={3}>{SECTION_TITLE[section]}</Title>
+    <AppLayout>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div>
+          <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
+            {SECTION_TITLE[section]}
+          </h1>
+          <p className="m-0 mt-1 text-sm text-zinc-500">{SECTION_SUB[section]}</p>
+        </div>
+
         {isForceFlow && (
           <Alert
             type="warning"
@@ -34,24 +46,23 @@ export function SettingsPlaceholderPage({ section }: SettingsPlaceholderPageProp
                 : '管理者は2要素認証の設定が必要です。'
             }
             showIcon
-            style={{ marginBottom: 16 }}
           />
         )}
-        <Card>
-          <Text type="secondary">
-            この画面は Phase 1 では未実装です。Phase P8 で本格的に実装されます。
-          </Text>
-          <br />
-          <Text type="secondary">
-            現在は P7 (FE Auth flow) までの実装内容を確認できます。
-          </Text>
-          <div style={{ marginTop: 24 }}>
-            <Link to="/home">
-              <Button type="primary">ホームに戻る</Button>
-            </Link>
+
+        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-8 text-center">
+          <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 mx-auto mb-4 grid place-items-center">
+            <Construction size={22} />
           </div>
-        </Card>
+          <h3 className="m-0 text-base font-semibold text-zinc-900">Phase P8 で実装予定</h3>
+          <p className="m-0 mt-1.5 text-sm text-zinc-500 max-w-md mx-auto">
+            この画面は Phase 1 (P7) では未実装です。 P8 (Settings + User Management UI)
+            で本格的に実装されます。
+          </p>
+          <Link to="/home" className="inline-block mt-6">
+            <Button icon={<ArrowLeft size={14} />}>ホームに戻る</Button>
+          </Link>
+        </div>
       </div>
-    </Layout>
+    </AppLayout>
   );
 }

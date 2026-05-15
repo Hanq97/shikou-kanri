@@ -1,0 +1,83 @@
+/**
+ * Design Tokens — Single Source of Truth
+ *
+ * Tham chiếu chính cho UI/UX của 施工管理システム.
+ * Mọi component (Antd theme + Tailwind utility) đều phải dùng tokens này.
+ */
+
+:root {
+  /* ===== Brand & Semantic Colors ===== */
+  --color-brand-primary: #1689e4;
+  --color-brand-primary-hover: #0a6cc2;
+  --color-brand-primary-active: #0a589e;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* ===== Neutral Palette (Slate/Zinc-based) ===== */
+  --color-bg-base: #fafafa;
+  --color-bg-elevated: #ffffff;
+  --color-bg-subtle: #f4f4f5;
+  --color-bg-hover: #f4f4f5;
+
+  --color-text-primary: #18181b;
+  --color-text-secondary: #52525b;
+  --color-text-tertiary: #71717a;
+  --color-text-disabled: #a1a1aa;
+  --color-text-inverse: #ffffff;
+
+  --color-border-subtle: #e4e4e7;
+  --color-border-default: #d4d4d8;
+  --color-border-strong: #a1a1aa;
+
+  /* ===== Spacing scale ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ===== Radius ===== */
+  --radius-sm: 4px;
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ===== Shadow (soft, modern) ===== */
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --shadow-elevated: 0 4px 8px -2px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-floating: 0 12px 24px -8px rgb(0 0 0 / 0.10), 0 6px 12px -4px rgb(0 0 0 / 0.06);
+
+  /* ===== Typography ===== */
+  --font-sans:
+    'Inter', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Courier New', monospace;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===== Layout ===== */
+  --layout-sidebar-width: 240px;
+  --layout-sidebar-width-collapsed: 64px;
+  --layout-header-height: 56px;
+}

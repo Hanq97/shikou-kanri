@@ -1,7 +1,10 @@
 # 03 — Frontend Architecture
 
-**Version**: 1.0 — 2026-05-15
+**Version**: 1.1 — 2026-05-16
 **Refer to**: ADR-003 (React stack), ADR-010 (PWA), ADR-011 (Offline)
+
+**Changelog**:
+- v1.1 (2026-05-16): Adopt UI hybrid approach — Ant Design 5 (core widgets + JP locale) + Tailwind CSS 3 (utility/layout) + Lucide React (iconography). Add design-tokens.css as single source of truth. AppLayout (sidebar + header) chuẩn cho mọi authenticated route.
 
 ---
 
@@ -19,7 +22,10 @@ Mô tả kiến trúc Frontend: stack, project structure, state management, rout
 | Framework | React 18 (StrictMode) | 1 | Concurrent features |
 | Language | TypeScript 5.x strict | 1 | Type sharing with BE possible |
 | Routing | React Router 6 | 1 | File-based or config-based |
-| UI Library | Ant Design 5 | 1 | Enterprise-grade JP-friendly |
+| UI Library | Ant Design 5 | 1 | Enterprise-grade JP-friendly. Dùng cho widget phức tạp: Form, Table, DatePicker (`ja_JP` locale), Select, Modal, Dropdown, Tooltip, Cascader |
+| Utility CSS | Tailwind CSS 3 | 1 | Layout, spacing, color, custom card/sidebar. `corePlugins.preflight = false` để không xung đột Antd normalize. Brand color palette: `brand-50` → `brand-950` |
+| Iconography | Lucide React | 1 | Modern minimal icons, tree-shakable. **Default** thay cho `@ant-design/icons` (giữ Antd icons cho các component nội bộ Antd render sẵn) |
+| Design tokens | `src/styles/design-tokens.css` | 1 | **Single source of truth** cho color/spacing/radius/shadow/typography. Antd theme + Tailwind config đều phải reference tokens này |
 | Form | React Hook Form + Zod | 1 | Schema-based validation |
 | Global state | Zustand | 1 | Lightweight; avoid Redux complexity |
 | Server state | TanStack Query v5 | 1 | Cache, retry, optimistic update |
@@ -34,6 +40,43 @@ Mô tả kiến trúc Frontend: stack, project structure, state management, rout
 | Code formatting | Prettier | 1 | — |
 | Linting | ESLint + react/typescript/jsx-a11y | 1 | a11y warnings enforced |
 | Testing | Vitest + Testing Library + Playwright (E2E) | 1 | — |
+
+---
+
+## 2.1. UI/UX Design System (baseline)
+
+> **Quy tắc cốt lõi**: Mọi screen mới PHẢI tuân theo design system này. Khi cần đổi token, sửa `src/styles/design-tokens.css` rồi mới apply — không hard-code màu/spacing trong component.
+
+### Khi nào dùng Antd vs Tailwind
+| Use case | Library | Lý do |
+|---|---|---|
+| Form, Input, Select, DatePicker, Cascader, Upload | **Antd** | JP locale (`ja_JP`), validation states, accessibility sẵn có |
+| Table, Pagination, Filter dropdown | **Antd** | Sorting/filter/virtual scroll built-in |
+| Modal, Drawer, Tooltip, Popconfirm, Notification | **Antd** | Z-index management, escape handling |
+| Layout (sidebar, header, grid, container) | **Tailwind** | Linh hoạt hơn Antd Layout, dễ responsive |
+| Card, badge, custom button, empty state | **Tailwind** | Visual style hiện đại hơn Antd default |
+| Spacing, padding, margin, color, typography utility | **Tailwind** | DX nhanh, không phải viết CSS file |
+| Icon trong page content | **Lucide React** | Modern, minimal. `import { Mail, Lock, ... } from 'lucide-react'` |
+| Icon trong Antd internal (Form validation, Alert, ...) | **Antd default** | Antd component render sẵn |
+
+### Design tokens (xem `src/styles/design-tokens.css`)
+- **Brand primary**: `#1689e4` (brand-500) — modern blue, không chói như Antd default `#1890ff`
+- **Neutral palette**: Zinc-based (bg `#fafafa`, text `#18181b`, border `#e4e4e7`)
+- **Radius**: 8px base (Antd `borderRadius: 8`)
+- **Shadow**: soft, 3 levels (card / elevated / floating) — KHÔNG dùng Antd default shadow đậm
+- **Typography**: Inter + Noto Sans JP, font-size base 14, weight 400/500/600
+- **Layout**: sidebar width 240px (collapsed 64px), header height 56px
+
+### Component conventions
+- **AppLayout** (`shared/components/layout/AppLayout.tsx`) — sidebar (collapsible) + sticky header với user dropdown. Mọi authenticated page WRAP qua đây.
+- **AuthLayout** (`features/auth/components/AuthLayout.tsx`) — centered card layout với brand header cho public auth pages.
+- **Card pattern**: `bg-white border border-zinc-200/70 rounded-xl shadow-card` thay cho Antd `<Card>` mặc định.
+- **Stat / KPI**: numbers dùng `tabular-nums tracking-tight font-semibold`, tone-colored icon box bên phải.
+- **Empty state**: icon trong vòng tròn pastel + title 16px semibold + description 14px secondary + CTA button.
+- **Loading**: Antd `<Spin>` cho async data, Tailwind `skeleton` (planned) cho list/table.
+
+### Antd theme tokens (set trong `app/providers.tsx`)
+Phải mirror design-tokens.css. Khi đổi tokens.css → update theme tokens tương ứng.
 
 ---
 
@@ -71,7 +114,10 @@ frontend/
 │   │
 │   ├── shared/
 │   │   ├── api/               # API client (Axios setup, generated types)
-│   │   ├── components/        # Reusable UI components (StatusBadge, MoneyDisplay, etc.)
+│   │   ├── components/
+│   │   │   ├── guards/        # AuthGuard, RoleGuard, PublicOnly
+│   │   │   ├── layout/        # AppLayout (sidebar+header chuẩn cho authenticated page)
+│   │   │   └── ...            # Reusable: StatusBadge, MoneyDisplay, ...
 │   │   ├── hooks/             # useAuth, useDebounce, usePermission
 │   │   ├── stores/            # Zustand stores (authStore, uiStore)
 │   │   ├── utils/             # date, currency, validation helpers
@@ -80,7 +126,9 @@ frontend/
 │   │
 │   ├── pages/                 # Lazy-loaded route components (wraps features)
 │   │
-│   ├── styles/                # Global CSS, Ant Design theme override
+│   ├── styles/
+│   │   └── design-tokens.css  # 🎯 Single source of truth (color, radius, shadow, typography)
+│   ├── index.css              # Tailwind directives + minimal reset
 │   ├── locales/               # i18n JSON files (ja, en future)
 │   ├── main.tsx               # Entry
 │   └── vite-env.d.ts
@@ -95,7 +143,9 @@ frontend/
 │   ├── integration/
 │   └── e2e/                   # Playwright
 │
-├── vite.config.ts
+├── vite.config.ts          # Path alias '@' → src/, dev proxy /api → backend
+├── tailwind.config.js      # preflight=false, brand color palette, custom shadow
+├── postcss.config.js       # Tailwind + autoprefixer
 ├── tsconfig.json
 ├── package.json
 └── .env.example

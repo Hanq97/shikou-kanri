@@ -1,3 +1,10 @@
+@import './styles/design-tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === Minimal reset (Tailwind preflight disabled — Antd handles its own normalize) === */
 *,
 *::before,
 *::after {
@@ -13,21 +20,18 @@ body,
 }
 
 body {
-  font-family:
-    'Noto Sans JP',
-    'Hiragino Kaku Gothic ProN',
-    'Hiragino Sans',
-    Meiryo,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-feature-settings: 'cv11', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f0f2f5;
-  color: rgba(0, 0, 0, 0.88);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  line-height: 1.5;
 }
 
 #root {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }

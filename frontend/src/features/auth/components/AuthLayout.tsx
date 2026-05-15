@@ -1,7 +1,5 @@
-import { Layout, Typography } from 'antd';
+import { HardHat } from 'lucide-react';
 import type { ReactNode } from 'react';
-
-const { Title, Text } = Typography;
 
 interface AuthLayoutProps {
   title?: string;
@@ -11,49 +9,39 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps): JSX.Element {
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
-      <Layout.Content
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 24,
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: 420 }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-              施工管理システム
-            </Title>
-            <Text type="secondary" style={{ fontSize: 13 }}>
-              藤和建設様 / Construction Management System
-            </Text>
+    <div className="min-h-screen w-full bg-gradient-to-br from-zinc-50 via-white to-brand-50/40 flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md">
+        {/* Brand header */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-brand-500 text-white grid place-items-center shadow-elevated mb-3">
+            <HardHat size={28} strokeWidth={2} />
           </div>
-          <div
-            style={{
-              background: '#fff',
-              padding: 32,
-              borderRadius: 8,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
-            }}
-          >
-            {title && (
-              <Title level={4} style={{ marginTop: 0, marginBottom: subtitle ? 4 : 24 }}>
-                {title}
-              </Title>
-            )}
-            {subtitle && (
-              <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
-                {subtitle}
-              </Text>
-            )}
-            {children}
-          </div>
-          <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginTop: 24, fontSize: 12 }}>
-            © 2026 DEHA Solutions
-          </Text>
+          <h1 className="text-xl font-semibold text-zinc-900 m-0 tracking-tight">
+            施工管理システム
+          </h1>
+          <p className="text-xs text-zinc-500 mt-1 m-0">
+            藤和建設様 / Construction Management
+          </p>
         </div>
-      </Layout.Content>
-    </Layout>
+
+        {/* Card */}
+        <div className="bg-white rounded-xl border border-zinc-200/70 shadow-card px-7 py-8">
+          {title && (
+            <h2 className="text-lg font-semibold text-zinc-900 m-0 mb-1 tracking-tight">
+              {title}
+            </h2>
+          )}
+          {subtitle && (
+            <p className="text-sm text-zinc-500 mb-6 mt-1 leading-relaxed">{subtitle}</p>
+          )}
+          {!subtitle && title && <div className="mb-6" />}
+          {children}
+        </div>
+
+        <p className="text-center text-xs text-zinc-400 mt-6 m-0">
+          © 2026 DEHA Solutions
+        </p>
+      </div>
+    </div>
   );
 }

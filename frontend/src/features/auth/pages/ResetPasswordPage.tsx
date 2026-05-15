@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Form, Input, Result, Typography } from 'antd';
+import { Alert, Button, Form, Input, Result } from 'antd';
+import { ArrowLeft, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -8,8 +9,6 @@ import { extractApiError } from '@/shared/api/client';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
 import { ResetPasswordSchema, type ResetPasswordFormValues } from '../schemas/password.schema';
-
-const { Text } = Typography;
 
 export function ResetPasswordPage(): JSX.Element {
   const [params] = useSearchParams();
@@ -82,7 +81,14 @@ export function ResetPasswordPage(): JSX.Element {
           <Controller
             name="password"
             control={control}
-            render={({ field }) => <Input.Password {...field} size="large" autoFocus />}
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                size="large"
+                autoFocus
+                prefix={<Lock size={16} className="text-zinc-400" />}
+              />
+            )}
           />
         </Form.Item>
 
@@ -94,21 +100,37 @@ export function ResetPasswordPage(): JSX.Element {
           <Controller
             name="passwordConfirm"
             control={control}
-            render={({ field }) => <Input.Password {...field} size="large" />}
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                size="large"
+                prefix={<Lock size={16} className="text-zinc-400" />}
+              />
+            )}
           />
         </Form.Item>
 
         {errorMessage && (
-          <Alert type="error" message={errorMessage} closable onClose={() => setErrorMessage(null)} style={{ marginBottom: 16 }} />
+          <Alert
+            type="error"
+            message={errorMessage}
+            closable
+            onClose={() => setErrorMessage(null)}
+            className="!mb-4"
+          />
         )}
 
         <Button type="primary" htmlType="submit" size="large" block loading={submitting}>
           パスワードを変更
         </Button>
 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Link to="/login">
-            <Text type="secondary">ログインに戻る</Text>
+        <div className="text-center mt-4">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-brand-600 transition-colors"
+          >
+            <ArrowLeft size={14} />
+            ログインに戻る
           </Link>
         </div>
       </Form>
