@@ -1,0 +1,246 @@
+{
+  "feature": "F8-AUTH",
+  "featureNameVi": "認証 & 権限管理 (Authentication & Authorization)",
+  "version": "1.0.0",
+  "generated": "2026-05-16",
+  "scope": "Phase 1 MVP — F8-01 認証 + F8-02 権限管理 only (F8-03 audit + F8-04 backup ở branches sau)",
+  "architecturePattern": {
+    "primary": "Modular Monolith",
+    "reference": "ADR-001",
+    "rationale": "Phase 1 scale 50 concurrent users không cần microservice; team 7 người không đủ ops; module boundary đủ cho future split khi cần"
+  },
+  "components": [
+    {
+      "id": "auth-module",
+      "name": "auth module",
+      "path": "src/modules/auth/",
+      "responsibility": "Authentication + authorization (login/logout/refresh, 2FA, password mgmt, role guards, invitation accept)",
+      "tier": "core"
+    },
+    {
+      "id": "users-module",
+      "name": "users module (within auth or separate)",
+      "path": "src/modules/auth/ (Phase 1, may extract Phase 2)",
+      "responsibility": "User management (list, role assignment, status changes, profile updates, admin actions)",
+      "tier": "core"
+    },
+    {
+      "id": "notification-stub",
+      "name": "notification module (minimal stub)",
+      "path": "src/modules/notification/",
+      "responsibility": "Send transactional emails (invitation, password reset, security alerts) qua SMTP",
+      "tier": "supporting"
+    },
+    {
+      "id": "audit-stub",
+      "name": "audit module (stub)",
+      "path": "src/modules/auth/internal/audit.stub.service.ts",
+      "responsibility": "Write audit events to audit_logs table (full implementation in F8-03 branch)",
+      "tier": "supporting"
+    },
+    {
+      "id": "bootstrap-cli",
+      "name": "bootstrap CLI",
+      "path": "src/cli/bootstrap-create-admin.command.ts",
+      "responsibility": "One-time admin creation on fresh deployment",
+      "tier": "ops"
+    },
+    {
+      "id": "shared-crypto",
+      "name": "shared/crypto",
+      "path": "src/shared/crypto/",
+      "responsibility": "Argon2id wrap, AES-256-GCM helpers, token generators",
+      "tier": "shared"
+    },
+    {
+      "id": "shared-database",
+      "name": "shared/database",
+      "path": "src/shared/database/",
+      "responsibility": "Prisma client singleton, base repository pattern",
+      "tier": "shared"
+    },
+    {
+      "id": "shared-observability",
+      "name": "shared/observability",
+      "path": "src/shared/observability/",
+      "responsibility": "Pino logger với redaction, traceId injection",
+      "tier": "shared"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Modular Monolith",
+      "applied_to": ["auth module structure", "cross-module boundary"],
+      "reference": "ADR-001"
+    },
+    {
+      "name": "Repository pattern",
+      "applied_to": ["UserRepository", "RefreshTokenRepository", "PasswordResetRepository", "InvitationRepository"],
+      "reference": "NestJS + Prisma best practice"
+    },
+    {
+      "name": "Guard chain (RBAC + Resource-based)",
+      "applied_to": ["JwtAuthGuard", "RolesGuard", "ProjectMembershipGuard (stub)"],
+      "reference": "NestJS Passport patterns"
+    },
+    {
+      "name": "Token rotation with family lineage",
+      "applied_to": ["Refresh token flow"],
+      "reference": "Auth0 best practices, OWASP Session Management"
+    },
+    {
+      "name": "Stub interface (Phase 1) → Full implementation (Phase later)",
+      "applied_to": ["AuditService"],
+      "reference": "BD-2"
+    },
+    {
+      "name": "Environment-aware config",
+      "applied_to": ["Cookie Secure flag", "Email transport (SES vs Mailhog)"],
+      "reference": "BD-4, BD-3"
+    },
+    {
+      "name": "Encrypted-at-rest sensitive data",
+      "applied_to": ["2FA secret", "Recovery codes"],
+      "reference": "BD-6"
+    }
+  ],
+  "technologyStack": {
+    "backend": {
+      "framework": "NestJS 10",
+      "runtime": "Node.js 20 LTS",
+      "language": "TypeScript strict mode",
+      "orm": "Prisma 5",
+      "validation": "class-validator + class-transformer",
+      "logger": "Pino + nestjs-pino"
+    },
+    "frontend": {
+      "framework": "React 18",
+      "build": "Vite 5",
+      "ui": "Ant Design 5",
+      "routing": "React Router 6",
+      "state": "Zustand + TanStack Query",
+      "form": "React Hook Form + Zod"
+    },
+    "auth": {
+      "passwordHash": "Argon2id (timeCost=3, memoryCost=64MB, parallelism=4)",
+      "jwtSigning": "HS256 (HMAC-SHA256)",
+      "totp": "otplib v12+ (RFC 6238)",
+      "passport": "@nestjs/passport + passport-local + passport-jwt"
+    },
+    "infra": {
+      "database": "PostgreSQL 16 (RDS Multi-AZ)",
+      "cache": "Redis 7 (ElastiCache, used cho rate limit + future BullMQ)",
+      "email": "AWS SES (prod) / Mailhog (dev)",
+      "secrets": "AWS Secrets Manager (prod) / .env (dev)"
+    }
+  },
+  "moduleDependencyGraph": {
+    "auth": {
+      "imports": ["shared/database", "shared/crypto", "shared/observability", "notification"],
+      "exports": ["AuthModule", "AuthService", "JwtAuthGuard", "RolesGuard", "@Roles", "@CurrentUser", "@Public", "AuthenticatedUser type"]
+    },
+    "notification": {
+      "imports": ["shared/observability"],
+      "exports": ["NotificationModule", "EmailService"]
+    },
+    "audit (stub)": {
+      "imports": ["shared/database"],
+      "exports": ["AuditService (interface)"]
+    }
+  },
+  "dataModel": {
+    "entitiesNew": ["RefreshToken", "PasswordResetToken", "Invitation", "AuditLog"],
+    "entitiesExtended": ["User (add 2FA fields, role enum, status enum, lockout fields)"],
+    "tablesTotal": 5,
+    "indexesCritical": [
+      "users.email UNIQUE",
+      "refresh_tokens.token_hash UNIQUE",
+      "refresh_tokens.userId+expiresAt composite",
+      "refresh_tokens.familyId",
+      "audit_logs.actor+occurredAt DESC",
+      "audit_logs.entity+occurredAt DESC"
+    ]
+  },
+  "stateManagement": {
+    "serverSide": {
+      "sessionStorage": "JWT in HttpOnly cookies (stateless access) + refresh token state in DB",
+      "rateLimitState": "Redis (per-IP, per-user, per-IP+email combo for login)",
+      "configState": "AWS Secrets Manager (prod) loaded at app startup"
+    },
+    "clientSide": {
+      "globalState": "Zustand store (authStore: user, isLoading, role)",
+      "serverState": "TanStack Query (cached user info, lists)",
+      "formState": "React Hook Form (per-form local)",
+      "transientState": "Component useState"
+    }
+  },
+  "nfrAddressed": [
+    {"nfr": "NFR-PERF-001 login p95 <500ms", "approach": "Argon2 tuned to ~150ms; rest = DB lookup + sign"},
+    {"nfr": "NFR-PERF-002 token validate <10ms", "approach": "HS256 fast; request-lifetime cache"},
+    {"nfr": "NFR-SEC-001 password hashing", "approach": "Argon2id with calibrated params"},
+    {"nfr": "NFR-SEC-002 token storage", "approach": "HttpOnly Secure cookies + __Host- prefix prod"},
+    {"nfr": "NFR-SEC-003 secrets encryption", "approach": "AES-256-GCM cho 2FA secret; RDS at-rest encryption"},
+    {"nfr": "NFR-SEC-005 rate limiting", "approach": "@nestjs/throttler với Redis backend"},
+    {"nfr": "NFR-SEC-006 account lockout", "approach": "Progressive: 5/15min auto, 10/1h admin"},
+    {"nfr": "NFR-SEC-007 audit logging", "approach": "Stub service writes synchronously to audit_logs"},
+    {"nfr": "NFR-COMP-001 APPI", "approach": "PII encrypted at rest; Pino redaction for logs; audit trail"},
+    {"nfr": "NFR-MAINT-001 test coverage 85%+", "approach": "Unit (services/guards) + Integration (controllers with test DB) + E2E (supertest)"}
+  ],
+  "phaseScope": {
+    "inScope": [
+      "F8-01 認証 (login, 2FA, refresh, logout, password mgmt, invitation accept)",
+      "F8-02 権限管理 (role-based + per-resource framework, user mgmt admin)",
+      "Audit stub integration",
+      "Bootstrap CLI",
+      "Email integration (transactional only)"
+    ],
+    "outOfScope": [
+      "Full audit module (F8-03 branch)",
+      "Backup admin (F8-04 branch)",
+      "SSO Phase 2",
+      "Mobile PWA Phase 2",
+      "AI features Phase 3",
+      "Password history",
+      "WebAuthn",
+      "SMS 2FA"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "description": "Argon2 tuning chưa hợp với prod hardware → login latency vượt 500ms",
+      "mitigation": "Benchmark on production-like instance before deploy; adjust params"
+    },
+    {
+      "id": "R-002",
+      "description": "2FA secret encryption key compromise → all 2FA secrets exposed",
+      "mitigation": "Key trong Secrets Manager với rotation policy; consider AWS KMS upgrade Phase 2"
+    },
+    {
+      "id": "R-003",
+      "description": "Refresh token race condition (concurrent refresh from multiple tabs)",
+      "mitigation": "DB transaction với row lock on refresh token record"
+    },
+    {
+      "id": "R-004",
+      "description": "Audit log synchronous write có thể slow down auth operations",
+      "mitigation": "Phase 1 scale OK; migrate to async queue trong F8-03 branch"
+    },
+    {
+      "id": "R-005",
+      "description": "Invitation token rò rỉ qua email forwarding",
+      "mitigation": "Single-use + 24h expiry + audit log accept event"
+    }
+  ],
+  "evidence": {
+    "sources": [
+      "innovate-srs-selection.md (8 decisions + 29 functions)",
+      "innovate-technical-selection.md (8 BD + 10 DD)",
+      "F8-AUTH-BASE-srs.md (31 FRs + 16 NFRs)",
+      "ADR-001 through ADR-016 (architecture decisions)",
+      "Domain KB (8 sections, 27 evidence pieces)"
+    ],
+    "totalEvidencePieces": 27,
+    "qualityRating": "high"
+  }
+}
