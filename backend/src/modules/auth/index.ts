@@ -1,4 +1,6 @@
 export { AuthModule } from './auth.module';
+export { AuthService } from './services/auth.service';
+export { AccountLockoutService } from './services/account-lockout.service';
 export { AuditStubService } from './internal/audit-stub.service';
 export { IntermediateTokenService } from './internal/intermediate-token.service';
 export { PasswordService } from './internal/password.service';
