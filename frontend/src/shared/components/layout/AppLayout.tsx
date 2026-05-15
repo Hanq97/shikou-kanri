@@ -101,10 +101,14 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
       <aside
         className={`${
           collapsed ? 'w-16' : 'w-60'
-        } shrink-0 bg-white border-r border-zinc-200/70 flex flex-col transition-[width] duration-200 sticky top-0 h-screen`}
+        } shrink-0 bg-white border-r border-zinc-200/70 flex flex-col transition-[width] duration-200 sticky top-0 h-screen relative`}
       >
         {/* Brand */}
-        <div className="h-14 flex items-center px-4 border-b border-zinc-200/70">
+        <div
+          className={`h-14 flex items-center border-b border-zinc-200/70 ${
+            collapsed ? 'justify-center px-2' : 'px-4'
+          }`}
+        >
           <div className="w-8 h-8 rounded-lg bg-brand-500 text-white grid place-items-center shrink-0">
             <HardHat size={18} strokeWidth={2.2} />
           </div>
@@ -139,13 +143,14 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
           })}
         </nav>
 
-        {/* Collapse toggle */}
+        {/* Floating collapse toggle — half-outside, modern Linear/Notion style */}
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}
-          className="h-10 border-t border-zinc-200/70 flex items-center justify-center text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 transition-colors cursor-pointer bg-transparent"
+          aria-label={collapsed ? 'サイドバーを展開' : 'サイドバーを折りたたむ'}
+          className="absolute top-[52px] -right-3 w-6 h-6 rounded-full bg-white border border-zinc-200 shadow-sm grid place-items-center text-zinc-400 hover:text-brand-600 hover:border-brand-300 hover:shadow hover:scale-110 transition-all cursor-pointer z-20"
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
         </button>
       </aside>
 
