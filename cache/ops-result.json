@@ -3,10 +3,13 @@
   "action": "context-detect",
   "data": {
     "found": false,
-    "error": "context-detect failed: Not in a git repository or git not installed",
-    "branch": null,
+    "branch": "master",
     "featureId": null,
-    "state": null
+    "developer": null,
+    "state": null,
+    "contextPath": null,
+    "stack": null,
+    "variant": null
   },
-  "timestamp": "2026-05-15T10:02:54.618Z"
+  "timestamp": "2026-05-15T10:03:32.971Z"
 }

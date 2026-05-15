@@ -1,0 +1,112 @@
+{
+  "mode": "greenfield",
+  "domain": "construction-management-towa",
+  "domainDisplayName": "藤和建設様 施工管理システム (Construction Management System for Towa Construction)",
+  "outputLanguage": "vi",
+  "interviewStyle": "extract-and-fill-gaps",
+  "referenceDocument": "藤和建設様_施工管理システム_統合ドキュメント.md",
+  "currentPhase": "completed",
+  "phases": {
+    "interview": {
+      "status": "completed",
+      "totalTopics": 6,
+      "completedTopics": [
+        "Topic 1: Tech Stack",
+        "Topic 2: AI Architecture",
+        "Topic 3: Mobile & Offline",
+        "Topic 4: Deployment & Tenancy",
+        "Topic 5: Auth, Compliance, Migration",
+        "Topic 6: Project Constraints"
+      ],
+      "currentTopic": null,
+      "currentQuestion": 0
+    },
+    "adr": {
+      "status": "completed",
+      "totalADRs": 21,
+      "completedADRs": [
+        "ADR-001",
+        "ADR-002",
+        "ADR-003",
+        "ADR-004",
+        "ADR-005",
+        "ADR-006",
+        "ADR-007",
+        "ADR-008",
+        "ADR-009",
+        "ADR-010",
+        "ADR-011",
+        "ADR-012",
+        "ADR-013",
+        "ADR-014",
+        "ADR-015",
+        "ADR-016",
+        "ADR-017",
+        "ADR-018",
+        "ADR-019",
+        "ADR-020",
+        "ADR-021"
+      ],
+      "adrList": [
+        "ADR-001: System Architecture Pattern (Modular Monolith)",
+        "ADR-002: Backend Framework (NestJS)",
+        "ADR-003: Frontend Framework (React + TS)",
+        "ADR-004: Database (PostgreSQL + pgvector)",
+        "ADR-005: Cloud Platform (AWS Tokyo)",
+        "ADR-006: Object Storage (S3 + lifecycle)",
+        "ADR-007: Full-text Search (PG FTS -> OpenSearch P2)",
+        "ADR-008: Real-time Communication (WebSocket P2)",
+        "ADR-009: CI/CD Platform (GitHub Actions)",
+        "ADR-010: Mobile Platform (PWA only P2)",
+        "ADR-011: Offline Strategy (Photo queue only)",
+        "ADR-012: Tenancy Model (Single-tenant)",
+        "ADR-013: DR Strategy (Backup-based)",
+        "ADR-014: Deployment Ownership (DEHA-managed SaaS)",
+        "ADR-015: Identity Provider (Email/PW P1 -> SSO P2)",
+        "ADR-016: 2FA Policy (Optional + Admin-mandatory)",
+        "ADR-017: 電帳法 Compliance (DB-based 訂正削除履歴)",
+        "ADR-018: Data Migration (CSV one-shot)",
+        "ADR-019: LLM Hosting (Bedrock) [Deferred P3]",
+        "ADR-020: Vector DB (pgvector) [Deferred P3]",
+        "ADR-021: AI Gateway (Custom thin) [Deferred P3]"
+      ]
+    },
+    "feature-map": {
+      "status": "completed"
+    },
+    "documents": {
+      "status": "completed",
+      "totalDocs": 9,
+      "completedDocs": [
+        "00-overview",
+        "01-system-architecture",
+        "02-module-architecture",
+        "03-frontend-architecture",
+        "04-database-design",
+        "05-backend-architecture",
+        "06-security-architecture",
+        "07-deployment-architecture",
+        "08-mvp-scope-and-roadmap"
+      ],
+      "docList": [
+        "00-overview",
+        "01-system-architecture",
+        "02-module-architecture",
+        "03-frontend-architecture",
+        "04-database-design",
+        "05-backend-architecture",
+        "06-security-architecture",
+        "07-deployment-architecture",
+        "08-mvp-scope-and-roadmap"
+      ]
+    },
+    "estimation": {
+      "status": "skipped"
+    }
+  },
+  "startedAt": "2026-05-15T00:00:00.000Z",
+  "updatedAt": "2026-05-15T13:46:37.015Z",
+  "mvpScope": "phase1-only-no-ai",
+  "pausedAt": "2026-05-15T10:37:20.482Z",
+  "completedAt": "2026-05-15T13:46:37.018Z"
+}
