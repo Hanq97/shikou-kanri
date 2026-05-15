@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
 import { AuthModule } from './modules/auth';
+import { NotificationModule } from './modules/notification';
 import { CryptoModule } from './shared/crypto/crypto.module';
 import { PrismaModule } from './shared/database/prisma.module';
 import { GlobalExceptionFilter } from './shared/exceptions/global-exception.filter';
@@ -18,6 +19,7 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
     PrismaModule,
     CryptoModule,
     HttpHelpersModule,
+    NotificationModule,
     AuthModule,
   ],
   controllers: [AppController],

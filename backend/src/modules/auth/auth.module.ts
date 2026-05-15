@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppConfigService } from '../../config/app-config.service';
 import { AuthController } from './controllers/auth.controller';
+import { UsersController } from './controllers/users.controller';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Require2FaGuard } from './guards/require-2fa.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -19,6 +20,8 @@ import { RefreshTokenRepository } from './repositories/refresh-token.repository'
 import { UserRepository } from './repositories/user.repository';
 import { AccountLockoutService } from './services/account-lockout.service';
 import { AuthService } from './services/auth.service';
+import { InvitationsService } from './services/invitations.service';
+import { UsersService } from './services/users.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -36,9 +39,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       { name: 'login', ttl: 900_000, limit: 5 },
     ]),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, UsersController],
   providers: [
     AuthService,
+    UsersService,
+    InvitationsService,
     AccountLockoutService,
     PasswordService,
     TokenService,
@@ -59,6 +64,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   ],
   exports: [
     AuthService,
+    UsersService,
+    InvitationsService,
     PasswordService,
     TokenService,
     IntermediateTokenService,

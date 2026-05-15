@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AppConfigService } from '../../../config/app-config.service';
 import { PrismaService } from '../../../shared/database/prisma.service';
 import { HashService } from '../../../shared/crypto/hash.service';
 import {
@@ -12,6 +13,7 @@ import {
   AuthPasswordResetInvalidError,
   AuthRefreshInvalidError,
 } from '../../../shared/exceptions/auth-errors';
+import { EmailService } from '../../notification/email.service';
 import { AuthenticatedUser, RequestContext, TokenPair } from '../domain/types';
 import { AuditStubService } from '../internal/audit-stub.service';
 import { IntermediateTokenService } from '../internal/intermediate-token.service';
@@ -41,6 +43,8 @@ export class AuthService {
     private readonly lockout: AccountLockoutService,
     private readonly audit: AuditStubService,
     private readonly passwordResets: PasswordResetRepository,
+    private readonly email: EmailService,
+    private readonly config: AppConfigService,
   ) {}
 
   // === Login ===
@@ -265,12 +269,17 @@ export class AuthService {
       ctx,
     });
 
-    // TODO: trigger email send via notification module (Phase 5 task).
-    // For now: log the token plaintext to console in dev only.
-    if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log(`[dev] Password reset link: /reset-password?token=${tokenPlaintext}`);
-    }
+    const resetUrl = `${this.config.get('FRONTEND_URL')}/reset-password?token=${encodeURIComponent(tokenPlaintext)}`;
+
+    await this.email.send({
+      to: user.email,
+      subject: '施工管理システム — パスワードリセット',
+      template: 'password-reset',
+      vars: {
+        name: user.name,
+        resetUrl,
+      },
+    });
   }
 
   async resetPassword(token: string, newPassword: string, ctx: RequestContext): Promise<void> {
