@@ -21,4 +21,16 @@ export const ResetPasswordSchema = z
 
 export const AcceptInviteSchema = ResetPasswordSchema;
 
+export const ChangePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1, '現在のパスワードを入力してください'),
+    password: PasswordSchema,
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: 'パスワードが一致しません',
+    path: ['passwordConfirm'],
+  });
+
 export type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
+export type ChangePasswordFormValues = z.infer<typeof ChangePasswordSchema>;

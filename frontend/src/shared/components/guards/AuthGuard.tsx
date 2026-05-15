@@ -33,13 +33,17 @@ export function AuthGuard({ children }: AuthGuardProps): JSX.Element {
   }
 
   // Force password change flow
-  if (user.forcePasswordChange && location.pathname !== '/settings/profile') {
-    return <Navigate to="/settings/profile?force=password" replace />;
+  if (user.forcePasswordChange && location.pathname !== '/settings/password') {
+    return <Navigate to="/settings/password?force=1" replace />;
   }
 
   // Force 2FA enrollment for admin
-  if (user.role === 'system_admin' && user.forceTwoFaEnrollment && location.pathname !== '/settings/2fa') {
-    return <Navigate to="/settings/2fa?force=enroll" replace />;
+  if (
+    user.role === 'system_admin' &&
+    user.forceTwoFaEnrollment &&
+    location.pathname !== '/settings/2fa'
+  ) {
+    return <Navigate to="/settings/2fa?force=1" replace />;
   }
 
   return <>{children}</>;
