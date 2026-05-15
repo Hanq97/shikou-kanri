@@ -1,0 +1,2933 @@
+# Frontend App Router & Navigation Specialist (FSD Architecture)
+# Chuyên Gia App Router & Navigation Frontend (FSD Architecture)
+
+**Role**: Next.js 15 App Router, routing, navigation, and layouts expert for Vietnamese legal AI platform
+**Focus**: App Router, route groups, layouts, navigation components, route guards, FSD structure
+**Stack**: Next.js 15.3.0, React 19, TypeScript 5, Feature-Sliced Design
+**Patterns**: 20 patterns (9.21 - 9.40)
+
+---
+
+## Specialist Identity
+## Nhận Dạng Chuyên Gia
+
+You are a **Frontend App Router & Navigation Specialist** focused on Feature-Sliced Design App Layer for Next.js 15 + React 19 Vietnamese legal AI platform.
+
+### Core Responsibilities / Trách Nhiệm Chính
+
+1. Configure Next.js 15 App Router with route groups
+2. Create layouts (RootLayout, DashboardLayout, AuthLayout, LegalLayout)
+3. Implement route guards (AuthGuard, RoleGuard, PermissionGuard, LegalGuard)
+4. Build navigation components (Navbar, Sidebar, Breadcrumbs, TabNavigation)
+5. Set up route loaders and error boundaries
+6. Create global app shell structure with Vietnamese legal platform
+7. Implement dynamic routing for legal documents, contracts, and cases
+8. Configure SEO metadata for legal pages
+9. Set up parallel and intercepting routes for modals
+10. Create mobile-responsive navigation for legal workflows
+
+### Expertise Areas
+- **Next.js 15 App Router** with Server Components
+- **Route Groups** for logical organization: (auth), (dashboard), (legal), (public)
+- **Dynamic Routing** for legal entities: [contractId], [caseId], [documentId]
+- **Layouts** with proper hierarchy and inheritance
+- **Middleware** for authentication and authorization
+- **Navigation Components** integrated with Zustand stores
+- **SEO Optimization** for legal content
+- **Mobile Navigation** for legal workflows
+- **Error Handling** with custom error boundaries
+- **Loading States** with Suspense and skeleton UI
+
+---
+
+## Pattern 9.21: RouterProvider - Next.js 15 App Router Configuration
+## Pattern 9.21: RouterProvider - Cấu Hình Next.js 15 App Router
+
+### Purpose / Mục Đích
+Configure Next.js 15 App Router with root layout, metadata, and provider hierarchy.
+
+### File Structure / Cấu Trúc Tệp
+
+```
+src/app/
+├── layout.tsx                      # Root layout (Server Component)
+├── page.tsx                        # Home page
+├── loading.tsx                     # Root loading UI
+├── error.tsx                       # Root error boundary
+├── not-found.tsx                   # 404 page
+├── providers.tsx                   # Combined providers (Client wrapper)
+├── globals.css                     # Global styles
+│
+├── (auth)/                         # Auth routes group
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── login/
+│   │   └── page.tsx
+│   └── register/
+│       └── page.tsx
+│
+├── (dashboard)/                    # Dashboard routes group
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── users/
+│   │   └── [userId]/
+│   │       └── page.tsx
+│   └── settings/
+│       └── page.tsx
+│
+├── (legal)/                        # Legal routes group
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── contracts/
+│   │   ├── page.tsx
+│   │   └── [contractId]/
+│   │       ├── page.tsx
+│   │       ├── loading.tsx
+│   │       └── error.tsx
+│   ├── documents/
+│   │   ├── page.tsx
+│   │   └── [documentId]/
+│   │       └── page.tsx
+│   └── cases/
+│       ├── page.tsx
+│       └── [caseId]/
+│           └── page.tsx
+│
+├── (public)/                       # Public routes group
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── pricing/
+│       └── page.tsx
+│
+└── api/                            # API routes
+    ├── auth/
+    │   └── [...nextauth]/
+    │       └── route.ts
+    └── trpc/
+        └── [trpc]/
+            └── route.ts
+```
+
+### Root Layout Implementation / Cài Đặt Root Layout
+
+```typescript
+// src/app/layout.tsx
+import type { Metadata } from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Providers } from './providers';
+import { Analytics } from '@vercel/analytics/react';
+import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin', 'vietnamese'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+
+  title: {
+    default: 'Nền Tảng Pháp Lý Thông Minh - StartX4CRM Legal Platform',
+    template: '%s | StartX4CRM Legal Platform',
+  },
+
+  description: 'Nền tảng quản lý hợp đồng, tài liệu pháp lý và các vụ án thông minh với AI. Legal AI platform for contract management, legal documents, and case management.',
+
+  keywords: [
+    'hợp đồng',
+    'tài liệu pháp lý',
+    'quản lý vụ án',
+    'AI pháp lý',
+    'contract management',
+    'legal documents',
+    'case management',
+    'legal AI',
+  ],
+
+  authors: [
+    { name: 'StartX4CRM', url: 'https://startx4crm.com' },
+  ],
+
+  creator: 'StartX4CRM',
+
+  openGraph: {
+    type: 'website',
+    locale: 'vi_VN',
+    url: 'https://startx4crm.com',
+    siteName: 'StartX4CRM Legal Platform',
+    title: 'Nền Tảng Pháp Lý Thông Minh - StartX4CRM',
+    description: 'Quản lý hợp đồng, tài liệu pháp lý và vụ án bằng AI',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'StartX4CRM Legal Platform',
+      },
+    ],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'StartX4CRM Legal Platform',
+    description: 'Quản lý pháp lý thông minh',
+    images: ['/og-image.png'],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+  },
+};
+
+// Structured data for legal platform
+export const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LegalService',
+  name: 'StartX4CRM Legal Platform',
+  description: 'AI-Powered Legal Management Platform',
+  url: 'https://startx4crm.com',
+  serviceName: 'Legal Document & Contract Management',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="vi" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#0066cc" />
+      </head>
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+        <Providers>{children}</Providers>
+        <Analytics />
+      </body>
+    </html>
+  );
+}
+```
+
+### Providers Wrapper / Bao Bọc Providers
+
+```typescript
+// src/app/providers.tsx
+'use client';
+
+import { ReactNode } from 'react';
+import { QueryProvider } from './providers/QueryProvider';
+import { ThemeProvider } from './providers/ThemeProvider';
+import { AuthProvider } from './providers/AuthProvider';
+import { ToastProvider } from './providers/ToastProvider';
+import { ErrorBoundary } from './providers/ErrorBoundary';
+
+interface ProvidersProps {
+  children: ReactNode;
+}
+
+export function Providers({ children }: ProvidersProps) {
+  return (
+    <ErrorBoundary>
+      <QueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <ToastProvider />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryProvider>
+    </ErrorBoundary>
+  );
+}
+```
+
+---
+
+## Pattern 9.22: RouteConfig - Route Configuration with Type Safety
+## Pattern 9.22: RouteConfig - Cấu Hình Định Tuyến Với An Toàn Kiểu Dữ Liệu
+
+### Purpose / Mục Đích
+Define route configuration with type safety for navigation and permission checks.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/shared/config/routes.ts
+import { type LucideIcon } from 'lucide-react';
+
+// Route types
+export type RouteGroup = 'auth' | 'dashboard' | 'legal' | 'public' | 'admin';
+
+export interface RouteConfig {
+  path: string;
+  label: string;
+  labelVi?: string;
+  icon?: LucideIcon;
+  group: RouteGroup;
+  isPublic: boolean;
+  requiresAuth: boolean;
+  requiredRoles?: string[];
+  requiredPermissions?: string[];
+  children?: RouteConfig[];
+  metadata?: {
+    title: string;
+    description: string;
+    descriptionVi?: string;
+  };
+}
+
+// Auth routes
+export const authRoutes: RouteConfig[] = [
+  {
+    path: '/login',
+    label: 'Đăng Nhập / Login',
+    labelVi: 'Đăng Nhập',
+    group: 'auth',
+    isPublic: true,
+    requiresAuth: false,
+    metadata: {
+      title: 'Đăng Nhập - StartX4CRM',
+      description: 'Login to StartX4CRM Legal Platform',
+      descriptionVi: 'Đăng nhập vào Nền Tảng Pháp Lý StartX4CRM',
+    },
+  },
+  {
+    path: '/register',
+    label: 'Đăng Ký / Register',
+    labelVi: 'Đăng Ký',
+    group: 'auth',
+    isPublic: true,
+    requiresAuth: false,
+    metadata: {
+      title: 'Đăng Ký - StartX4CRM',
+      description: 'Register for StartX4CRM Legal Platform',
+      descriptionVi: 'Đăng ký sử dụng Nền Tảng Pháp Lý StartX4CRM',
+    },
+  },
+  {
+    path: '/forgot-password',
+    label: 'Quên Mật Khẩu / Forgot Password',
+    labelVi: 'Quên Mật Khẩu',
+    group: 'auth',
+    isPublic: true,
+    requiresAuth: false,
+  },
+];
+
+// Dashboard routes
+export const dashboardRoutes: RouteConfig[] = [
+  {
+    path: '/dashboard',
+    label: 'Bảng Điều Khiển / Dashboard',
+    labelVi: 'Bảng Điều Khiển',
+    group: 'dashboard',
+    isPublic: false,
+    requiresAuth: true,
+    metadata: {
+      title: 'Bảng Điều Khiển',
+      description: 'Dashboard overview',
+      descriptionVi: 'Tổng quan bảng điều khiển',
+    },
+  },
+  {
+    path: '/dashboard/users',
+    label: 'Người Dùng / Users',
+    labelVi: 'Người Dùng',
+    group: 'dashboard',
+    isPublic: false,
+    requiresAuth: true,
+    requiredRoles: ['admin', 'manager'],
+  },
+  {
+    path: '/dashboard/settings',
+    label: 'Cài Đặt / Settings',
+    labelVi: 'Cài Đặt',
+    group: 'dashboard',
+    isPublic: false,
+    requiresAuth: true,
+  },
+];
+
+// Legal routes
+export const legalRoutes: RouteConfig[] = [
+  {
+    path: '/legal/contracts',
+    label: 'Hợp Đồng / Contracts',
+    labelVi: 'Hợp Đồng',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+    metadata: {
+      title: 'Quản Lý Hợp Đồng',
+      description: 'Contract management',
+      descriptionVi: 'Quản lý hợp đồng pháp lý',
+    },
+  },
+  {
+    path: '/legal/contracts/[contractId]',
+    label: 'Chi Tiết Hợp Đồng / Contract Details',
+    labelVi: 'Chi Tiết Hợp Đồng',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    path: '/legal/documents',
+    label: 'Tài Liệu Pháp Lý / Legal Documents',
+    labelVi: 'Tài Liệu Pháp Lý',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+    metadata: {
+      title: 'Quản Lý Tài Liệu Pháp Lý',
+      description: 'Legal document management',
+      descriptionVi: 'Quản lý tài liệu pháp lý',
+    },
+  },
+  {
+    path: '/legal/documents/[documentId]',
+    label: 'Chi Tiết Tài Liệu / Document Details',
+    labelVi: 'Chi Tiết Tài Liệu',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    path: '/legal/cases',
+    label: 'Vụ Án / Legal Cases',
+    labelVi: 'Vụ Án',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+    metadata: {
+      title: 'Quản Lý Vụ Án',
+      description: 'Case management',
+      descriptionVi: 'Quản lý vụ án pháp lý',
+    },
+  },
+  {
+    path: '/legal/cases/[caseId]',
+    label: 'Chi Tiết Vụ Án / Case Details',
+    labelVi: 'Chi Tiết Vụ Án',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+  },
+];
+
+// Public routes
+export const publicRoutes: RouteConfig[] = [
+  {
+    path: '/',
+    label: 'Trang Chủ / Home',
+    labelVi: 'Trang Chủ',
+    group: 'public',
+    isPublic: true,
+    requiresAuth: false,
+    metadata: {
+      title: 'Trang Chủ - StartX4CRM Legal Platform',
+      description: 'Welcome to StartX4CRM',
+      descriptionVi: 'Chào mừng đến với StartX4CRM',
+    },
+  },
+  {
+    path: '/pricing',
+    label: 'Giá Cả / Pricing',
+    labelVi: 'Giá Cả',
+    group: 'public',
+    isPublic: true,
+    requiresAuth: false,
+    metadata: {
+      title: 'Giá Cả - StartX4CRM',
+      description: 'Pricing plans',
+      descriptionVi: 'Các gói giá',
+    },
+  },
+  {
+    path: '/about',
+    label: 'Giới Thiệu / About',
+    labelVi: 'Giới Thiệu',
+    group: 'public',
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    path: '/contact',
+    label: 'Liên Hệ / Contact',
+    labelVi: 'Liên Hệ',
+    group: 'public',
+    isPublic: true,
+    requiresAuth: false,
+  },
+];
+
+// All routes
+export const allRoutes = [
+  ...authRoutes,
+  ...dashboardRoutes,
+  ...legalRoutes,
+  ...publicRoutes,
+];
+
+// Navigation menu for sidebar
+export const navigationMenu: RouteConfig[] = [
+  {
+    path: '/dashboard',
+    label: 'Bảng Điều Khiển / Dashboard',
+    labelVi: 'Bảng Điều Khiển',
+    group: 'dashboard',
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    path: '/legal/contracts',
+    label: 'Hợp Đồng / Contracts',
+    labelVi: 'Hợp Đồng',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    path: '/legal/documents',
+    label: 'Tài Liệu / Documents',
+    labelVi: 'Tài Liệu',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    path: '/legal/cases',
+    label: 'Vụ Án / Cases',
+    labelVi: 'Vụ Án',
+    group: 'legal',
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    path: '/dashboard/users',
+    label: 'Người Dùng / Users',
+    labelVi: 'Người Dùng',
+    group: 'dashboard',
+    isPublic: false,
+    requiresAuth: true,
+    requiredRoles: ['admin'],
+  },
+  {
+    path: '/dashboard/settings',
+    label: 'Cài Đặt / Settings',
+    labelVi: 'Cài Đặt',
+    group: 'dashboard',
+    isPublic: false,
+    requiresAuth: true,
+  },
+];
+
+// Helper functions
+export function getRouteByPath(path: string): RouteConfig | undefined {
+  return allRoutes.find((route) => route.path === path);
+}
+
+export function isPublicRoute(path: string): boolean {
+  return allRoutes.find((route) => route.path === path)?.isPublic ?? false;
+}
+
+export function requiresAuth(path: string): boolean {
+  return allRoutes.find((route) => route.path === path)?.requiresAuth ?? false;
+}
+
+export function getRequiredRoles(path: string): string[] {
+  return allRoutes.find((route) => route.path === path)?.requiredRoles ?? [];
+}
+```
+
+---
+
+## Pattern 9.23: RouteGuards - Route Protection & Middleware
+## Pattern 9.23: RouteGuards - Bảo Vệ Định Tuyến & Middleware
+
+### Purpose / Mục Đích
+Protect routes with authentication, authorization, and role-based access control.
+
+### Middleware Implementation / Cài Đặt Middleware
+
+```typescript
+// src/middleware.ts
+import { NextResponse, type NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
+
+// Public routes that don't require authentication
+const publicRoutes = [
+  '/',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/pricing',
+  '/about',
+  '/contact',
+];
+
+// Routes accessible only when NOT authenticated
+const authOnlyRoutes = ['/login', '/register', '/forgot-password'];
+
+// Protected routes that require authentication
+const protectedRoutes = ['/dashboard', '/legal'];
+
+// Secret key for JWT verification
+const secret = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'your-secret-key-here'
+);
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Get authentication token from cookies
+  const token = request.cookies.get('auth-token')?.value;
+
+  // Check if route is public
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  // Check if route is auth-only
+  const isAuthOnlyRoute = authOnlyRoutes.some((route) => pathname.startsWith(route));
+
+  // Check if route is protected
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  // Verify token if available
+  let isAuthenticated = false;
+  let user: any = null;
+
+  if (token) {
+    try {
+      const verified = await jwtVerify(token, secret);
+      isAuthenticated = true;
+      user = verified.payload;
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      isAuthenticated = false;
+    }
+  }
+
+  // Redirect unauthenticated users to login if accessing protected routes
+  if (isProtectedRoute && !isAuthenticated) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Redirect authenticated users away from auth pages
+  if (isAuthOnlyRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Check role-based access
+  if (pathname.startsWith('/dashboard/users') && isAuthenticated) {
+    const userRoles = (user?.roles || []) as string[];
+    if (!userRoles.includes('admin') && !userRoles.includes('manager')) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
+
+  // Add user info to request headers for use in server components
+  if (isAuthenticated && user) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-user-id', user.sub || '');
+    requestHeaders.set('x-user-roles', JSON.stringify(user.roles || []));
+    requestHeaders.set('x-user-permissions', JSON.stringify(user.permissions || []));
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     * - api folder (handled separately)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public/|api/).*)',
+  ],
+};
+```
+
+### Client-side AuthGuard Component / Thành Phần AuthGuard Phía Client
+
+```typescript
+// src/features/auth/components/AuthGuard.tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/app/providers/StoreProvider';
+
+interface AuthGuardProps {
+  children: React.ReactNode;
+  requiredRoles?: string[];
+  requiredPermissions?: string[];
+  fallback?: React.ReactNode;
+}
+
+export function AuthGuard({
+  children,
+  requiredRoles,
+  requiredPermissions,
+  fallback,
+}: AuthGuardProps) {
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Check authentication
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    // Check required roles
+    if (requiredRoles && requiredRoles.length > 0) {
+      const userRoles = (user?.roles || []) as string[];
+      const hasRequiredRole = requiredRoles.some((role) =>
+        userRoles.includes(role)
+      );
+
+      if (!hasRequiredRole) {
+        router.push('/unauthorized');
+        return;
+      }
+    }
+
+    // Check required permissions
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      const userPermissions = (user?.permissions || []) as string[];
+      const hasRequiredPermission = requiredPermissions.every((permission) =>
+        userPermissions.includes(permission)
+      );
+
+      if (!hasRequiredPermission) {
+        router.push('/unauthorized');
+        return;
+      }
+    }
+
+    setIsChecking(false);
+  }, [isAuthenticated, user, requiredRoles, requiredPermissions, router]);
+
+  if (isChecking) {
+    return fallback || <AuthGuardSkeleton />;
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
+function AuthGuardSkeleton() {
+  return (
+    <div className="space-y-4 p-4">
+      <div className="h-12 bg-gray-200 rounded animate-pulse" />
+      <div className="h-64 bg-gray-200 rounded animate-pulse" />
+    </div>
+  );
+}
+```
+
+---
+
+## Pattern 9.24: RouteLoader - Data Loading with Suspense
+## Pattern 9.24: RouteLoader - Tải Dữ Liệu Bằng Suspense
+
+### Purpose / Mục Đích
+Load route data efficiently with Suspense boundaries and skeleton UI.
+
+### Loading UI Implementation / Cài Đặt Giao Diện Tải
+
+```typescript
+// src/app/(legal)/contracts/loading.tsx
+import { ContractListSkeleton } from '@/features/legal/contracts/components/ContractListSkeleton';
+
+export default function ContractsLoading() {
+  return <ContractListSkeleton />;
+}
+
+// src/features/legal/contracts/components/ContractListSkeleton.tsx
+export function ContractListSkeleton() {
+  return (
+    <div className="space-y-4">
+      {/* Header skeleton */}
+      <div className="space-y-2">
+        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-4 w-96 bg-gray-100 rounded animate-pulse" />
+      </div>
+
+      {/* Search bar skeleton */}
+      <div className="h-10 w-full bg-gray-200 rounded animate-pulse" />
+
+      {/* Table skeleton */}
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// src/app/(legal)/contracts/[contractId]/loading.tsx
+import { ContractDetailSkeleton } from '@/features/legal/contracts/components/ContractDetailSkeleton';
+
+export default function ContractDetailLoading() {
+  return <ContractDetailSkeleton />;
+}
+
+export const metadata = {
+  title: 'Đang Tải... / Loading...',
+};
+
+// src/features/legal/contracts/components/ContractDetailSkeleton.tsx
+export function ContractDetailSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Header skeleton */}
+      <div className="space-y-4">
+        <div className="h-10 w-2/3 bg-gray-200 rounded animate-pulse" />
+        <div className="flex gap-2">
+          <div className="h-6 w-24 bg-gray-200 rounded animate-pulse" />
+          <div className="h-6 w-24 bg-gray-200 rounded animate-pulse" />
+          <div className="h-6 w-24 bg-gray-200 rounded animate-pulse" />
+        </div>
+      </div>
+
+      {/* Content skeleton */}
+      <div className="grid grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+            <div className="h-6 w-full bg-gray-100 rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
+
+      {/* Document viewer skeleton */}
+      <div className="h-96 bg-gray-200 rounded animate-pulse" />
+    </div>
+  );
+}
+```
+
+### Route Data Loading / Tải Dữ Liệu Định Tuyến
+
+```typescript
+// src/app/(legal)/contracts/[contractId]/page.tsx
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { ContractDetail } from '@/features/legal/contracts/components/ContractDetail';
+import { getContract } from '@/features/legal/contracts/api';
+
+interface ContractPageProps {
+  params: Promise<{ contractId: string }>;
+}
+
+// Generate metadata for SEO
+export async function generateMetadata(
+  { params }: ContractPageProps
+): Promise<Metadata> {
+  const { contractId } = await params;
+
+  try {
+    const contract = await getContract(contractId);
+
+    return {
+      title: `Hợp Đồng: ${contract.title} | StartX4CRM`,
+      description: contract.description || `Xem chi tiết hợp đồng ${contract.title}`,
+      openGraph: {
+        title: `Hợp Đồng: ${contract.title}`,
+        description: contract.description || `Xem chi tiết hợp đồng ${contract.title}`,
+        type: 'article',
+        publishedTime: contract.createdAt,
+        modifiedTime: contract.updatedAt,
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Hợp Đồng Không Tìm Thấy | StartX4CRM',
+      description: 'The contract could not be found.',
+    };
+  }
+}
+
+// Generate static paths for commonly accessed contracts
+export async function generateStaticParams() {
+  // This would typically fetch top contracts from your API
+  return [
+    { contractId: 'contract-1' },
+    { contractId: 'contract-2' },
+    { contractId: 'contract-3' },
+  ];
+}
+
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function ContractPage({ params }: ContractPageProps) {
+  const { contractId } = await params;
+
+  try {
+    const contract = await getContract(contractId);
+
+    if (!contract) {
+      notFound();
+    }
+
+    return (
+      <div className="space-y-6">
+        <ContractDetail contract={contract} />
+      </div>
+    );
+  } catch (error) {
+    notFound();
+  }
+}
+```
+
+---
+
+## Pattern 9.25: RouteErrorBoundary - Route-Level Error Handling
+## Pattern 9.25: RouteErrorBoundary - Xử Lý Lỗi Cấp Định Tuyến
+
+### Purpose / Mục Đích
+Handle errors at route level with custom error boundaries and recovery.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/app/(legal)/contracts/[contractId]/error.tsx
+'use client';
+
+import { useEffect } from 'react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import Link from 'next/link';
+
+interface ContractErrorProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
+export default function ContractError({ error, reset }: ContractErrorProps) {
+  useEffect(() => {
+    // Log error details
+    console.error('Contract page error:', error);
+  }, [error]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+        <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full">
+          <AlertTriangle className="w-6 h-6 text-red-600" />
+        </div>
+
+        <h1 className="mt-4 text-2xl font-bold text-center text-gray-900">
+          Lỗi Tải Hợp Đồng / Error Loading Contract
+        </h1>
+
+        <p className="mt-2 text-sm text-center text-gray-600">
+          Xin lỗi, không thể tải hợp đồng. Vui lòng thử lại sau. / Sorry, we couldn't load the
+          contract. Please try again.
+        </p>
+
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 p-4 bg-gray-100 rounded border-l-4 border-red-500">
+            <p className="text-xs font-mono text-red-600 font-semibold">Error Details:</p>
+            <p className="text-xs font-mono text-gray-700 mt-2">{error.message}</p>
+            {error.digest && (
+              <p className="text-xs font-mono text-gray-500 mt-2">ID: {error.digest}</p>
+            )}
+          </div>
+        )}
+
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Thử Lại / Try Again
+          </button>
+
+          <Link
+            href="/legal/contracts"
+            className="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+          >
+            <Home className="w-4 h-4 mr-2" />
+            Quay Lại Danh Sách / Back to List
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// src/app/(legal)/error.tsx - Legal group error boundary
+'use client';
+
+import { useEffect } from 'react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import Link from 'next/link';
+
+interface LegalErrorProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
+export default function LegalError({ error, reset }: LegalErrorProps) {
+  useEffect(() => {
+    console.error('Legal section error:', error);
+  }, [error]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+        <div className="flex items-center justify-center w-12 h-12 mx-auto bg-amber-100 rounded-full">
+          <AlertTriangle className="w-6 h-6 text-amber-600" />
+        </div>
+
+        <h1 className="mt-4 text-2xl font-bold text-center text-gray-900">
+          Lỗi / Error
+        </h1>
+
+        <p className="mt-2 text-sm text-center text-gray-600">
+          Đã xảy ra lỗi trong khi tải trang pháp lý. / An error occurred while loading the legal
+          section.
+        </p>
+
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Thử Lại / Try Again
+          </button>
+
+          <Link
+            href="/dashboard"
+            className="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+          >
+            <Home className="w-4 h-4 mr-2" />
+            Quay Về Bảng Điều Khiển / Back to Dashboard
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## Pattern 9.26: NavigationBar - Top Navigation Component
+## Pattern 9.26: NavigationBar - Thành Phần Điều Hướng Trên Cùng
+
+### Purpose / Mục Đích
+Create responsive top navigation with user menu and branding.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/widgets/header/Header.tsx
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Menu, X, LogOut, Settings, User } from 'lucide-react';
+import { useAuthStore, useUIStore } from '@/app/providers/StoreProvider';
+import { useState } from 'react';
+import { useClickOutside } from '@/shared/hooks/useClickOutside';
+
+export function Header() {
+  const router = useRouter();
+  const { user, logout } = useAuthStore();
+  const { sidebarOpen, toggleSidebar } = useUIStore();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useClickOutside(() => setUserMenuOpen(false));
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
+  return (
+    <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+        {/* Logo and brand */}
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">S</span>
+          </div>
+          <span className="font-bold text-lg text-gray-900 hidden sm:inline">
+            StartX4CRM
+          </span>
+        </Link>
+
+        {/* Center - Navigation items (hidden on mobile) */}
+        <nav className="hidden md:flex items-center gap-8">
+          <Link
+            href="/legal/contracts"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            Hợp Đồng / Contracts
+          </Link>
+          <Link
+            href="/legal/documents"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            Tài Liệu / Documents
+          </Link>
+          <Link
+            href="/legal/cases"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            Vụ Án / Cases
+          </Link>
+        </nav>
+
+        {/* Right side - User menu */}
+        <div className="flex items-center gap-4">
+          {/* Mobile menu toggle */}
+          <button
+            onClick={toggleSidebar}
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {sidebarOpen ? (
+              <X className="w-5 h-5 text-gray-600" />
+            ) : (
+              <Menu className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+
+          {/* User menu */}
+          <div className="relative" ref={userMenuRef}>
+            <button
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">
+                  {user?.name?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              </div>
+              <span className="hidden sm:inline text-sm font-medium text-gray-900">
+                {user?.name || 'User'}
+              </span>
+            </button>
+
+            {/* User menu dropdown */}
+            {userMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                <div className="px-4 py-2 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                  <p className="text-xs text-gray-500">{user?.email}</p>
+                </div>
+
+                <Link
+                  href="/dashboard/profile"
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-gray-700 text-sm transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  Hồ Sơ / Profile
+                </Link>
+
+                <Link
+                  href="/dashboard/settings"
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-gray-700 text-sm transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  Cài Đặt / Settings
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-red-600 text-sm transition-colors border-t border-gray-100"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Đăng Xuất / Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+```
+
+---
+
+## Pattern 9.27: Sidebar - Side Navigation Component
+## Pattern 9.27: Sidebar - Thành Phần Điều Hướng Bên
+
+### Purpose / Mục Đích
+Create collapsible sidebar with navigation groups and visual indicators.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/widgets/sidebar/Sidebar.tsx
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard,
+  FileText,
+  Briefcase,
+  Scale,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
+import { useUIStore } from '@/app/providers/StoreProvider';
+import { useState } from 'react';
+import { navigationMenu } from '@/shared/config/routes';
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const { sidebarOpen } = useUIStore();
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    legal: true,
+  });
+
+  const toggleGroup = (group: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [group]: !prev[group],
+    }));
+  };
+
+  const isActive = (path: string) => {
+    return pathname === path || pathname.startsWith(`${path}/`);
+  };
+
+  // Group routes by category
+  const groupedRoutes = navigationMenu.reduce(
+    (acc, route) => {
+      const group = route.group;
+      if (!acc[group]) {
+        acc[group] = [];
+      }
+      acc[group].push(route);
+      return acc;
+    },
+    {} as Record<string, typeof navigationMenu>
+  );
+
+  if (!sidebarOpen) return null;
+
+  return (
+    <aside className="hidden lg:flex flex-col w-64 bg-gray-50 border-r border-gray-200 overflow-y-auto">
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {/* Dashboard section */}
+        {groupedRoutes['dashboard'] && (
+          <div className="space-y-1">
+            <div className="px-2 py-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase">
+                Quản Lý / Management
+              </p>
+            </div>
+            {groupedRoutes['dashboard'].map((route) => (
+              <Link
+                key={route.path}
+                href={route.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  isActive(route.path)
+                    ? 'bg-blue-100 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+                <span className="text-sm">{route.labelVi}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Legal section */}
+        {groupedRoutes['legal'] && (
+          <div className="space-y-1 mt-6">
+            <button
+              onClick={() => toggleGroup('legal')}
+              className="w-full flex items-center justify-between px-2 py-2 text-xs font-semibold text-gray-500 uppercase hover:text-gray-700 transition-colors"
+            >
+              <span>Pháp Lý / Legal</span>
+              {expandedGroups['legal'] ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </button>
+
+            {expandedGroups['legal'] && (
+              <div className="space-y-1 ml-2 border-l-2 border-gray-200 pl-2">
+                {groupedRoutes['legal'].map((route) => {
+                  const getIcon = (path: string) => {
+                    if (path.includes('contracts'))
+                      return <Briefcase className="w-4 h-4 flex-shrink-0" />;
+                    if (path.includes('documents'))
+                      return <FileText className="w-4 h-4 flex-shrink-0" />;
+                    if (path.includes('cases'))
+                      return <Scale className="w-4 h-4 flex-shrink-0" />;
+                    return null;
+                  };
+
+                  return (
+                    <Link
+                      key={route.path}
+                      href={route.path}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                        isActive(route.path)
+                          ? 'bg-green-100 text-green-600 font-medium'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {getIcon(route.path)}
+                      <span className="text-sm">{route.labelVi}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </nav>
+
+      {/* Footer info */}
+      <div className="px-4 py-4 border-t border-gray-200 space-y-2">
+        <p className="text-xs text-gray-500">
+          Phiên Bản / Version<br />
+          <span className="font-semibold text-gray-700">v1.0.0</span>
+        </p>
+      </div>
+    </aside>
+  );
+}
+```
+
+---
+
+## Pattern 9.28: Breadcrumbs - Breadcrumb Navigation
+## Pattern 9.28: Breadcrumbs - Điều Hướng Dấu Vết
+
+### Purpose / Mục Đích
+Show current page location in hierarchy with clickable breadcrumbs.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/widgets/breadcrumbs/Breadcrumbs.tsx
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { ChevronRight, Home } from 'lucide-react';
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  labelVi?: string;
+}
+
+interface BreadcrumbsProps {
+  items?: BreadcrumbItem[];
+  showHome?: boolean;
+}
+
+export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
+  const pathname = usePathname();
+
+  // Generate breadcrumbs from pathname if items not provided
+  const breadcrumbs = items || generateBreadcrumbs(pathname);
+
+  if (breadcrumbs.length === 0) return null;
+
+  return (
+    <nav
+      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200"
+      aria-label="Breadcrumb"
+    >
+      <ol className="flex items-center gap-2">
+        {showHome && (
+          <>
+            <li>
+              <Link
+                href="/dashboard"
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                aria-label="Dashboard"
+              >
+                <Home className="w-4 h-4 text-gray-600" />
+              </Link>
+            </li>
+            {breadcrumbs.length > 0 && (
+              <li className="text-gray-400">
+                <ChevronRight className="w-4 h-4" />
+              </li>
+            )}
+          </>
+        )}
+
+        {breadcrumbs.map((item, index) => {
+          const isLast = index === breadcrumbs.length - 1;
+
+          return (
+            <li key={item.label} className="flex items-center gap-2">
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  {item.labelVi || item.label}
+                </Link>
+              ) : (
+                <span className={isLast ? 'text-sm font-medium text-gray-900' : 'text-sm text-gray-600'}>
+                  {item.labelVi || item.label}
+                </span>
+              )}
+
+              {!isLast && (
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+// Helper function to generate breadcrumbs from pathname
+function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
+  const segments = pathname.split('/').filter(Boolean);
+  const breadcrumbs: BreadcrumbItem[] = [];
+
+  const breadcrumbMap: Record<string, { label: string; labelVi: string }> = {
+    legal: { label: 'Legal', labelVi: 'Pháp Lý' },
+    contracts: { label: 'Contracts', labelVi: 'Hợp Đồng' },
+    documents: { label: 'Documents', labelVi: 'Tài Liệu' },
+    cases: { label: 'Cases', labelVi: 'Vụ Án' },
+    dashboard: { label: 'Dashboard', labelVi: 'Bảng Điều Khiển' },
+    users: { label: 'Users', labelVi: 'Người Dùng' },
+    settings: { label: 'Settings', labelVi: 'Cài Đặt' },
+  };
+
+  segments.forEach((segment, index) => {
+    // Skip numeric IDs and special segments
+    if (/^[0-9a-f-]+$/.test(segment)) {
+      breadcrumbs.push({
+        label: 'Details / Chi Tiết',
+        labelVi: 'Chi Tiết',
+      });
+      return;
+    }
+
+    const map = breadcrumbMap[segment];
+    if (map) {
+      const href = '/' + segments.slice(0, index + 1).join('/');
+      breadcrumbs.push({
+        label: map.label,
+        labelVi: map.labelVi,
+        href: index < segments.length - 1 ? href : undefined,
+      });
+    }
+  });
+
+  return breadcrumbs;
+}
+```
+
+---
+
+## Pattern 9.29: TabNavigation - Tab-Based Navigation
+## Pattern 9.29: TabNavigation - Điều Hướng Dựa Trên Tab
+
+### Purpose / Mục Đích
+Create tabbed interface for organizing related content sections.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/widgets/tabs/TabNavigation.tsx
+'use client';
+
+import { useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+export interface TabItem {
+  id: string;
+  label: string;
+  labelVi?: string;
+  content: React.ReactNode;
+  badge?: string;
+}
+
+interface TabNavigationProps {
+  tabs: TabItem[];
+  defaultTab?: string;
+  onChange?: (tabId: string) => void;
+  variant?: 'default' | 'underline' | 'pills';
+}
+
+export function TabNavigation({
+  tabs,
+  defaultTab,
+  onChange,
+  variant = 'default',
+}: TabNavigationProps) {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || defaultTab || tabs[0]?.id);
+
+  const handleTabChange = useCallback(
+    (tabId: string) => {
+      setActiveTab(tabId);
+      onChange?.(tabId);
+    },
+    [onChange]
+  );
+
+  const activeTabContent = tabs.find((tab) => tab.id === activeTab);
+
+  return (
+    <div className="space-y-6">
+      {/* Tab buttons */}
+      <div className={getTabContainerClassName(variant)}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => handleTabChange(tab.id)}
+            className={getTabButtonClassName(activeTab === tab.id, variant)}
+          >
+            <span>{tab.labelVi || tab.label}</span>
+            {tab.badge && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-red-600 rounded-full">
+                {tab.badge}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      <div className="animate-fade-in">{activeTabContent?.content}</div>
+    </div>
+  );
+}
+
+function getTabContainerClassName(variant: string): string {
+  const baseClass = 'flex items-center gap-0 border-b border-gray-200';
+  switch (variant) {
+    case 'underline':
+      return baseClass;
+    case 'pills':
+      return 'flex items-center gap-2 bg-gray-100 rounded-lg p-1';
+    default:
+      return baseClass;
+  }
+}
+
+function getTabButtonClassName(isActive: boolean, variant: string): string {
+  const baseClass = 'px-4 py-2 font-medium text-sm transition-colors relative';
+
+  switch (variant) {
+    case 'underline':
+      return `${baseClass} ${
+        isActive
+          ? 'text-blue-600 border-b-2 border-blue-600'
+          : 'text-gray-600 hover:text-gray-900'
+      }`;
+    case 'pills':
+      return `${baseClass} rounded-md ${
+        isActive
+          ? 'bg-white text-blue-600 shadow-sm'
+          : 'text-gray-600 hover:text-gray-900'
+      }`;
+    default:
+      return `${baseClass} ${
+        isActive
+          ? 'text-blue-600 border-b-2 border-blue-600'
+          : 'text-gray-600 hover:text-gray-900'
+      }`;
+  }
+}
+
+// Usage example for contract detail page
+export function ContractDetailTabs({ contractId }: { contractId: string }) {
+  const tabs: TabItem[] = [
+    {
+      id: 'overview',
+      label: 'Overview / Tổng Quan',
+      labelVi: 'Tổng Quan',
+      content: <ContractOverview contractId={contractId} />,
+    },
+    {
+      id: 'documents',
+      label: 'Documents / Tài Liệu',
+      labelVi: 'Tài Liệu',
+      content: <ContractDocuments contractId={contractId} />,
+      badge: '3',
+    },
+    {
+      id: 'timeline',
+      label: 'Timeline / Lịch Sử',
+      labelVi: 'Lịch Sử',
+      content: <ContractTimeline contractId={contractId} />,
+    },
+    {
+      id: 'comments',
+      label: 'Comments / Bình Luận',
+      labelVi: 'Bình Luận',
+      content: <ContractComments contractId={contractId} />,
+      badge: '5',
+    },
+  ];
+
+  return <TabNavigation tabs={tabs} defaultTab="overview" variant="underline" />;
+}
+```
+
+---
+
+## Pattern 9.30: MobileNav - Mobile Navigation
+## Pattern 9.30: MobileNav - Điều Hướng Trên Thiết Bị Di Động
+
+### Purpose / Mục Đích
+Create mobile-optimized bottom navigation for touch devices.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/widgets/mobile-nav/MobileNav.tsx
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard,
+  FileText,
+  Briefcase,
+  Scale,
+  MoreVertical,
+} from 'lucide-react';
+import { useState } from 'react';
+import { useClickOutside } from '@/shared/hooks/useClickOutside';
+
+interface MobileNavItem {
+  id: string;
+  label: string;
+  labelVi: string;
+  href: string;
+  icon: React.ReactNode;
+  badge?: string;
+}
+
+export function MobileNav() {
+  const pathname = usePathname();
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreMenuRef = useClickOutside(() => setMoreMenuOpen(false));
+
+  const navItems: MobileNavItem[] = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      labelVi: 'Bảng Điều Khiển',
+      href: '/dashboard',
+      icon: <LayoutDashboard className="w-6 h-6" />,
+    },
+    {
+      id: 'contracts',
+      label: 'Contracts',
+      labelVi: 'Hợp Đồng',
+      href: '/legal/contracts',
+      icon: <Briefcase className="w-6 h-6" />,
+    },
+    {
+      id: 'documents',
+      label: 'Documents',
+      labelVi: 'Tài Liệu',
+      href: '/legal/documents',
+      icon: <FileText className="w-6 h-6" />,
+    },
+    {
+      id: 'cases',
+      label: 'Cases',
+      labelVi: 'Vụ Án',
+      href: '/legal/cases',
+      icon: <Scale className="w-6 h-6" />,
+    },
+  ];
+
+  const primaryItems = navItems.slice(0, 3);
+  const moreItems = navItems.slice(3);
+
+  const isActive = (href: string) => {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 safe-area-inset-bottom">
+      <div className="flex items-center justify-around h-16">
+        {/* Primary navigation items */}
+        {primaryItems.map((item) => (
+          <Link
+            key={item.id}
+            href={item.href}
+            className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${
+              isActive(item.href)
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            {item.icon}
+            <span className="text-xs font-medium">{item.labelVi}</span>
+          </Link>
+        ))}
+
+        {/* More menu */}
+        {moreItems.length > 0 && (
+          <div className="relative h-full w-full" ref={moreMenuRef}>
+            <button
+              onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+              className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${
+                moreMenuOpen
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <MoreVertical className="w-6 h-6" />
+              <span className="text-xs font-medium">Thêm</span>
+            </button>
+
+            {/* More menu dropdown */}
+            {moreMenuOpen && (
+              <div className="absolute bottom-full right-0 w-40 bg-white rounded-t-lg shadow-lg border border-gray-200 border-b-0">
+                {moreItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    onClick={() => setMoreMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 border-b border-gray-100 last:border-b-0 transition-colors ${
+                      isActive(item.href)
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {item.icon}
+                    <span className="text-sm font-medium">{item.labelVi}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+}
+```
+
+---
+
+## Pattern 9.31-9.35: Route Guards - Multi-Level Access Control
+## Pattern 9.31-9.35: Bảo Vệ Định Tuyến - Kiểm Soát Truy Cập Đa Cấp
+
+### Purpose / Mục Đích
+Implement multi-level route protection: Auth, Role, Permission, Subscription, Maintenance.
+
+### Implementation / Cài Đặt
+
+```typescript
+// src/features/auth/guards/useRouteGuards.ts
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/app/providers/StoreProvider';
+
+export interface GuardConfig {
+  requiresAuth?: boolean;
+  requiredRoles?: string[];
+  requiredPermissions?: string[];
+  requiredSubscription?: 'free' | 'pro' | 'enterprise';
+  maintenanceMode?: boolean;
+}
+
+export function useRouteGuards(config: GuardConfig) {
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
+  const [accessDenied, setAccessDenied] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check authentication
+    if (config.requiresAuth && !isAuthenticated) {
+      setAccessDenied('unauthenticated');
+      router.push('/login');
+      return;
+    }
+
+    // Check maintenance mode
+    if (config.maintenanceMode) {
+      setAccessDenied('maintenance');
+      return;
+    }
+
+    // Check required roles
+    if (config.requiredRoles && isAuthenticated && user) {
+      const userRoles = (user.roles || []) as string[];
+      const hasRequiredRole = config.requiredRoles.some((role) =>
+        userRoles.includes(role)
+      );
+
+      if (!hasRequiredRole) {
+        setAccessDenied('insufficient-role');
+        router.push('/unauthorized');
+        return;
+      }
+    }
+
+    // Check required permissions
+    if (config.requiredPermissions && isAuthenticated && user) {
+      const userPermissions = (user.permissions || []) as string[];
+      const hasAllPermissions = config.requiredPermissions.every((permission) =>
+        userPermissions.includes(permission)
+      );
+
+      if (!hasAllPermissions) {
+        setAccessDenied('insufficient-permission');
+        router.push('/unauthorized');
+        return;
+      }
+    }
+
+    // Check subscription level
+    if (config.requiredSubscription && isAuthenticated && user) {
+      const subscriptionLevels = { free: 1, pro: 2, enterprise: 3 };
+      const userLevel =
+        subscriptionLevels[user.subscription as keyof typeof subscriptionLevels] || 0;
+      const requiredLevel =
+        subscriptionLevels[
+          config.requiredSubscription as keyof typeof subscriptionLevels
+        ];
+
+      if (userLevel < requiredLevel) {
+        setAccessDenied('insufficient-subscription');
+        router.push('/subscription-required');
+        return;
+      }
+    }
+
+    setIsChecking(false);
+  }, [isAuthenticated, user, config, router]);
+
+  return {
+    isChecking,
+    accessDenied,
+    isAllowed: !accessDenied && !isChecking,
+  };
+}
+
+// RoleGuard component
+export function RoleGuard({
+  children,
+  requiredRoles,
+  fallback,
+}: {
+  children: React.ReactNode;
+  requiredRoles: string[];
+  fallback?: React.ReactNode;
+}) {
+  const { isChecking, isAllowed } = useRouteGuards({
+    requiresAuth: true,
+    requiredRoles,
+  });
+
+  if (isChecking) {
+    return fallback || <RoleGuardSkeleton />;
+  }
+
+  if (!isAllowed) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
+// PermissionGuard component
+export function PermissionGuard({
+  children,
+  requiredPermissions,
+  fallback,
+}: {
+  children: React.ReactNode;
+  requiredPermissions: string[];
+  fallback?: React.ReactNode;
+}) {
+  const { isChecking, isAllowed } = useRouteGuards({
+    requiresAuth: true,
+    requiredPermissions,
+  });
+
+  if (isChecking) {
+    return fallback || <PermissionGuardSkeleton />;
+  }
+
+  if (!isAllowed) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
+// SubscriptionGuard component
+export function SubscriptionGuard({
+  children,
+  requiredSubscription,
+  fallback,
+}: {
+  children: React.ReactNode;
+  requiredSubscription: 'free' | 'pro' | 'enterprise';
+  fallback?: React.ReactNode;
+}) {
+  const { isChecking, isAllowed } = useRouteGuards({
+    requiresAuth: true,
+    requiredSubscription,
+  });
+
+  if (isChecking) {
+    return fallback || <SubscriptionGuardSkeleton />;
+  }
+
+  if (!isAllowed) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
+function RoleGuardSkeleton() {
+  return <div className="h-64 bg-gray-200 rounded animate-pulse" />;
+}
+
+function PermissionGuardSkeleton() {
+  return <div className="h-64 bg-gray-200 rounded animate-pulse" />;
+}
+
+function SubscriptionGuardSkeleton() {
+  return <div className="h-64 bg-gray-200 rounded animate-pulse" />;
+}
+
+// Usage in components
+export function AdminPanel() {
+  return (
+    <RoleGuard requiredRoles={['admin']}>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Bảng Điều Khiển Quản Trị / Admin Panel</h1>
+        {/* Admin content */}
+      </div>
+    </RoleGuard>
+  );
+}
+
+export function ContractEditor() {
+  return (
+    <PermissionGuard requiredPermissions={['contracts:write', 'contracts:delete']}>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Chỉnh Sửa Hợp Đồng / Edit Contract</h1>
+        {/* Editor content */}
+      </div>
+    </PermissionGuard>
+  );
+}
+
+export function AdvancedFeatures() {
+  return (
+    <SubscriptionGuard requiredSubscription="pro">
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Tính Năng Nâng Cao / Advanced Features</h1>
+        {/* Advanced features content */}
+      </div>
+    </SubscriptionGuard>
+  );
+}
+```
+
+---
+
+## Pattern 9.36-9.40: Global Layout & Styling
+## Pattern 9.36-9.40: Bố Cục & Kiểu Dáng Toàn Cầu
+
+### Purpose / Mục Đích
+Configure root layout, app shell, global header/footer, and global CSS.
+
+### Layout Implementation / Cài Đặt Bố Cục
+
+```typescript
+// src/app/(dashboard)/layout.tsx
+import { Header } from '@/widgets/header/Header';
+import { Sidebar } from '@/widgets/sidebar/Sidebar';
+import { Footer } from '@/widgets/footer/Footer';
+import { MobileNav } from '@/widgets/mobile-nav/MobileNav';
+import { Breadcrumbs } from '@/widgets/breadcrumbs/Breadcrumbs';
+import { AuthGuard } from '@/features/auth/components/AuthGuard';
+
+export const metadata = {
+  title: {
+    template: '%s | Dashboard - StartX4CRM',
+    default: 'Dashboard | StartX4CRM',
+  },
+};
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AuthGuard requiredRoles={['user', 'admin', 'manager']}>
+      <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+        {/* Sidebar */}
+        <Sidebar />
+
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <Header />
+
+          {/* Main content */}
+          <main className="flex-1 overflow-y-auto lg:p-6 p-4 mb-16 lg:mb-0">
+            <Breadcrumbs showHome />
+            <div className="mt-4">{children}</div>
+          </main>
+
+          {/* Footer - hidden on mobile due to MobileNav */}
+          <Footer />
+        </div>
+
+        {/* Mobile navigation */}
+        <MobileNav />
+      </div>
+    </AuthGuard>
+  );
+}
+
+// src/app/(legal)/layout.tsx - Legal section layout
+export const metadata = {
+  title: {
+    template: '%s | Pháp Lý - StartX4CRM',
+    default: 'Pháp Lý | StartX4CRM',
+  },
+};
+
+export default function LegalLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AuthGuard requiredRoles={['user', 'lawyer', 'admin']}>
+      <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+        <Sidebar />
+
+        <div className="flex-1 flex flex-col">
+          <Header />
+
+          <main className="flex-1 overflow-y-auto lg:p-6 p-4 mb-16 lg:mb-0 space-y-4">
+            <Breadcrumbs showHome />
+            <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
+              <p className="text-sm text-blue-800">
+                <strong>Pháp Lý / Legal Section:</strong> Quản lý hợp đồng, tài liệu và vụ
+                án. / Manage contracts, documents, and legal cases.
+              </p>
+            </div>
+            {children}
+          </main>
+
+          <Footer />
+        </div>
+
+        <MobileNav />
+      </div>
+    </AuthGuard>
+  );
+}
+
+// src/app/(auth)/layout.tsx - Auth layout (minimal)
+export const metadata = {
+  title: {
+    template: '%s | Xác Thực - StartX4CRM',
+    default: 'Xác Thực | StartX4CRM',
+  },
+};
+
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">{children}</div>
+    </div>
+  );
+}
+```
+
+### Global Header / Footer Components / Các Thành Phần Tiêu Đề/Chân Trang Toàn Cầu
+
+```typescript
+// src/widgets/footer/Footer.tsx
+import Link from 'next/link';
+
+export function Footer() {
+  return (
+    <footer className="bg-gray-900 text-gray-300 py-8 px-4 lg:px-6 hidden lg:block">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        {/* Company info */}
+        <div>
+          <h3 className="text-white font-bold mb-4">StartX4CRM</h3>
+          <p className="text-sm text-gray-400">
+            Nền tảng pháp lý thông minh. / Legal management platform.
+          </p>
+        </div>
+
+        {/* Product links */}
+        <div>
+          <h4 className="text-white font-semibold mb-4">Sản Phẩm / Product</h4>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="/legal/contracts" className="hover:text-white transition-colors">
+                Hợp Đồng / Contracts
+              </Link>
+            </li>
+            <li>
+              <Link href="/legal/documents" className="hover:text-white transition-colors">
+                Tài Liệu / Documents
+              </Link>
+            </li>
+            <li>
+              <Link href="/legal/cases" className="hover:text-white transition-colors">
+                Vụ Án / Cases
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Company links */}
+        <div>
+          <h4 className="text-white font-semibold mb-4">Công Ty / Company</h4>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="/about" className="hover:text-white transition-colors">
+                Giới Thiệu / About
+              </Link>
+            </li>
+            <li>
+              <Link href="/pricing" className="hover:text-white transition-colors">
+                Giá Cả / Pricing
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-white transition-colors">
+                Liên Hệ / Contact
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Legal links */}
+        <div>
+          <h4 className="text-white font-semibold mb-4">Pháp Lý / Legal</h4>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="/privacy" className="hover:text-white transition-colors">
+                Bảo Mật / Privacy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="hover:text-white transition-colors">
+                Điều Khoản / Terms
+              </Link>
+            </li>
+            <li>
+              <Link href="/cookies" className="hover:text-white transition-colors">
+                Cookies / Cookies
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Bottom divider */}
+      <div className="border-t border-gray-800 pt-8">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-400">
+            {new Date().getFullYear()} StartX4CRM. Tất cả quyền được bảo lưu. / All rights
+            reserved.
+          </p>
+          <div className="flex items-center gap-4">
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              Twitter
+            </a>
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              LinkedIn
+            </a>
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+```
+
+### Global Styles / Kiểu Dáng Toàn Cầu
+
+```css
+/* src/app/globals.css */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Root variables */
+:root {
+  --color-primary: #0066cc;
+  --color-primary-dark: #0052a3;
+  --color-secondary: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-success: #10b981;
+  --color-gray-50: #f9fafb;
+  --color-gray-900: #111827;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* Safe area for mobile */
+  --safe-area-inset-top: max(12px, env(safe-area-inset-top));
+  --safe-area-inset-right: max(12px, env(safe-area-inset-right));
+  --safe-area-inset-bottom: max(12px, env(safe-area-inset-bottom));
+  --safe-area-inset-left: max(12px, env(safe-area-inset-left));
+}
+
+/* HTML */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body */
+body {
+  background-color: #f9fafb;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto Oxide',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold tracking-tight;
+}
+
+h1 {
+  @apply text-3xl lg:text-4xl;
+}
+
+h2 {
+  @apply text-2xl lg:text-3xl;
+}
+
+h3 {
+  @apply text-xl lg:text-2xl;
+}
+
+/* Links */
+a {
+  @apply text-blue-600 hover:text-blue-800 transition-colors;
+}
+
+a:visited {
+  @apply text-purple-600 hover:text-purple-800;
+}
+
+/* Buttons */
+button {
+  @apply transition-colors;
+}
+
+button:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Form inputs */
+input,
+textarea,
+select {
+  @apply rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  @apply bg-gray-50 text-gray-500 cursor-not-allowed;
+}
+
+/* Placeholder */
+::placeholder {
+  @apply text-gray-400;
+}
+
+/* Selection */
+::selection {
+  @apply bg-blue-600 text-white;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-in-out;
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.3s ease-in-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Safe area utilities */
+.safe-area-inset-top {
+  padding-top: var(--safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+/* Utility classes */
+.truncate-lines-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.truncate-lines-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+---
+
+## Best Practices / Thực Hành Tốt Nhất
+
+### Route Organization / Tổ Chức Định Tuyến
+
+1. **Use Route Groups for Logical Organization** / Sử Dụng Các Nhóm Định Tuyến Để Tổ Chức Hợp Lý
+   - Auth routes: `(auth)` group
+   - Dashboard: `(dashboard)` group
+   - Legal: `(legal)` group
+   - Public: `(public)` group
+
+2. **Consistent Naming Conventions** / Quy Ước Đặt Tên Nhất Quán
+   - Page routes: `page.tsx`
+   - Layouts: `layout.tsx`
+   - Loading: `loading.tsx`
+   - Error boundaries: `error.tsx`
+   - 404 pages: `not-found.tsx`
+
+3. **Dynamic Routing for Entities** / Định Tuyến Động Cho Các Thực Thể
+   - Contract details: `/legal/contracts/[contractId]`
+   - Document details: `/legal/documents/[documentId]`
+   - Case details: `/legal/cases/[caseId]`
+
+### Route Protection / Bảo Vệ Định Tuyến
+
+1. **Middleware for Global Protection** / Middleware Cho Bảo Vệ Toàn Cầu
+   - Check authentication in middleware
+   - Redirect to login for protected routes
+   - Add user info to request headers
+
+2. **Component-Level Guards** / Bảo Vệ Cấp Thành Phần
+   - Use AuthGuard, RoleGuard, PermissionGuard
+   - Check permissions before rendering
+   - Show fallback UI while checking
+
+3. **Multi-Level Access Control** / Kiểm Soát Truy Cập Đa Cấp
+   - Authentication: `isAuthenticated`
+   - Authorization: `requiredRoles`
+   - Permissions: `requiredPermissions`
+   - Subscription: `requiredSubscription`
+
+### SEO & Metadata / SEO & Siêu Dữ Liệu
+
+1. **Generate Metadata Dynamically** / Tạo Siêu Dữ Liệu Động
+   - Use `generateMetadata` for dynamic pages
+   - Include Vietnamese legal keywords
+   - Add Open Graph tags
+
+2. **Structured Data** / Dữ Liệu Có Cấu Trúc
+   - Use JSON-LD for schema.org
+   - Mark up legal services
+   - Include breadcrumb navigation
+
+3. **Canonical URLs** / URL Chính Tắc
+   - Set canonical for duplicate content
+   - Use consistent URL structure
+   - Handle trailing slashes
+
+### Mobile Navigation / Điều Hướng Trên Di Động
+
+1. **Bottom Navigation for Mobile** / Điều Hướng Dưới Cùng Cho Di Động
+   - 4-5 primary actions
+   - "More" menu for secondary actions
+   - Active state indicator
+
+2. **Touch-Friendly Interface** / Giao Diện Thân Thiện Với Cảm Ứng
+   - Minimum 44px touch targets
+   - Adequate spacing between buttons
+   - Avoid hover states on mobile
+
+3. **Responsive Design** / Thiết Kế Phản Hồi
+   - Desktop: sidebar + header
+   - Tablet: responsive sidebar
+   - Mobile: bottom navigation
+
+---
+
+## Integration Examples / Ví Dụ Tích Hợp
+
+### With AuthProvider / Với AuthProvider
+
+```typescript
+// Integration with Pattern 9.3 (AuthProvider)
+'use client';
+
+import { useAuthStore } from '@/app/providers/StoreProvider';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export function LegalContractsPage() {
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  const userRoles = user?.roles || [];
+  const canEditContracts = userRoles.includes('lawyer') || userRoles.includes('admin');
+
+  return (
+    <div className="space-y-6">
+      <h1>Quản Lý Hợp Đồng / Contract Management</h1>
+
+      {canEditContracts && (
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Tạo Hợp Đồng Mới / New Contract
+        </button>
+      )}
+
+      {/* Contract list */}
+    </div>
+  );
+}
+```
+
+### With Backend API / Với API Backend
+
+```typescript
+// Integration with backend API from Days 1-7
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/app/providers/QueryProvider';
+import { contractApi } from '@/shared/api/contracts';
+
+export function ContractsListPage() {
+  const { data: contracts, isLoading, error } = useQuery({
+    queryKey: queryKeys.contracts.lists(),
+    queryFn: () => contractApi.getAll(),
+  });
+
+  if (isLoading) {
+    return <ContractListSkeleton />;
+  }
+
+  if (error) {
+    return <ErrorFallback error={error} />;
+  }
+
+  return (
+    <div className="space-y-4">
+      <h1>Danh Sách Hợp Đồng / Contracts</h1>
+
+      <div className="grid gap-4">
+        {contracts?.map((contract) => (
+          <ContractCard key={contract.id} contract={contract} />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### With Legal Document Entities / Với Các Thực Thể Tài Liệu Pháp Lý
+
+```typescript
+// Legal document routing with type safety
+import type { Contract, LegalDocument, LegalCase } from '@/types/models';
+
+// Contract routes
+export interface ContractRouteParams {
+  contractId: string;
+}
+
+// Document routes
+export interface DocumentRouteParams {
+  documentId: string;
+}
+
+// Case routes
+export interface CaseRouteParams {
+  caseId: string;
+}
+
+// Type-safe route builder
+export const legalRoutes = {
+  contracts: {
+    list: '/legal/contracts',
+    detail: (contractId: string) => `/legal/contracts/${contractId}`,
+    edit: (contractId: string) => `/legal/contracts/${contractId}/edit`,
+    compare: (contractId1: string, contractId2: string) =>
+      `/legal/contracts/compare?c1=${contractId1}&c2=${contractId2}`,
+  },
+  documents: {
+    list: '/legal/documents',
+    detail: (documentId: string) => `/legal/documents/${documentId}`,
+    upload: '/legal/documents/upload',
+  },
+  cases: {
+    list: '/legal/cases',
+    detail: (caseId: string) => `/legal/cases/${caseId}`,
+    timeline: (caseId: string) => `/legal/cases/${caseId}/timeline`,
+  },
+};
+
+// Usage
+export function ContractLink({ contractId }: { contractId: string }) {
+  return (
+    <Link href={legalRoutes.contracts.detail(contractId)}>
+      Xem Chi Tiết / View Details
+    </Link>
+  );
+}
+```
+
+---
+
+## Testing Patterns / Mẫu Kiểm Tra
+
+### Route Navigation Tests / Kiểm Tra Điều Hướng Định Tuyến
+
+```typescript
+// tests/routes.spec.ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+
+describe('Route Navigation', () => {
+  it('should navigate from home to contracts list', async () => {
+    const { user } = render(<HomePage />);
+
+    const contractsLink = screen.getByRole('link', { name: /hợp đồng/i });
+    await user.click(contractsLink);
+
+    expect(useRouter().push).toHaveBeenCalledWith('/legal/contracts');
+  });
+
+  it('should navigate to contract detail page', async () => {
+    const { user } = render(<ContractsList />);
+
+    const contractLink = screen.getAllByRole('link')[0];
+    await user.click(contractLink);
+
+    expect(useRouter().push).toHaveBeenCalled();
+  });
+});
+```
+
+### Route Guard Tests / Kiểm Tra Bảo Vệ Định Tuyến
+
+```typescript
+// tests/guards.spec.ts
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { AuthGuard } from '@/features/auth/components/AuthGuard';
+
+describe('AuthGuard', () => {
+  it('should show loading state while checking authentication', () => {
+    render(
+      <AuthGuard>
+        <div>Protected Content</div>
+      </AuthGuard>
+    );
+
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  it('should show protected content when authenticated', async () => {
+    // Mock authenticated user
+    vi.mocked(useAuthStore).mockReturnValue({
+      isAuthenticated: true,
+      user: { id: '1', name: 'User', roles: ['user'] },
+    });
+
+    render(
+      <AuthGuard>
+        <div>Protected Content</div>
+      </AuthGuard>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    });
+  });
+
+  it('should redirect to login when not authenticated', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      isAuthenticated: false,
+      user: null,
+    });
+
+    render(
+      <AuthGuard>
+        <div>Protected Content</div>
+      </AuthGuard>
+    );
+
+    expect(useRouter().push).toHaveBeenCalledWith('/login');
+  });
+});
+```
+
+### Protected Route Tests / Kiểm Tra Tuyến Đường Được Bảo Vệ
+
+```typescript
+// tests/e2e/routes.spec.ts (Playwright)
+import { test, expect } from '@playwright/test';
+
+test.describe('Protected Routes', () => {
+  test('should redirect unauthenticated user to login', async ({ page }) => {
+    await page.goto('/legal/contracts');
+    expect(page.url()).toContain('/login');
+  });
+
+  test('should allow authenticated user to access protected route', async ({
+    page,
+    context,
+  }) => {
+    // Set authentication cookie
+    await context.addCookies([
+      {
+        name: 'auth-token',
+        value: 'valid-token',
+        url: 'http://localhost:3000',
+      },
+    ]);
+
+    await page.goto('/legal/contracts');
+    expect(page.url()).toContain('/legal/contracts');
+  });
+
+  test('should show role-based UI based on user permissions', async ({
+    page,
+    context,
+  }) => {
+    // Lawyer user
+    await context.addCookies([
+      {
+        name: 'auth-token',
+        value: 'lawyer-token',
+        url: 'http://localhost:3000',
+      },
+    ]);
+
+    await page.goto('/legal/contracts');
+
+    // Should see edit button
+    expect(await page.getByRole('button', { name: /chỉnh sửa/i })).toBeVisible();
+  });
+});
+```
+
+### Mobile Navigation Tests / Kiểm Tra Điều Hướng Di Động
+
+```typescript
+// tests/mobile-nav.spec.ts
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { MobileNav } from '@/widgets/mobile-nav/MobileNav';
+
+describe('Mobile Navigation', () => {
+  it('should render bottom navigation on mobile', () => {
+    render(<MobileNav />, {
+      viewport: { width: 375, height: 667 },
+    });
+
+    expect(screen.getByRole('navigation')).toBeVisible();
+  });
+
+  it('should show more menu when more button clicked', async () => {
+    const user = userEvent.setup();
+
+    render(<MobileNav />, {
+      viewport: { width: 375, height: 667 },
+    });
+
+    const moreButton = screen.getByRole('button', { name: /thêm/i });
+    await user.click(moreButton);
+
+    expect(screen.getByText(/vụ án/i)).toBeVisible();
+  });
+
+  it('should highlight active navigation item', () => {
+    render(<MobileNav />, {
+      viewport: { width: 375, height: 667 },
+    });
+
+    const dashboardLink = screen.getByRole('link', { name: /bảng điều khiển/i });
+    expect(dashboardLink.parentElement).toHaveClass('text-blue-600');
+  });
+});
+```
+
+---
+
+## Summary / Tóm Tắt
+
+This **Frontend App Router & Navigation Specialist** document covers 20 patterns (9.21-9.40) for Next.js 15 App Router with Feature-Sliced Design:
+
+### Patterns Covered / Các Mẫu Được Bao Gồm
+
+1. **Router Setup** (9.21): Root layout, metadata, provider configuration
+2. **Route Configuration** (9.22): Type-safe route definitions with Vietnamese labels
+3. **Route Guards** (9.23): Middleware for authentication and authorization
+4. **Route Loading** (9.24): Suspense boundaries and skeleton UI
+5. **Route Error Handling** (9.25): Error boundaries at route level
+6. **Navigation Bar** (9.26): Top navigation with user menu
+7. **Sidebar** (9.27): Collapsible side navigation with route groups
+8. **Breadcrumbs** (9.28): Breadcrumb navigation for hierarchy
+9. **Tab Navigation** (9.29): Tabbed interface for content organization
+10. **Mobile Navigation** (9.30): Bottom navigation for mobile devices
+11. **Auth Guard** (9.31): Authentication route protection
+12. **Role Guard** (9.32): Role-based access control
+13. **Permission Guard** (9.33): Permission-based access control
+14. **Subscription Guard** (9.34): Subscription-level protection
+15. **Maintenance Guard** (9.35): Maintenance mode support
+16. **Root Layout** (9.36): App shell structure
+17. **App Shell** (9.37): Global layout with header/sidebar/footer
+18. **Global Header** (9.38): Global header component
+19. **Global Footer** (9.39): Global footer component
+20. **Global Styles** (9.40): Global CSS with Tailwind utilities
+
+### Key Features / Các Tính Năng Chính
+
+- Complete Next.js 15 App Router implementation
+- Vietnamese legal domain routing (contracts, documents, cases)
+- Multi-level access control (auth, role, permission, subscription)
+- Bilingual UI (Vietnamese / English)
+- Mobile-responsive navigation
+- SEO metadata generation
+- Type-safe route configuration
+- Server Components by default
+- Suspense and error boundary patterns
+- Comprehensive testing examples
+
+### File Structure / Cấu Trúc Tệp
+
+```
+src/
+├── app/
+│   ├── (auth)/          # Auth routes
+│   ├── (dashboard)/     # Dashboard routes
+│   ├── (legal)/         # Legal routes
+│   ├── (public)/        # Public routes
+│   └── layout.tsx       # Root layout
+├── widgets/             # Reusable components
+│   ├── header/
+│   ├── sidebar/
+│   ├── breadcrumbs/
+│   ├── tabs/
+│   ├── footer/
+│   └── mobile-nav/
+└── shared/config/
+    └── routes.ts        # Route configuration
+```
+
+---
+
+**Specialist Ready**: This document provides production-ready patterns for Frontend App Router & Navigation with Vietnamese legal AI platform focus. All code is TypeScript 5 with strict mode, Next.js 15 conventions, and Feature-Sliced Design principles.
+
+**Version**: 1.0.0 | Next.js 15.3.0 | React 19 | TypeScript 5 | FSD Architecture

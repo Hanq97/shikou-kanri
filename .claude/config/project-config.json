@@ -1,0 +1,14 @@
+{
+  "projectName": "Shikou-Kanri",
+  "techStack": {
+    "backend": {
+      "stack": "unknown",
+      "variant": ""
+    }
+  },
+  "sourceRoots": [],
+  "rag": {
+    "server": "http://localhost:8000",
+    "embedding": "http://localhost:8080"
+  }
+}

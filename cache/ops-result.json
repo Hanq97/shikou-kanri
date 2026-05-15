@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "action": "context-detect",
+  "data": {
+    "found": false,
+    "error": "context-detect failed: Not in a git repository or git not installed",
+    "branch": null,
+    "featureId": null,
+    "state": null
+  },
+  "timestamp": "2026-05-15T10:02:54.618Z"
+}

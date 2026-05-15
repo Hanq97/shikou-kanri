@@ -1,0 +1,1140 @@
+# /design --detail Workflow v4.1
+
+## Purpose
+Create Detail Design documents with scope-aware branching (Backend/Frontend/Full-stack)
+
+**Agents**: frontend-detail-specialist (v5.0) + backend-design-specialist (v3.0) — scope-dependent
+**Micro-Agents**: FDD 10 agents (fdd-00 to fdd-09), BDD 10 agents (bdd-00 to bdd-09)
+**Execution**: Direct Agent (No Orchestrator) — AI reads specialist → loads micro-agents via JIT
+**Output**: Scope-dependent (1-3 documents per feature/sub-feature)
+
+---
+
+## Pre-requisites (Validated by Router)
+- State: INNOVATE_DD_APPROVED (NOT INNOVATE_DD — v5.2 approval gate)
+- Quality Gate D3: Passed (Basic Design approved + evidence ≥3, quality ≥80%)
+- Evidence file with Detail Design Approach (innovate-dd-selection.md)
+
+---
+
+## Step 0.1: G0 Gate — INNOVATE_DD Quality Validation
+
+**WHY**: DD generation is the most expensive phase (10+10 micro-agents). G0 prevents
+wasted context by validating innovate quality upfront. All 5 conditions are scope-independent
+because they validate prerequisites, not DD content.
+
+**CRITICAL**: This gate MUST pass before proceeding.
+
+```bash
+echo "🔒 G0 Gate: INNOVATE_DD Quality Validation"
+
+# Get context directory
+node core/cli/ops.js context-detect
+CONTEXT_DIR=$(node -e "console.log(JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8')).data.contextPath||'')" 2>/dev/null || echo "")
+
+if [ -z "$CONTEXT_DIR" ]; then
+  echo "❌ G0 FAILED: No active context found"
+  echo "   To fix: node core/state/state-manager.js init <feature> [developer]"
+  exit 1
+fi
+
+# G0.1: innovate-dd-selection.md exists
+SELECTION_FILE="$CONTEXT_DIR/innovate-dd-selection.md"
+
+if [ ! -f "$SELECTION_FILE" ]; then
+  echo "❌ G0.1 FAILED: innovate-dd-selection.md not found"
+  echo "   To fix: Run /innovate --dd first"
+  exit 1
+fi
+
+# G0.2-G0.5: Content validation via gate-check
+node core/cli/ops.js gate-check --gate D3 --selectionFile "$SELECTION_FILE"
+GATE_RESULT=$(node -e "const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8'));console.log(r.ok?'PASS':'FAIL:'+(r.error||'Gate failed'))" 2>/dev/null || echo "FAIL:Script error")
+
+if [[ "$GATE_RESULT" == FAIL* ]]; then
+  echo "❌ G0 Gate FAILED:"
+  echo "$GATE_RESULT" | sed 's/FAIL://g' | tr '|' '\n' | sed 's/^/   /g'
+  echo ""
+  echo "   To fix:"
+  echo "   - G0.2: Re-run /innovate --dd with more evidence"
+  echo "   - G0.3: Ensure multi-model evaluation"
+  echo "   - G0.4: Expand rationale section"
+  echo "   - G0.5: Document rejected alternatives"
+  exit 1
+fi
+
+echo "✅ G0 Gate PASSED (G0.1-G0.5)"
+echo ""
+```
+
+---
+
+## Step 0.2: Workflow State Validation
+
+Invoke the **workflow-state-validator** skill:
+- Validates that current workflow state allows Detail Design generation
+- Expected state: BD_CREATED or INNOVATE_DD completed
+- If FAIL: STOP and display state violation — user must complete prerequisite phases
+- If PASS: Continue to Step 0.3
+
+---
+
+## Step 0.3: Quality Gate D3
+
+Invoke the **quality-gate-check** skill with gate D3 (Design Completeness):
+- Validates SRS and Basic Design exist and meet quality criteria
+- If FAIL: Display gate violations — user must complete prerequisite design phases
+- If PASS: Continue to Step 0.5
+- **Note**: This skill-based check complements the existing G0 gate in Step 0.1
+
+---
+
+## Step 0.5: Stack Context Loading (v5.4)
+
+Load project stack configuration and export variables for specialist agents:
+
+```bash
+echo "📦 Loading stack context..."
+
+# 1. Load project stack configuration from project-config.json
+STACK_CONFIG_PATH=".claude/config/project-config.json"
+
+# Load stack configuration via ops.js
+node core/cli/ops.js stack-load
+eval "$(node -e "
+  const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8'));
+  const d=r.data||{};
+  const sd=d.stackData||{};
+  const be=sd.backend||{};
+  const fe=sd.frontend||{};
+  const infra=sd.infrastructure||{};
+  console.log('export STACK_BACKEND_FRAMEWORK=\"'+(be.framework||'spring-boot')+'\"');
+  console.log('export STACK_FRONTEND_FRAMEWORK=\"'+(fe.framework||'nextjs')+'\"');
+  console.log('export STACK_ORM=\"'+(be.patterns&&be.patterns.orm||'R2DBC')+'\"');
+  console.log('export STACK_UI_LIBRARY=\"'+(fe.uiLibrary||'antd')+'\"');
+  console.log('export STACK_STATE_MANAGEMENT=\"'+(fe.stateManagement||'redux-toolkit')+'\"');
+  console.log('export STACK_INFRASTRUCTURE=\"'+Object.entries(infra).map(([k,v])=>k+':'+v).join(', ')+'\"');
+" 2>/dev/null)"
+
+echo "   Source roots: loaded via ops.js stack-load"
+
+# 2. Query RAG for stack-specific patterns (non-blocking)
+SPECIALIST_PATTERNS=""
+if command -v node &> /dev/null; then
+  node core/cli/ops.js rag-query --query "${STACK_BACKEND_FRAMEWORK:-spring-boot} patterns best practices" --layer eps 2>/dev/null
+  SPECIALIST_PATTERNS=$(node -e "
+    try {
+      const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8'));
+      const chunks=(r.data&&r.data.chunks)||[];
+      console.log(chunks.filter(c=>c.score>0.7).map(c=>c.content.substring(0,200)).join('\n---\n'));
+    } catch(e) {}
+  " 2>/dev/null || echo "")
+fi
+
+export SPECIALIST_PATTERNS
+
+# 3. Query RAG for architecture compliance patterns
+ARCH_PATTERNS=""
+ARCH_LAYERS=""
+ARCH_CONSTRAINTS=""
+if command -v node &> /dev/null; then
+  node core/cli/ops.js arch-detect 2>/dev/null
+  ARCH_RESULT=$(node -e "
+    try {
+      const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8'));
+      console.log(JSON.stringify(r.data||{patterns:[],layers:[],source:'none'}));
+    } catch(e) { console.log('{\"patterns\":[],\"layers\":[],\"source\":\"error\"}'); }
+  " 2>/dev/null || echo '{"patterns":[],"layers":[],"source":"error"}')
+
+  ARCH_PATTERNS=$(node -e "try{const j=JSON.parse(process.argv[1]);console.log((j.patterns||[]).join(', '))}catch(e){}" "$ARCH_RESULT" 2>/dev/null || echo "")
+  ARCH_LAYERS=$(node -e "try{const j=JSON.parse(process.argv[1]);console.log((j.layers||[]).join(' -> '))}catch(e){}" "$ARCH_RESULT" 2>/dev/null || echo "")
+  ARCH_SOURCE=$(node -e "try{const j=JSON.parse(process.argv[1]);console.log(j.source||'none')}catch(e){console.log('none')}" "$ARCH_RESULT" 2>/dev/null || echo "none")
+
+  if [ "$ARCH_SOURCE" = "rag" ]; then
+    echo "   📐 Architecture (RAG): $ARCH_PATTERNS"
+    echo "   📐 Layers: $ARCH_LAYERS"
+  fi
+fi
+
+# 4. Fallback: Load from Basic Design if RAG unavailable
+if [ -z "$ARCH_PATTERNS" ] || [ "$ARCH_SOURCE" != "rag" ]; then
+  BD_FILE=$(find documents/features -name "*-basic-design.md" 2>/dev/null | head -1)
+  if [ -n "$BD_FILE" ] && [ -f "$BD_FILE" ]; then
+    ARCH_FROM_BD=$(node -e "
+      const fs = require('fs');
+      const content = fs.readFileSync(process.argv[1], 'utf8');
+      const section12 = content.match(/##\\s*1\\.2[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s*1\\.[3-9]|\\n##\\s*2\\.)/);
+      if (section12) {
+        const rows = section12[1].match(/\\|\\s*([^|]+)\\s*\\|/g) || [];
+        const patterns = rows.slice(2)
+          .map(r => r.replace(/[|]/g, '').trim())
+          .filter(r => r && !r.includes('---'))
+          .slice(0, 5);
+        console.log(patterns.join(', '));
+      }
+    " "$BD_FILE" 2>/dev/null || echo "")
+    if [ -n "$ARCH_FROM_BD" ]; then
+      ARCH_PATTERNS="$ARCH_FROM_BD"
+      echo "   📐 Architecture (Basic Design): $ARCH_PATTERNS"
+    fi
+  fi
+fi
+
+# 5. Default architecture constraints (always applied)
+ARCH_CONSTRAINTS="Follow layer boundaries; Use dependency injection; No cross-layer direct calls; Respect Basic Design patterns"
+
+export ARCH_PATTERNS
+export ARCH_LAYERS
+export ARCH_CONSTRAINTS
+
+echo "✅ Stack context loaded"
+echo ""
+```
+
+**Stack Variables Available for Specialists**:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `STACK_BACKEND_FRAMEWORK` | spring-boot | Backend framework |
+| `STACK_FRONTEND_FRAMEWORK` | nextjs | Frontend framework |
+| `STACK_ORM` | R2DBC | ORM/Database library |
+| `STACK_UI_LIBRARY` | antd | UI component library |
+| `STACK_STATE_MANAGEMENT` | redux-toolkit | State management |
+| `SPECIALIST_PATTERNS` | (empty) | RAG-retrieved specialist patterns |
+| `ARCH_PATTERNS` | (empty) | Architecture patterns |
+| `ARCH_CONSTRAINTS` | (default) | Architecture constraints to enforce |
+
+---
+
+## Step 0.6: RAG Context Preload for DD Generation
+
+**WHY**: LAYER_PRIORITY["design-detail"] = primary ["eps", "design", "arch"], secondary ["code"].
+Step 0.5 only queries eps+arch. This step loads **design-layer** (existing DD patterns from
+past features) and **code-layer** (actual implementation patterns) to ground generation in
+real project data. Also loads matched specialists via SpecialistLoader.
+
+```pseudo
+# RAG 2.0: Pre-load context for DD generation (ALL non-blocking)
+try:
+    rag = HippoRAGService.getInstance(feature, branch)
+
+    # 1. Design layer: existing DD patterns from similar features
+    design_results = await rag.getContext(
+        f"{feature} detail design frontend backend patterns",
+        { name: "dd-preload" },
+        { layers: ["design"], topK: 5 }
+    )
+    DD_RAG_DESIGNS = design_results.chunks
+        .filter(c => c.score > 0.6)
+        .map(c => c.content)
+
+    # 2. Code layer: actual implementation patterns
+    code_results = await rag.getContext(
+        f"{feature} service controller repository component",
+        { name: "code-preload" },
+        { layers: ["code"], topK: 5 }
+    )
+    DD_RAG_CODE = code_results.chunks
+        .filter(c => c.score > 0.6)
+        .map(c => ({ file: c.metadata.filePath, snippet: c.content }))
+
+    # 3. Matched specialists via SpecialistLoader
+    loader = SpecialistLoader()
+    loader.loadSpecialists()
+    keywords = [STACK_BACKEND_FRAMEWORK, STACK_FRONTEND_FRAMEWORK, STACK_ORM]
+    DD_RAG_SPECIALISTS = unique(flatten([loader.findByKeyword(kw) for kw in keywords]))[:5]
+
+    display(f"📊 RAG Preload: {len(DD_RAG_DESIGNS)} designs, "
+            f"{len(DD_RAG_CODE)} code patterns, "
+            f"{len(DD_RAG_SPECIALISTS)} specialists")
+except:
+    DD_RAG_DESIGNS = []
+    DD_RAG_CODE = []
+    DD_RAG_SPECIALISTS = []
+    display("⚠️ RAG preload skipped (non-blocking)")
+```
+
+**Non-blocking**: RAG failures do not stop the workflow. DD generation proceeds with plan spec only.
+
+---
+
+## Step 0.7: Evidence Fusion
+
+Invoke the **evidence-fusion** skill:
+- Merges evidence from memory-bank, RAG query results, and research findings
+- Provides synthesized evidence context for FDD/BDD generation
+- Output: Merged evidence context available for Step 1/Step 3 generation
+
+---
+
+## Step 0.8: Check BASE Necessity & Sub-Features
+
+Determine if BASE document should be created:
+
+```pseudo
+# EXECUTE: Get workflow context (JavaScript utility - PRESERVED)
+context_result = node.run("core/state/state-manager.js", ["get"])
+
+# PARSE: Extract feature name
+context = json.parse(context_result.stdout)
+feature_name = context.feature
+
+# SEARCH: Find feature directory
+feature_pattern = f"documents/features/{feature_name}-*"
+feature_dirs = glob_directories(feature_pattern)
+
+if not feature_dirs:
+    raise Error(f"Feature directory not found for: {feature_name}")
+
+feature_dir = feature_dirs[0]  # Take first match
+
+# CHECK: Subfeature registry existence
+registry_path = f"{feature_dir}/.subfeatures.json"
+```
+
+**If no registry**: Single feature only
+```pseudo
+create_base = False
+has_subfeatures = False
+```
+
+**If registry exists**: Check BASE necessity
+```pseudo
+if file_exists(registry_path):
+    registry = json.load_file(registry_path)
+    base_needed = registry.get("baseNeeded", False)
+    base_type = registry.get("baseType", "")
+    if base_needed:
+        create_base = True
+        environment["BASE_TYPE"] = base_type
+    else:
+        create_base = False
+    has_subfeatures = True
+else:
+    create_base = False
+    has_subfeatures = False
+
+environment["CREATE_BASE"] = create_base
+environment["HAS_SUBFEATURES"] = has_subfeatures
+```
+
+**Display Structure**:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 SUB-FEATURE STRUCTURE DETECTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Feature: [FEATURE]
+Sub-features: [N]
+BASE Needed: [true/false]
+[If true] BASE Type: [core-library/foundation/orchestrator/manual]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## Step 0.9: Design Scope Detection
+
+Automatically detect feature scope from Basic Design + SRS content.
+Scope determines which phases (FDD/API/BDD) to execute.
+
+**WHY**: Many real-world features are backend-only. Running FDD for them wastes
+context and produces irrelevant documents. Scope detection prevents this.
+
+### 0.9.1: Load BD + SRS Content
+
+Read BOTH BD + SRS (SRS provides additional scope context via use cases and actors).
+
+```pseudo
+# CONSTRUCT: File paths from feature_dir (set in Step 0.8)
+bd_file = f"documents/features/{feature_dir}/{feature}-BASE-basic-design.md"
+srs_file = f"documents/features/{feature_dir}/{feature}-BASE-srs.md"
+
+# LOAD: Both documents
+bd_content = read_file(bd_file)
+srs_content = read_file(srs_file)  # May not exist for some features
+combined_content = bd_content + (srs_content or "")
+```
+
+### 0.9.2: Detect Scope Indicators
+
+**Matching**: Case-insensitive substring search. Multi-word phrases reduce false positives.
+
+```pseudo
+# INDICATORS: Case-insensitive, multi-word phrases
+frontend_indicators = ["screen", "ui component", "react", "page layout", "form",
+                       "bff", "navigation", "frontend module", "user interface"]
+backend_indicators = ["service layer", "repository", "entity", "controller",
+                      "database", "batch job", "message queue", "worker", "backend module"]
+
+# SCAN: Count meaningful occurrences
+fe_count = count_case_insensitive(combined_content, frontend_indicators)
+be_count = count_case_insensitive(combined_content, backend_indicators)
+
+# DETERMINE: Scope based on indicator presence
+if fe_count > 0 and be_count > 0:
+    detected_scope = "fullstack"
+elif fe_count > 0 and be_count == 0:
+    detected_scope = "frontend"
+elif be_count > 0 and fe_count == 0:
+    detected_scope = "backend"
+else:
+    # EDGE CASE: No indicators found → default to fullstack (safest)
+    detected_scope = "fullstack"
+    display("⚠️ No clear scope indicators found in BD/SRS. Defaulting to fullstack.")
+```
+
+### 0.9.3: Auto-detect API Contracts Need (frontend/fullstack only)
+
+```pseudo
+api_indicators = ["api endpoint", "rest api", "bff", "api contract", "http method"]
+needs_api_contracts = (detected_scope != "backend") and
+                      count_case_insensitive(bd_content, api_indicators) > 0
+```
+
+### 0.9.4: Confirm with User
+
+```pseudo
+AskUserQuestion:
+  question: "Scope detected from BD+SRS analysis. Confirm or override?"
+  header: "Scope"
+  options:
+    1. label: "Confirm: {detected_scope}"
+       description: "FE: {fe_count} indicators, BE: {be_count} indicators"
+    2. label: "Override: backend"
+       description: "BDD only — no frontend documents"
+    3. label: "Override: frontend"
+       description: "FDD + optional API Contracts — no backend documents"
+    4. label: "Override: fullstack"
+       description: "FDD + API Contracts + BDD — all documents"
+
+DESIGN_SCOPE = user_choice  # "backend" | "frontend" | "fullstack"
+```
+
+### 0.9.5: Display Scope Execution Plan
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 DESIGN SCOPE: {DESIGN_SCOPE}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+| DESIGN_SCOPE | Phase 1 (FDD) | Phase 2 (API) | Phase 3 (BDD) |
+|-------------|---------------|---------------|---------------|
+| backend     | Skip          | Skip          | Run           |
+| frontend    | Run           | {auto-detect} | Skip          |
+| fullstack   | Run           | Run           | Run           |
+
+**IMPORTANT**: DESIGN_SCOPE applies to ALL sub-features.
+Do NOT re-detect scope per sub-feature. See Sub-Feature Processing section.
+
+---
+
+## Variable Reference for Remaining Workflow
+
+The following variables were determined in previous steps. The AI executing this
+workflow must carry these forward to all subsequent phases:
+
+| Variable | Set In | Values | Used In |
+|----------|--------|--------|---------|
+| DESIGN_SCOPE | Step 0.9 | "backend" / "frontend" / "fullstack" | Phase 1, 2, 3, Sub-Features, Completion |
+| needs_api_contracts | Step 0.9.3 | true / false | Phase 2 |
+| CREATE_BASE | Step 0.8 | true / false | Sub-Features |
+| HAS_SUBFEATURES | Step 0.8 | true / false | Sub-Features |
+| use_abc_pattern | Phase 1 (A+B+C) | true / false | Phase 1 FDD structure |
+| DD_RAG_DESIGNS | Step 0.6 | array (existing DD patterns from design layer) | Phase 1, 2, 3 per-agent context |
+| DD_RAG_CODE | Step 0.6 | array (code patterns from code layer) | Phase 1, 2, 3 per-agent context |
+| DD_RAG_SPECIALISTS | Step 0.6 | array (matched specialist filenames) | Phase 1, 3 per-agent context |
+
+**CRITICAL**: These are AI-tracked variables (not shell environment variables).
+When a scope guard says `if DESIGN_SCOPE == "backend"`, this means: "If the user
+confirmed backend scope in Step 0.9, skip this phase."
+
+---
+
+## Phase 1: Frontend Detail Design
+
+**Scope Guard**: Skip if DESIGN_SCOPE == "backend"
+
+```pseudo
+if DESIGN_SCOPE == "backend":
+    display("⏭️ Phase 1: Skipped (backend scope — no FDD)")
+    # Proceed directly to Phase 3
+else:
+    # A+B+C check (see A+B+C FDD Pattern section below)
+    if HAS_SUBFEATURES and sub_feature_count >= 4:
+        use_abc_pattern = true
+    else:
+        use_abc_pattern = false
+```
+
+### Step 1.1: Read Agent Specification
+```bash
+# Load FDD orchestrator via specialist-load
+node core/cli/ops.js specialist-load --type document --category detail-design-frontend --name _orchestrator
+FDD_SPEC=$(node -e "const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8')); console.log(r.data?.content || '')")
+# Contains: 10 micro-agent references, JIT loading pattern, validation rules
+```
+
+### Step 1.2: Load Context
+```pseudo
+evidence_content = read_file(evidence_file)
+basic_design_content = read_file(bd_file)
+```
+
+### Step 1.3: Direct Agent Execution (NO orchestrator)
+
+frontend-detail-specialist.md IS the orchestrator instructions. AI reads the agent spec
+and executes its workflow directly. There is NO orchestrate-fdd.js file — this is
+direct agent execution (confirmed: backend-design-specialist.md line 6).
+
+### Step 1.4: Generate Sections with JIT Loading (10 micro-agents)
+
+| # | Agent File | Section |
+|---|------------|---------|
+| 0 | fdd-00-document-info.md | Document information |
+| 1 | fdd-01-overview.md | Overview |
+| 2 | fdd-02-business-flow.md | Business flow |
+| 3 | fdd-03-screens.md | Screen specifications |
+| 4 | fdd-04-state.md | State management |
+| 5 | fdd-05-data-integration.md | Data integration |
+| 6 | fdd-06-error.md | Error handling |
+| 7 | fdd-07-responsive.md | Responsive design |
+| 8 | fdd-08-performance.md | Performance |
+| 9 | fdd-09-visual-design.md | Visual design |
+
+**Per-Section Enrichment (for each micro-agent):**
+
+**1.4.1 Architecture Analysis (component/module sections)**
+
+For component-level sections (fdd-03 screens, fdd-04 state, fdd-05 data-integration), invoke the **architecture-analyzer** skill:
+- Detect duplicate components against existing frontend codebase
+- Validate proposed component architecture against project tech stack
+
+**1.4.2 Pattern Analysis**
+
+After loading each micro-agent specialist, invoke the **pattern-analyzer** skill:
+- Check proposed patterns against specialist recommendations
+- Use alignment results to guide section generation
+
+**1.4.3 Design Validation (Per Section)**
+
+After generating each section, invoke the **design-validator** skill:
+- Q1: Evidence grounding — design decisions trace to evidence
+- Q2: ID uniqueness — no duplicate IDs
+- Q3: Bilingual ratio — within 60:40 to 80:20
+- Q4: Interface purity — no implementation code in design doc
+- If any violation: fix before proceeding to next micro-agent
+
+### Step 1.5: Quality Validation
+```pseudo
+validation_result = node.run(".claude/utils/tests/fdd-validator.js", [document_path])
+if validation_result.exit_code != 0:
+    display("⚠️ Frontend DD validation warnings:")
+    display(validation_result.stdout)
+```
+
+### Step 1.6: Write Frontend DD
+```pseudo
+frontend_dd_file = f"documents/features/{feature_dir}/{feature}-BASE-frontend-detail-design.md"
+write_file(frontend_dd_file, frontend_dd_content)
+display(f"✅ Created: {frontend_dd_file}")
+```
+
+### FDD Enforcement Mode (TodoWrite + Checkpoints)
+
+**WHY**: FDD has 10 micro-agents executed sequentially. Without enforcement, AI may skip
+agents or lose context mid-generation.
+
+**Before Phase 1** — Initialize:
+```pseudo
+TodoWrite([
+    { content: "FDD Section 0: Document Info", status: "pending" },
+    { content: "FDD Section 1: Overview", status: "pending" },
+    { content: "FDD Section 2: Business Flow", status: "pending" },
+    { content: "FDD Section 3: Screens", status: "pending" },
+    { content: "FDD Section 4: State Management", status: "pending" },
+    { content: "FDD Section 5: Data Integration", status: "pending" },
+    { content: "FDD Section 6: Error Handling", status: "pending" },
+    { content: "FDD Section 7: Responsive Design", status: "pending" },
+    { content: "FDD Section 8: Performance", status: "pending" },
+    { content: "FDD Section 9: Visual Design", status: "pending" },
+])
+```
+
+**For EACH micro-agent (0-9)**:
+```pseudo
+TodoWrite: mark section N as in_progress
+```bash
+# Load FDD section N specialist
+node core/cli/ops.js specialist-load --type document --category detail-design-frontend --name fdd-0N-{section}
+FDD_SECTION_SPEC=$(node -e "const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8')); console.log(r.data?.content || '')")
+```
+
+# RAG: Per-agent context injection (non-blocking)
+try:
+    agent_graph = await rag.getGraphContext({ name: f"fdd-{N:02d}" })
+    FDD_KW_MAP = { 3: "screen", 4: "state-management", 5: "api-client",
+                   6: "error-handling", 8: "performance", 9: "visual-design" }
+    if N in FDD_KW_MAP:
+        section_specialists = await rag.querySpecialists(
+            [FDD_KW_MAP[N], STACK_FRONTEND_FRAMEWORK], topK=2)
+    else:
+        section_specialists = []
+except:
+    agent_graph = None; section_specialists = []
+
+# Generate section content with RAG context:
+#   DD_RAG_DESIGNS (existing patterns) + DD_RAG_CODE (code patterns)
+#   + agent_graph (entity relationships) + section_specialists (specialist patterns)
+validation = node.run(".claude/hooks/validate-section.js", [document_path, N])
+if validation.exit_code != 0:
+    display(f"⚠️ Section {N} failed — regenerating (max 2 retries)")
+write_file(f".checkpoints/fdd-s{N}.lock", f"Section {N} complete at {timestamp}")
+TodoWrite: mark section N as completed
+```
+
+**After all 10** — Verify:
+```pseudo
+checkpoint_count = count_files(".checkpoints/fdd-s*.lock")
+if checkpoint_count != 10:
+    display(f"❌ FDD enforcement failed: {checkpoint_count}/10")
+    STOP
+display("✅ FDD enforcement passed: 10/10 checkpoints")
+```
+
+---
+
+## Phase 2: API Contracts
+
+**Scope Guard**: Skip if DESIGN_SCOPE == "backend"
+**Auto-detect**: If DESIGN_SCOPE == "frontend", check needs_api_contracts from Step 0.9.3
+
+```pseudo
+if DESIGN_SCOPE == "backend":
+    display("⏭️ Phase 2: Skipped (backend scope)")
+elif DESIGN_SCOPE == "frontend" and not needs_api_contracts:
+    display("⏭️ Phase 2: Skipped (no API indicators in BD)")
+else:
+    # RAG: Load existing API patterns (non-blocking)
+    try:
+        api_patterns = await rag.findByStereotype("Controller", { topK: 3 })
+        api_arch = await rag.queryWithArchitecture(
+            "api endpoints rest controller dto",
+            { stereotype: "Controller", topK: 3 }
+        )
+    except:
+        api_patterns = []; api_arch = []
+
+    Step 2.1: Derive from Frontend DD (+ RAG api_patterns as reference)
+        # Screen data needs → GET endpoints
+        # User actions → POST/PUT/DELETE endpoints
+        # State mutations → Request/Response DTOs
+
+    Step 2.2: Generate API Contracts document
+        # Use api_arch for naming conventions and DTO structure consistency
+
+    Step 2.3: Write API Contracts
+        api_file = f"documents/features/{feature_dir}/{feature}-BASE-api-contracts.md"
+        write_file(api_file, api_contracts_content)
+        display(f"✅ Created: {api_file}")
+```
+
+**NO enforcement** — single-step derivation, not multi-agent process.
+
+---
+
+## Phase 3: Backend Detail Design
+
+**Scope Guard**: Skip if DESIGN_SCOPE == "frontend"
+
+**WHY**: BDD runs last in fullstack scope because backend implements API contracts derived
+from frontend needs (frontend-first approach). In backend-only scope, BDD loads BD + SRS
+directly instead of FDD + API Contracts.
+
+```pseudo
+if DESIGN_SCOPE == "frontend":
+    display("⏭️ Phase 3: Skipped (frontend scope — no BDD)")
+```
+
+### Step 3.1: Read Agent Specification
+```bash
+# Load BDD orchestrator via specialist-load
+node core/cli/ops.js specialist-load --type document --category detail-design-backend --name _orchestrator
+BDD_SPEC=$(node -e "const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8')); console.log(r.data?.content || '')")
+# Type: Direct Micro-Agent Workflow (No Orchestrator)
+# 10 micro-agents, 3-layer enforcement, JIT loading
+```
+
+### Step 3.2: Load Context (scope-dependent)
+```pseudo
+if DESIGN_SCOPE == "fullstack":
+    fdd_content = read_file(fdd_file)
+    api_content = read_file(api_contracts_file)
+    context_source = "FDD + API Contracts"
+elif DESIGN_SCOPE == "backend":
+    bd_content = read_file(bd_file)
+    srs_content = read_file(srs_file)
+    context_source = "BD + SRS (no frontend documents)"
+```
+
+### Step 3.3: Direct Agent Execution (NO orchestrator)
+
+backend-design-specialist.md IS the orchestrator instructions. AI reads agent spec
+then loads micro-agents via JIT. orchestrate-bdd.js DOES NOT EXIST.
+
+### Step 3.4: Generate Sections with JIT Loading (10 micro-agents)
+
+| # | Agent File | Section |
+|---|------------|---------|
+| 0 | bdd-00-document-info.md | Document information |
+| 1 | bdd-01-service-overview.md | Service overview |
+| 2 | bdd-02-business-logic.md | Business logic |
+| 3 | bdd-03-api-endpoints.md | API endpoints |
+| 4 | bdd-04-data-database.md | Data & database |
+| 5 | bdd-05-integration.md | Integration |
+| 6 | bdd-06-error-handling.md | Error handling |
+| 7 | bdd-07-performance.md | Performance |
+| 8 | bdd-08-security.md | Security |
+| 9 | bdd-09-test-cases.md | Test cases |
+
+**Per-Section Enrichment (for each micro-agent):**
+
+**3.4.1 Architecture Analysis (component/module sections)**
+
+For component-level sections (bdd-03 API endpoints, bdd-04 data/database, bdd-05 integration), invoke the **architecture-analyzer** skill:
+- Detect duplicate services/repositories against existing backend codebase
+- Validate proposed service architecture against project tech stack
+
+**3.4.2 Pattern Analysis**
+
+After loading each micro-agent specialist, invoke the **pattern-analyzer** skill:
+- Check proposed patterns against specialist recommendations
+- Use alignment results to guide section generation
+
+**3.4.3 Design Validation (Per Section)**
+
+After generating each section, invoke the **design-validator** skill:
+- Q1: Evidence grounding — design decisions trace to evidence
+- Q2: ID uniqueness — no duplicate IDs
+- Q3: Bilingual ratio — within 60:40 to 80:20
+- Q4: Interface purity — no implementation code in design doc
+- If any violation: fix before proceeding to next micro-agent
+
+### Step 3.5: Quality Validation
+```pseudo
+validation_result = node.run(".claude/utils/tests/bdd-validator.js", [document_path])
+if validation_result.exit_code != 0:
+    display("⚠️ Backend DD validation warnings:")
+    display(validation_result.stdout)
+```
+
+### Step 3.6: Write Backend DD
+```pseudo
+backend_dd_file = f"documents/features/{feature_dir}/{feature}-BASE-backend-detail-design.md"
+write_file(backend_dd_file, backend_dd_content)
+display(f"✅ Created: {backend_dd_file}")
+```
+
+### Step 3.7: Insert DD-SECTION Markers (Auto-Split Enablement)
+
+**WHY**: DD-SECTION markers enable `/plan` auto-split for large DDs (> 300 lines).
+Without markers, the pseudo-code generator falls back to single-file mode (F1).
+
+```pseudo
+bdd_lines = backend_dd_content.split("\n").length
+
+if bdd_lines > 300:
+    # Insert DD-SECTION markers around each micro-agent section group
+    # Markers use HTML comments so they don't affect rendering
+    # Section IDs should be descriptive, lowercase with hyphens
+    #
+    # Example markers (adapt to actual BDD structure):
+    #   <!-- DD-SECTION: core-logic -->
+    #   ## 1. Service Overview
+    #   ## 2. Business Logic
+    #   <!-- DD-SECTION-END: core-logic -->
+    #
+    #   <!-- DD-SECTION: api-data -->
+    #   ## 3. API Endpoints
+    #   ## 4. Data & Database
+    #   <!-- DD-SECTION-END: api-data -->
+    #
+    #   <!-- DD-SECTION: integration -->
+    #   ## 5. Integration
+    #   ## 6. Error Handling
+    #   ## 7. Performance
+    #   <!-- DD-SECTION-END: integration -->
+    #
+    #   <!-- DD-SECTION: security-testing -->
+    #   ## 8. Security
+    #   ## 9. Test Cases
+    #   <!-- DD-SECTION-END: security-testing -->
+    #
+    # Rules:
+    #   - Section ID = any [\w][\w-]* string (section-agnostic, E23)
+    #   - Group related BDD sections (2-3 per marker) for balanced sub-plans
+    #   - Place markers BEFORE first heading and AFTER last heading in group
+    #   - Missing DD-SECTION-END is tolerated (auto-closed at next start or EOF)
+    display(f"📂 BDD {bdd_lines} lines > 300 — insert DD-SECTION markers for auto-split")
+else:
+    display(f"📄 BDD {bdd_lines} lines ≤ 300 — no markers needed (single-file mode)")
+```
+
+### BDD Enforcement Mode (3-Layer: Hooks + TodoWrite + Checkpoints)
+
+**WHY**: BDD has 10 micro-agents and is the longest generation phase.
+backend-design-specialist.md (v3.0) was designed with 3-layer enforcement built-in.
+
+**Before Phase 3** — Initialize:
+```pseudo
+mkdir -p .checkpoints
+rm -f .checkpoints/bdd-s*.lock
+
+TodoWrite([
+    { content: "BDD Section 0: Document Info", status: "pending" },
+    { content: "BDD Section 1: Service Overview", status: "pending" },
+    { content: "BDD Section 2: Business Logic", status: "pending" },
+    { content: "BDD Section 3: API Endpoints", status: "pending" },
+    { content: "BDD Section 4: Data & Database", status: "pending" },
+    { content: "BDD Section 5: Integration", status: "pending" },
+    { content: "BDD Section 6: Error Handling", status: "pending" },
+    { content: "BDD Section 7: Performance", status: "pending" },
+    { content: "BDD Section 8: Security", status: "pending" },
+    { content: "BDD Section 9: Test Cases", status: "pending" },
+])
+```
+
+**For EACH micro-agent (0-9)**:
+```pseudo
+# Layer 1 (Hooks): Validate previous section
+if N > 0:
+    node.run(".claude/hooks/validate-section.js", [document_path, N-1])
+
+# Layer 2 (TodoWrite): Mark in_progress
+TodoWrite: mark section N as in_progress
+
+# Generate: Load micro-agent (JIT) → generate content
+```bash
+# Load BDD section N specialist
+node core/cli/ops.js specialist-load --type document --category detail-design-backend --name bdd-0N-{section}
+BDD_SECTION_SPEC=$(node -e "const r=JSON.parse(require('fs').readFileSync('cache/ops-result.json','utf8')); console.log(r.data?.content || '')")
+```
+
+# CALI: Context-Aware Layer Injection (non-blocking)
+# Maps BDD sections to code stereotypes for pattern retrieval
+CALI_MAP = { 1: "Service", 2: "Service", 3: "Controller",
+             4: "Repository", 5: "Service", 6: "Service",
+             7: "Service", 8: "Service", 9: "Service" }
+try:
+    if N in CALI_MAP:
+        similar = await rag.retrieveSimilarPatterns(
+            CALI_MAP[N], feature_module,
+            { limit: 3, minConfidence: 0.7, includeCode: true }
+        )
+        # Inject actual code patterns from similar stereotypes into agent context
+    agent_graph = await rag.getGraphContext({ name: f"bdd-{N:02d}" })
+except:
+    similar = { patterns: [], source: "error" }
+    agent_graph = None
+
+# Generate section with: agent instructions + DD_RAG_CODE + similar.patterns + agent_graph
+
+# Layer 1 (Hooks): Validate current section
+node.run(".claude/hooks/validate-section.js", [document_path, N])
+
+# Layer 3 (Checkpoints): Write lock file
+write_file(f".checkpoints/bdd-s{N}.lock", f"Section {N} complete at {timestamp}")
+
+# Layer 2 (TodoWrite): Mark completed
+TodoWrite: mark section N as completed
+```
+
+**After all 10** — Final verification:
+```pseudo
+checkpoint_count = count_files(".checkpoints/bdd-s*.lock")
+if checkpoint_count != 10:
+    display(f"❌ BDD enforcement failed: {checkpoint_count}/10")
+    STOP
+display("✅ BDD enforcement passed: 10/10 checkpoints")
+```
+
+### Final Design Validation (FDD + BDD)
+
+After all FDD and BDD sections are generated, invoke the **design-validator** skill on each complete document:
+- Run Q1-Q4 on the entire FDD document
+- Run Q1-Q4 on the entire BDD document
+- Verify cross-document consistency (API contracts match between FDD and BDD)
+- If violations found: iterate on affected sections
+- If all pass: Continue to Sub-Feature Processing / Write
+
+---
+
+## Sub-Feature Processing
+
+**Scope applies to ALL sub-features** — detect once for BASE, apply to all.
+
+**WHY**: Evidence from real-world projects shows 100% of features with sub-features have the same
+scope across all subs. Re-detecting per sub would waste context and create inconsistency.
+
+```pseudo
+if CREATE_BASE:
+    1. Create BASE documents first (scope-dependent: 1-3 files)
+    2. For each sub-feature: Repeat Phase 1/2/3 with SAME DESIGN_SCOPE
+
+if not CREATE_BASE and HAS_SUBFEATURES:
+    1. For each sub-feature: Repeat Phase 1/2/3 with SAME DESIGN_SCOPE
+
+For each sub-feature:
+    - Use SAME DESIGN_SCOPE (do NOT re-run Step 0.9)
+    - Use SAME needs_api_contracts flag
+    - Add Service Boundaries section (cross-sub-feature interfaces)
+```
+
+---
+
+## Pseudo-code Generation
+
+**WHY**: Pseudo-code is consumed by `/plan` to create implementation plans.
+PseudoCodeGenerator transforms human-readable DD into LLM-optimized format.
+
+**Scope-adapted rule**: Generate pseudo-code for EVERY DD that was created in this run.
+PseudoCodeGenerator requires an existing DD file path (`humanDDPath, srsPath, docType`).
+It cannot generate from BD+SRS — skip missing DDs instead of failing.
+
+```pseudo
+srs_file = find("documents/features/{feature_dir}/*-srs.md")
+
+# FDD pseudo-code (only if FDD document exists)
+fdd_file = find("documents/features/{feature_dir}/*-frontend-detail-design.md")
+if fdd_file exists:
+    fdd_content = readFileSync(fdd_file, "utf8")
+    fdd_pseudo = PseudoCodeGenerator(fdd_file, srs_file, "FRONTEND_DD")
+
+    # Size-based trigger: markers + > 300 lines → multi-file
+    if fdd_content.includes("<!-- DD-SECTION:") AND fdd_content.split("\n").length > 300:
+        fdd_pseudo.setSplitMode("multi-file")
+        result = await fdd_pseudo.generateAndSplit()
+        masterPath = fdd_file.replace(".md", ".pseudo")
+        writeFileSync(masterPath, result.master)
+        display("✅ Frontend pseudo-code (multi-file master): {masterPath}")
+        for [sectionId, content] in result.sections:
+            sectionPath = fdd_file.replace(".md", "-{sectionId}.pseudo")
+            writeFileSync(sectionPath, content)
+            display("   Section: {sectionId}.pseudo")
+    else:
+        fdd_pseudo.save(fdd_file.replace(".md", ".pseudo"))
+        display("✅ Frontend pseudo-code (single): {pseudo_path}")
+else:
+    display("⏭️ Frontend pseudo-code: Skipped (no FDD document)")
+
+# BDD pseudo-code (only if BDD document exists)
+bdd_file = find("documents/features/{feature_dir}/*-backend-detail-design.md")
+if bdd_file exists:
+    bdd_content = readFileSync(bdd_file, "utf8")
+    bdd_pseudo = PseudoCodeGenerator(bdd_file, srs_file, "BACKEND_DD")
+
+    # Size-based trigger (C7): markers + > 300 lines → multi-file
+    if bdd_content.includes("<!-- DD-SECTION:") AND bdd_content.split("\n").length > 300:
+        bdd_pseudo.setSplitMode("multi-file")
+        result = await bdd_pseudo.generateAndSplit()
+        # Save master
+        masterPath = bdd_file.replace(".md", ".pseudo")
+        writeFileSync(masterPath, result.master)
+        display("✅ Backend pseudo-code (multi-file master): {masterPath}")
+        # Save section files
+        for [sectionId, content] in result.sections:
+            sectionPath = bdd_file.replace(".md", "-{sectionId}.pseudo")
+            writeFileSync(sectionPath, content)
+            display("   Section: {sectionId}.pseudo")
+    else:
+        # Fallback: single file (backward compat)
+        bdd_pseudo.save(bdd_file.replace(".md", ".pseudo"))
+        display("✅ Backend pseudo-code (single): {pseudo_path}")
+else:
+    display("⏭️ Backend pseudo-code: Skipped (no BDD document)")
+
+# Validate (non-blocking — report but don't stop)
+for each pseudo_file:
+    report = PseudoCodeValidator(pseudo_file, dd_file, srs_file)
+    report.save(context_dir)
+```
+
+| DESIGN_SCOPE | FDD Pseudo | BDD Pseudo |
+|-------------|------------|------------|
+| backend     | Skip       | Generate   |
+| frontend    | Generate   | Skip       |
+| fullstack   | Generate   | Generate   |
+
+---
+
+## Post-Generation: RAG Index & Graph Update
+
+**WHY**: Indexing generated DD into RAG enables future features to learn from this design.
+Graph extraction creates entity relationships for architecture compliance checks.
+This is the feedback loop that makes RAG progressively smarter with each feature.
+
+```pseudo
+# Index generated DD into RAG + extract graph entities (non-blocking)
+try:
+    rag = HippoRAGService.getInstance(feature, branch)
+
+    if fdd_content:
+        await rag.indexContent(fdd_content, "fdd", "DD_COMPLETE")
+        await rag.extractAndUpdate(fdd_content, "fdd", "frontend-detail-design")
+        display("📊 FDD indexed into RAG (design layer)")
+
+    if bdd_content:
+        await rag.indexContent(bdd_content, "bdd", "DD_COMPLETE")
+        await rag.extractAndUpdate(bdd_content, "bdd", "backend-detail-design")
+        display("📊 BDD indexed into RAG (design layer)")
+
+    if api_content:
+        await rag.indexContent(api_content, "fdd", "DD_COMPLETE")
+        display("📊 API Contracts indexed into RAG (design layer)")
+
+    display("✅ RAG updated: DD documents indexed for future reference")
+except:
+    display("⚠️ RAG indexing skipped (non-blocking)")
+```
+
+| DESIGN_SCOPE | FDD Index | BDD Index | API Index |
+|-------------|-----------|-----------|-----------|
+| backend     | —         | Index     | —         |
+| frontend    | Index     | —         | If exists |
+| fullstack   | Index     | Index     | Index     |
+
+**Non-blocking**: Indexing failures do not affect the DD output or state update.
+
+---
+
+## Update State
+
+```pseudo
+result = node.run("core/state/state-manager.js", ["update", "DD_CREATED"])
+if result.exit_code != 0:
+    raise Error(f"Failed to update state: {result.stderr}")
+display("✅ State updated: DD_CREATED")
+```
+
+---
+
+## Post-Workflow: Update Evidence & Context (MANDATORY)
+
+**1. Update evidence.md — Section "### 3.3 DD Summary"**
+
+Using the Read tool, read evidence.md. Then using the Edit tool, add or replace:
+
+```markdown
+### 3.3 DD Summary (updated by /design --detail — [DATE])
+
+**Document(s)**: [list of generated files]
+**Scope**: [DESIGN_SCOPE]
+**Key Outputs**: [2-3 bullet points]
+**Scope Confirmed**: [X] agents executed / [Y] documents generated
+
+**Corrections to Innovate Decisions**:
+[If design process revealed issues with innovate decisions]
+[If none: "Innovate decisions confirmed by design"]
+```
+
+**2. Update context.md — Add to Decisions Log**
+
+Read context.md. Append row:
+
+| # | Phase | Decision | Choice | Rationale | Corrects |
+|---|-------|----------|--------|-----------|----------|
+| N | DESIGN_DD | [DD output] | Scope: [DESIGN_SCOPE], [N] docs | Generated from innovate | [if any] |
+
+**CRITICAL**: This step is MANDATORY after successful DD generation.
+
+---
+
+## A+B+C FDD Pattern (≥4 sub-features, frontend/fullstack only)
+
+**WHY**: A+B+C reduces duplication by 74% for features with many sub-features.
+Backend is excluded because it already has a 2-tier pattern (BASE + per-sub).
+
+```pseudo
+if DESIGN_SCOPE == "backend":
+    # A+B+C not applicable — backend uses BASE + per-sub pattern
+elif HAS_SUBFEATURES and sub_feature_count >= 4:
+    use_abc_pattern = true
+    display("📋 Using A+B+C FDD Pattern (≥4 sub-features)")
+else:
+    use_abc_pattern = false
+    display("📋 Using Traditional FDD Pattern (10 micro-agents)")
+```
+
+### A+B+C Document Structure
+
+| Document | Agent | Purpose |
+|----------|-------|---------|
+| `{FEATURE}-portal-fdd.md` | portal-fdd-agent | Cross-feature workflows, user journeys, API strategy |
+| `{FEATURE}-aggregate-fdd.md` | aggregate-fdd-agent | App shell, shared components, root state |
+| `{FEATURE}-{SUB}-screens-fdd.md` | screens-fdd-agent | Module-specific screens (refs A & B) |
+
+### Execution Order (A+B+C)
+
+1. **Document A: Portal FDD** — Business workflows (Mermaid), user journeys (UJ-XXX), API strategy
+2. **Document B: Aggregate FDD** — App shell & routing, shared components (SC-XXX), root state
+3. **Document C: Screens FDD** (per sub) — Module screens (refs A), module state (refs B)
+
+A+B+C agents: `specialists/document/detail-design-frontend/` (portal-fdd, aggregate-fdd, screens-fdd)
+
+---
+
+## Output Documents (scope-dependent)
+
+| DESIGN_SCOPE | Documents per feature/sub-feature |
+|-------------|----------------------------------|
+| backend     | `{F}-{S}-backend-detail-design.md` (1 file) |
+| frontend    | `{F}-{S}-frontend-detail-design.md` + optional `{F}-{S}-api-contracts.md` (1-2 files) |
+| fullstack   | `{F}-{S}-frontend-detail-design.md` + `{F}-{S}-api-contracts.md` + `{F}-{S}-backend-detail-design.md` (3 files) |
+
+## Document Standards
+- **FDD Standard**: `.claude/docs/FRONTEND_DETAIL_DESIGN_STANDARD.md`
+- **BDD Standard**: `.claude/docs/BACKEND_DETAIL_DESIGN_STANDARD.md`
+- **API Standard**: `.claude/docs/API_CONTRACTS_STANDARD.md`
+
+## Language Rules
+- **Content**: Vietnamese (≥60% ratio)
+- **Technical terms**: English (API, REST, JWT, Component, etc.)
+- **Code snippets**: English (TypeScript/Java interfaces only, no implementation)
+
+---
+
+## Completion Message
+
+```pseudo
+display(f"""
+✅ DETAIL DESIGN CREATED (Scope: {DESIGN_SCOPE})
+
+Documents:
+{if DESIGN_SCOPE in ["frontend", "fullstack"]:}
+  Frontend DD: {fdd_file}
+{if needs_api_contracts:}
+  API Contracts: {api_file}
+{if DESIGN_SCOPE in ["backend", "fullstack"]:}
+  Backend DD: {bdd_file}
+
+{if fdd_pseudo exists:}
+  Frontend Pseudo: {fdd_pseudo}
+{if bdd_pseudo exists:}
+  Backend Pseudo: {bdd_pseudo}
+
+Enforcement:
+  {if FDD ran:} ✅ FDD: 10/10 checkpoints
+  {if BDD ran:} ✅ BDD: 10/10 checkpoints
+
+Next command: /plan
+""")
+```
+
+---
+*/design --detail Workflow v4.1*
+*Self-contained micro-command with Stack Context + BASE + Post-Workflow*
+*Scope-Aware: Backend / Frontend / Full-stack*
+*Direct Agent Execution (No Orchestrator)*
+*Enforcement: FDD (10 agents) + BDD (10 agents)*
+*RAG 2.0: Preload (design+code layers) + Per-Agent (Graph+Specialists) + CALI (BDD) + Post-Gen Index*
+*A+B+C Pattern: Frontend/Fullstack with ≥4 sub-features*

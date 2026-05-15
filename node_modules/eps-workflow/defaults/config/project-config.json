@@ -1,0 +1,44 @@
+{
+  "projectId": "",
+  "name": "",
+  "domain": "",
+  "description": "",
+  "documentsPath": "documents",
+
+  "sourceRoots": [
+    {
+      "path": "backend/",
+      "label": "backend",
+      "stackKey": "",
+      "variant": "default",
+      "language": "",
+      "framework": "",
+      "architecture": "",
+      "modules": [],
+      "patterns": {
+        "orm": "",
+        "api": ""
+      },
+      "conventions": {},
+      "implementationPatterns": {}
+    },
+    {
+      "path": "frontend/",
+      "label": "frontend",
+      "stackKey": "",
+      "variant": "default",
+      "language": "",
+      "framework": "",
+      "modules": [],
+      "patterns": {
+        "uiLibrary": ""
+      },
+      "implementationPatterns": {}
+    }
+  ],
+
+  "infrastructure": {},
+  "businessModules": {},
+  "performanceRequirements": {},
+  "excludeDirs": ["node_modules", "dist", "target", ".git", ".claude"]
+}

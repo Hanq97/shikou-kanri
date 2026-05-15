@@ -1,0 +1,27 @@
+{
+  "actions": {
+    "context-detect": "./actions/context-detect.js",
+    "gate-check": "./actions/gate-check.js",
+    "stack-load": "./actions/stack-load.js",
+    "rag-query": "./actions/rag-query.js",
+    "gemini-read": "./actions/gemini-read.js",
+    "gemini-call": "./actions/gemini-call.js",
+    "plan-detect": "./actions/plan-detect.js",
+    "checkpoint-load": "./actions/checkpoint.js",
+    "checkpoint-save": "./actions/checkpoint.js",
+    "design-parse": "./actions/design-parse.js",
+    "state-update": "./actions/state-update.js",
+    "arch-detect": "./actions/arch-detect.js",
+    "auto-route": "./actions/auto-route.js",
+    "preserve-state": "./actions/preserve-state.js",
+    "test-scan": "./actions/test-scan.js",
+    "test-generate": "./actions/test-generate.js",
+    "test-validate": "./actions/test-validate.js",
+    "reverse-dd-extract": "./actions/reverse-dd-extract.js",
+    "coverage-report": "./actions/coverage-report.js",
+    "specialist-load": "./actions/specialist-load.js",
+    "design-checkpoint": "./actions/design-checkpoint.js",
+    "design-context": "./actions/design-context.js",
+    "design-review": "../design/design-review-engine.js"
+  }
+}

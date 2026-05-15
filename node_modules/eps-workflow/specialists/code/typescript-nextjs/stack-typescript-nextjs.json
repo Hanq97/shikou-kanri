@@ -1,0 +1,197 @@
+{
+  "$comment": "TypeScript Next.js stack — merged from stack-definitions + stacks + architecture-definitions",
+  "name": "TypeScript Next.js",
+  "language": "typescript",
+  "framework": "nextjs",
+  "version": {
+    "typescript": "5.x",
+    "nextjs": "16.x",
+    "react": "19.x"
+  },
+  "extensions": [".ts", ".tsx", ".js", ".jsx"],
+
+  "parsing": {
+    "parser": "typescript-parser",
+    "extractor": "nextjs-extractor",
+    "patterns": {
+      "page": {
+        "files": ["page.tsx", "page.ts", "page.jsx", "page.js"],
+        "nodeType": "Page"
+      },
+      "layout": {
+        "files": ["layout.tsx", "layout.ts"],
+        "nodeType": "Layout"
+      },
+      "apiRoute": {
+        "files": ["route.ts", "route.tsx"],
+        "directory": "/api/",
+        "nodeType": "ApiRoute"
+      },
+      "serverComponent": {
+        "directive": null,
+        "nodeType": "ServerComponent"
+      },
+      "clientComponent": {
+        "directive": "'use client'",
+        "nodeType": "ClientComponent"
+      },
+      "serverAction": {
+        "directive": "'use server'",
+        "nodeType": "Function"
+      },
+      "hook": {
+        "namePrefix": "use",
+        "files": ["use*.ts", "use*.tsx"],
+        "nodeType": "Hook"
+      },
+      "context": {
+        "nameSuffix": ["Context", "Provider"],
+        "exports": ["createContext"],
+        "nodeType": "Context"
+      },
+      "reduxSlice": {
+        "imports": ["@reduxjs/toolkit"],
+        "functions": ["createSlice", "createAsyncThunk"],
+        "nodeType": "Component"
+      },
+      "apiClient": {
+        "directory": "/api/",
+        "imports": ["axios", "fetch"],
+        "nodeType": "Service"
+      }
+    },
+    "directories": {
+      "app": "src/app/",
+      "components": "src/presentation/ui/",
+      "hooks": "src/hooks/",
+      "api": "src/infrastructure/api/",
+      "store": "src/store/",
+      "utils": "src/utils/"
+    }
+  },
+
+  "architecture": {
+    "supportedArchitectures": ["clean-architecture", "feature-sliced-design", "layered", "modular-monolith"],
+    "defaultArchitecture": null,
+    "autoDetection": {
+      "clean-architecture": {
+        "requiredDirs": ["domain", "infrastructure", "presentation"],
+        "alternativeDirs": ["src/domain", "src/infrastructure", "src/presentation"],
+        "confidence": 0.85
+      },
+      "feature-sliced-design": {
+        "requiredDirs": ["app", "pages", "widgets", "features", "entities", "shared"],
+        "alternativeDirs": ["src/app", "src/pages", "src/widgets"],
+        "confidence": 0.9
+      },
+      "layered": {
+        "requiredDirs": ["components", "hooks", "api", "store"],
+        "confidence": 0.7
+      }
+    },
+    "layerMappings": {
+      "clean-architecture": {
+        "domain": {
+          "pathPatterns": ["**/domain/entities/**", "**/domain/repositories/**", "**/domain/use-cases/**"],
+          "exportPatterns": ["interface I*", "type *Entity", "*Usecase"],
+          "stereotype": "DomainEntity"
+        },
+        "infrastructure": {
+          "pathPatterns": ["**/infrastructure/api/**", "**/infrastructure/repositories/**", "**/infrastructure/store/**"],
+          "exportPatterns": ["*Api", "*RepositoryImpl", "*Slice"],
+          "stereotype": "InfrastructureAdapter"
+        },
+        "presentation": {
+          "pathPatterns": ["**/presentation/**", "**/ui/**"],
+          "exportPatterns": ["function *Component", "const *: FC"],
+          "stereotype": "UIComponent"
+        },
+        "core": {
+          "pathPatterns": ["**/core/**"],
+          "exportPatterns": ["*Factory", "*Container", "*Config"],
+          "stereotype": "SharedUtility"
+        }
+      },
+      "feature-sliced-design": {
+        "app": {
+          "pathPatterns": ["**/app/**", "app/**"],
+          "description": "Application initialization, providers, global styles",
+          "stereotype": "AppLayer"
+        },
+        "pages": {
+          "pathPatterns": ["**/pages/**", "pages/**"],
+          "description": "Page components and routing",
+          "stereotype": "PageLayer"
+        },
+        "widgets": {
+          "pathPatterns": ["**/widgets/**"],
+          "description": "Complex components composed of features",
+          "stereotype": "WidgetLayer"
+        },
+        "features": {
+          "pathPatterns": ["**/features/**"],
+          "description": "User scenarios, business features",
+          "stereotype": "FeatureLayer"
+        },
+        "entities": {
+          "pathPatterns": ["**/entities/**"],
+          "description": "Business entities, models",
+          "stereotype": "EntityLayer"
+        },
+        "shared": {
+          "pathPatterns": ["**/shared/**"],
+          "description": "Reusable utilities, UI kit, libs",
+          "stereotype": "SharedLayer"
+        }
+      }
+    },
+    "frameworkPatterns": {
+      "appRouter": {
+        "pages": "**/app/**/page.tsx",
+        "layouts": "**/app/**/layout.tsx",
+        "routes": "**/app/**/route.ts",
+        "loading": "**/app/**/loading.tsx",
+        "error": "**/app/**/error.tsx"
+      },
+      "componentTypes": {
+        "server": { "indicator": "no 'use client'" },
+        "client": { "indicator": "'use client'" }
+      }
+    }
+  },
+
+  "variants": {
+    "default": {
+      "name": "Next.js App Router + Ant Design",
+      "description": "App Router with Ant Design, Redux Toolkit, i18next, ReactFlow",
+      "patterns": {
+        "use_nextjs_app_router": true,
+        "use_antd": true,
+        "use_redux_toolkit": true,
+        "use_i18next": true,
+        "use_reactflow": true
+      },
+      "specialists": {
+        "architecture": ["nextjs-clean-architecture-specialist", "frontend-di-specialist", "module-organization-specialist", "react-composition-specialist", "frontend-architecture-styles-specialist"],
+        "routing": ["multitenant-routing-specialist", "nextjs-file-conventions-specialist"],
+        "state": ["redux-toolkit-specialist"],
+        "api": ["axios-interceptor-specialist", "api-client-specialist"],
+        "core": ["core-layer-specialist", "provider-composition-specialist"],
+        "hooks": ["hook-patterns-specialist"],
+        "repository": ["base-repository-specialist"],
+        "ui": ["antd-form-specialist", "block-screen-specialist", "theme-specialist", "crud-page-patterns-specialist", "table-datagrid-specialist", "web-design-guidelines-specialist"],
+        "layout": ["layout-appshell-specialist"],
+        "security": ["permission-specialist", "nextjs-security-specialist"],
+        "localization": ["i18n-specialist"],
+        "features": ["workflow-designer-specialist", "fcm-notification-specialist", "ckeditor-specialist", "dndkit-specialist", "calendar-specialist"],
+        "patterns": ["data-fetching-specialist", "nextjs-rsc-patterns-specialist", "nextjs-cache-specialist", "nextjs-error-handling-specialist"],
+        "performance": ["perf-specialist", "nextjs-assets-optimization-specialist", "react-perf-critical-specialist", "react-perf-rendering-specialist"],
+        "testing": ["testing-specialist"]
+      },
+      "specialistDir": "typescript-nextjs",
+      "kb_path": {
+        "frontend": ".claude/utils/knowledge-base/frontend-kb.json"
+      }
+    }
+  }
+}

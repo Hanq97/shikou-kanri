@@ -1,0 +1,55 @@
+{
+  "permissions": {
+    "allow": [
+      "Read", "Glob", "Grep", "WebFetch", "WebSearch",
+      "Bash(node .claude/*)",
+      "Bash(git *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          { "type": "command", "command": "node .claude/guards/hooks/workflow-gate.js", "timeout": 10 },
+          { "type": "command", "command": "node .claude/guards/hooks/architecture-awareness.js", "timeout": 10 }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          { "type": "command", "command": "node .claude/guards/hooks/auto-chain.js", "timeout": 10 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "agent", "prompt": "Review changes for regressions and quality gates.", "timeout": 120 }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node .claude/core/cli/ops.js preserve-state", "timeout": 10 },
+          { "type": "command", "command": "node .claude/core/cli/ops.js checkpoint-save", "timeout": 10 }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node .claude/core/cli/ops.js auto-route", "timeout": 5 }
+        ]
+      }
+    ]
+  },
+  "preserved-state": {},
+  "ops": {
+    "output_file": ".claude/cache/ops-result.json",
+    "cache_dir": ".claude/cache/"
+  }
+}

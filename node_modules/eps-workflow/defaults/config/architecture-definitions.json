@@ -1,0 +1,793 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Architecture-agnostic definitions for multi-stack code analysis",
+  "$version": "2.0",
+  "$date": "2026-02-15",
+
+  "architecturePatterns": {
+    "clean-architecture": {
+      "name": "Clean Architecture",
+      "description": "Uncle Bob's Clean Architecture with 4 layers",
+      "origin": "Robert C. Martin",
+      "layers": ["domain", "application", "infrastructure", "presentation"],
+      "dependencyRule": "inward-only",
+      "coreLayer": "domain",
+      "layerConstraints": {
+        "domain": {
+          "allowedDependencies": [],
+          "forbiddenDependencies": ["Controller", "Repository", "Service", "Configuration"],
+          "requiredMarkers": ["@Entity", "@Table"],
+          "returnTypePatterns": null,
+          "responsibilities": ["Business entities", "Value objects", "Domain events", "Aggregates"]
+        },
+        "application": {
+          "allowedDependencies": ["Repository", "Entity", "DTO", "Mapper", "Port"],
+          "forbiddenDependencies": ["Controller", "Configuration", "WebClient"],
+          "requiredMarkers": ["@Service", "@Transactional"],
+          "returnTypePatterns": ["Mono<*>", "Flux<*>"],
+          "responsibilities": ["Business logic", "Use cases", "Orchestration", "Transaction management"]
+        },
+        "infrastructure": {
+          "allowedDependencies": ["Entity", "DTO", "Port"],
+          "forbiddenDependencies": ["Controller", "Service"],
+          "requiredMarkers": ["@Repository", "@Component"],
+          "returnTypePatterns": ["Mono<*>", "Flux<*>"],
+          "responsibilities": ["Data persistence", "External API calls", "Caching", "Messaging"]
+        },
+        "presentation": {
+          "allowedDependencies": ["Service", "DTO", "Mapper"],
+          "forbiddenDependencies": ["Repository", "Entity"],
+          "requiredMarkers": ["@RestController", "@RequestMapping"],
+          "returnTypePatterns": ["Mono<ResponseEntity<*>>", "Flux<*>"],
+          "responsibilities": ["HTTP handling", "Input validation", "DTO mapping", "Error responses"]
+        }
+      }
+    },
+    "hexagonal": {
+      "name": "Hexagonal Architecture (Ports & Adapters)",
+      "description": "Alistair Cockburn's hexagonal pattern",
+      "origin": "Alistair Cockburn",
+      "layers": ["domain", "ports", "adapters"],
+      "dependencyRule": "ports-only",
+      "coreLayer": "domain"
+    },
+    "onion": {
+      "name": "Onion Architecture",
+      "description": "Jeffrey Palermo's onion architecture",
+      "origin": "Jeffrey Palermo",
+      "layers": ["domain", "domain-services", "application-services", "infrastructure"],
+      "dependencyRule": "inward-only",
+      "coreLayer": "domain"
+    },
+    "layered": {
+      "name": "Traditional Layered (N-Tier)",
+      "description": "Classic 3-tier architecture",
+      "origin": "Traditional",
+      "layers": ["presentation", "business", "data"],
+      "dependencyRule": "downward-only",
+      "coreLayer": "business"
+    },
+    "vertical-slices": {
+      "name": "Vertical Slices Architecture",
+      "description": "Feature-based organization",
+      "origin": "Jimmy Bogard",
+      "layers": ["features"],
+      "dependencyRule": "feature-isolated",
+      "coreLayer": "features"
+    },
+    "feature-sliced-design": {
+      "name": "Feature-Sliced Design",
+      "description": "Frontend architecture standard",
+      "origin": "Feature-Sliced Design Team",
+      "layers": ["app", "processes", "pages", "widgets", "features", "entities", "shared"],
+      "dependencyRule": "layer-import-only-below",
+      "coreLayer": "entities"
+    },
+    "mvc": {
+      "name": "Model-View-Controller",
+      "description": "Classic MVC pattern",
+      "origin": "Trygve Reenskaug",
+      "layers": ["model", "view", "controller"],
+      "dependencyRule": "none",
+      "coreLayer": "model"
+    },
+    "mvvm": {
+      "name": "Model-View-ViewModel",
+      "description": "MVVM pattern for UI applications",
+      "origin": "Microsoft",
+      "layers": ["model", "view", "viewmodel"],
+      "dependencyRule": "viewmodel-mediates",
+      "coreLayer": "model"
+    },
+    "ddd": {
+      "name": "Domain-Driven Design",
+      "description": "DDD tactical patterns",
+      "origin": "Eric Evans",
+      "layers": ["domain", "application", "infrastructure", "interface"],
+      "dependencyRule": "inward-only",
+      "coreLayer": "domain"
+    },
+    "modular-monolith": {
+      "name": "Modular Monolith",
+      "description": "Independent modules with clear boundaries",
+      "origin": "Various",
+      "layers": ["modules"],
+      "dependencyRule": "explicit-contracts",
+      "coreLayer": "modules"
+    },
+    "cqrs": {
+      "name": "CQRS",
+      "description": "Command Query Responsibility Segregation",
+      "origin": "Greg Young",
+      "layers": ["commands", "queries", "domain", "persistence"],
+      "dependencyRule": "segregated",
+      "coreLayer": "domain"
+    }
+  },
+
+  "stackDefinitions": {
+    "java-spring-boot": {
+      "name": "Java Spring Boot",
+      "supportedArchitectures": ["clean-architecture", "hexagonal", "layered", "ddd", "cqrs", "modular-monolith"],
+      "defaultArchitecture": null,
+      "layerConstraintOverrides": {
+        "clean-architecture": {
+          "application": {
+            "additionalMarkers": ["@Slf4j"],
+            "additionalResponsibilities": ["Reactive stream handling"]
+          },
+          "infrastructure": {
+            "requiredMarkers": ["@Repository"],
+            "additionalPatterns": ["extends ReactiveCrudRepository"]
+          }
+        }
+      },
+      "autoDetection": {
+        "clean-architecture": {
+          "requiredDirs": ["domain", "service", "repository", "web"],
+          "indicators": ["@Service", "@Repository", "@RestController"],
+          "confidence": 0.8
+        },
+        "hexagonal": {
+          "requiredDirs": ["domain", "ports", "adapters"],
+          "alternativeDirs": ["core", "application/ports", "infrastructure/adapters"],
+          "indicators": ["@Port", "@Adapter", "@UseCase"],
+          "confidence": 0.85
+        },
+        "layered": {
+          "requiredDirs": ["controller", "service", "dao"],
+          "alternativeDirs": ["presentation", "business", "data"],
+          "indicators": ["@Controller", "@Service", "@Repository"],
+          "confidence": 0.75
+        },
+        "ddd": {
+          "requiredDirs": ["domain/model", "domain/repository", "application", "infrastructure"],
+          "indicators": ["@AggregateRoot", "@ValueObject", "@DomainEvent"],
+          "confidence": 0.85
+        },
+        "modular-monolith": {
+          "pattern": "modules/*/{domain,application,infrastructure}",
+          "indicators": ["@Module"],
+          "confidence": 0.8
+        }
+      },
+      "layerMappings": {
+        "clean-architecture": {
+          "domain": {
+            "pathPatterns": ["**/domain/**", "**/model/**", "**/entity/**"],
+            "markers": ["@Entity", "@MappedSuperclass", "@Embeddable", "@ValueObject"],
+            "baseClasses": ["AbstractAuditingEntity"],
+            "stereotype": "DomainEntity"
+          },
+          "application": {
+            "pathPatterns": ["**/service/**", "**/application/**", "**/usecase/**"],
+            "markers": ["@Service", "@Transactional", "@UseCase"],
+            "nameSuffix": ["Service", "ServiceImpl", "UseCase", "UseCaseImpl"],
+            "stereotype": "ApplicationService"
+          },
+          "infrastructure": {
+            "pathPatterns": ["**/repository/**", "**/infrastructure/**", "**/config/**", "**/adapter/**"],
+            "markers": ["@Repository", "@Configuration", "@Component", "@Adapter"],
+            "interfaces": ["ReactiveCrudRepository", "JpaRepository", "R2dbcRepository"],
+            "nameSuffix": ["Repository", "RepositoryImpl", "Adapter", "Client"],
+            "stereotype": "InfrastructureAdapter"
+          },
+          "presentation": {
+            "pathPatterns": ["**/web/rest/**", "**/controller/**", "**/rest/**", "**/api/**"],
+            "markers": ["@RestController", "@Controller", "@RequestMapping"],
+            "nameSuffix": ["Resource", "Controller", "Api", "Endpoint"],
+            "stereotype": "PresentationController"
+          }
+        },
+        "hexagonal": {
+          "domain": {
+            "pathPatterns": ["**/domain/**", "**/core/**"],
+            "markers": ["@Entity", "@AggregateRoot"],
+            "stereotype": "DomainEntity"
+          },
+          "ports": {
+            "pathPatterns": ["**/ports/**", "**/application/ports/**"],
+            "markers": ["@Port"],
+            "nameSuffix": ["Port", "UseCase", "Gateway"],
+            "stereotype": "Port"
+          },
+          "adapters": {
+            "pathPatterns": ["**/adapters/**", "**/infrastructure/**"],
+            "markers": ["@Adapter"],
+            "nameSuffix": ["Adapter", "Repository", "Client"],
+            "stereotype": "Adapter"
+          }
+        },
+        "layered": {
+          "presentation": {
+            "pathPatterns": ["**/controller/**", "**/web/**"],
+            "markers": ["@Controller", "@RestController"],
+            "stereotype": "Controller"
+          },
+          "business": {
+            "pathPatterns": ["**/service/**", "**/business/**"],
+            "markers": ["@Service"],
+            "stereotype": "Service"
+          },
+          "data": {
+            "pathPatterns": ["**/dao/**", "**/repository/**", "**/data/**"],
+            "markers": ["@Repository"],
+            "stereotype": "DataAccessObject"
+          }
+        }
+      },
+      "databasePatterns": {
+        "r2dbc": {
+          "detection": {
+            "interfaces": ["ReactiveCrudRepository", "R2dbcRepository"],
+            "imports": ["io.r2dbc", "reactor.core"],
+            "returnTypes": ["Mono", "Flux"]
+          },
+          "technology": "Spring Data R2DBC",
+          "reactive": true,
+          "customPatterns": {
+            "customRepository": "*RepositoryInternal + *RepositoryInternalImpl",
+            "queryBuilder": "ReactiveQueryBuilder",
+            "sqlHelper": "*SqlHelper"
+          }
+        },
+        "jpa": {
+          "detection": {
+            "interfaces": ["JpaRepository", "CrudRepository", "PagingAndSortingRepository"],
+            "imports": ["javax.persistence", "jakarta.persistence"],
+            "annotations": ["@Entity", "@Table", "@Id"]
+          },
+          "technology": "Spring Data JPA / Hibernate",
+          "reactive": false
+        },
+        "jdbc": {
+          "detection": {
+            "classes": ["JdbcTemplate", "NamedParameterJdbcTemplate"],
+            "imports": ["org.springframework.jdbc"]
+          },
+          "technology": "Spring JDBC",
+          "reactive": false
+        },
+        "mybatis": {
+          "detection": {
+            "interfaces": ["@Mapper"],
+            "files": ["*Mapper.xml"],
+            "imports": ["org.mybatis"]
+          },
+          "technology": "MyBatis",
+          "reactive": false
+        }
+      }
+    },
+
+    "typescript-nextjs": {
+      "name": "TypeScript Next.js",
+      "supportedArchitectures": ["clean-architecture", "feature-sliced-design", "layered", "modular-monolith"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "clean-architecture": {
+          "requiredDirs": ["domain", "infrastructure", "presentation"],
+          "alternativeDirs": ["src/domain", "src/infrastructure", "src/presentation"],
+          "confidence": 0.85
+        },
+        "feature-sliced-design": {
+          "requiredDirs": ["app", "pages", "widgets", "features", "entities", "shared"],
+          "alternativeDirs": ["src/app", "src/pages", "src/widgets"],
+          "confidence": 0.9
+        },
+        "layered": {
+          "requiredDirs": ["components", "hooks", "api", "store"],
+          "confidence": 0.7
+        }
+      },
+      "layerMappings": {
+        "clean-architecture": {
+          "domain": {
+            "pathPatterns": ["**/domain/entities/**", "**/domain/repositories/**", "**/domain/use-cases/**"],
+            "exportPatterns": ["interface I*", "type *Entity", "*Usecase"],
+            "stereotype": "DomainEntity"
+          },
+          "infrastructure": {
+            "pathPatterns": ["**/infrastructure/api/**", "**/infrastructure/repositories/**", "**/infrastructure/store/**"],
+            "exportPatterns": ["*Api", "*RepositoryImpl", "*Slice"],
+            "stereotype": "InfrastructureAdapter"
+          },
+          "presentation": {
+            "pathPatterns": ["**/presentation/**", "**/ui/**"],
+            "exportPatterns": ["function *Component", "const *: FC"],
+            "stereotype": "UIComponent"
+          },
+          "core": {
+            "pathPatterns": ["**/core/**"],
+            "exportPatterns": ["*Factory", "*Container", "*Config"],
+            "stereotype": "SharedUtility"
+          }
+        },
+        "feature-sliced-design": {
+          "app": {
+            "pathPatterns": ["**/app/**", "app/**"],
+            "description": "Application initialization, providers, global styles",
+            "stereotype": "AppLayer"
+          },
+          "pages": {
+            "pathPatterns": ["**/pages/**", "pages/**"],
+            "description": "Page components and routing",
+            "stereotype": "PageLayer"
+          },
+          "widgets": {
+            "pathPatterns": ["**/widgets/**"],
+            "description": "Complex components composed of features",
+            "stereotype": "WidgetLayer"
+          },
+          "features": {
+            "pathPatterns": ["**/features/**"],
+            "description": "User scenarios, business features",
+            "stereotype": "FeatureLayer"
+          },
+          "entities": {
+            "pathPatterns": ["**/entities/**"],
+            "description": "Business entities, models",
+            "stereotype": "EntityLayer"
+          },
+          "shared": {
+            "pathPatterns": ["**/shared/**"],
+            "description": "Reusable utilities, UI kit, libs",
+            "stereotype": "SharedLayer"
+          }
+        }
+      },
+      "frameworkPatterns": {
+        "appRouter": {
+          "pages": "**/app/**/page.tsx",
+          "layouts": "**/app/**/layout.tsx",
+          "routes": "**/app/**/route.ts",
+          "loading": "**/app/**/loading.tsx",
+          "error": "**/app/**/error.tsx"
+        },
+        "componentTypes": {
+          "server": { "indicator": "no 'use client'" },
+          "client": { "indicator": "'use client'" }
+        }
+      }
+    },
+
+    "typescript-react": {
+      "name": "TypeScript React",
+      "supportedArchitectures": ["feature-sliced-design", "atomic-design", "layered", "clean-architecture"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "feature-sliced-design": {
+          "requiredDirs": ["features", "entities", "shared"],
+          "confidence": 0.9
+        },
+        "atomic-design": {
+          "requiredDirs": ["atoms", "molecules", "organisms", "templates", "pages"],
+          "confidence": 0.9
+        },
+        "layered": {
+          "requiredDirs": ["components", "hooks", "services", "store"],
+          "confidence": 0.7
+        }
+      },
+      "layerMappings": {
+        "atomic-design": {
+          "atoms": {
+            "pathPatterns": ["**/atoms/**"],
+            "description": "Basic building blocks (buttons, inputs)",
+            "stereotype": "Atom"
+          },
+          "molecules": {
+            "pathPatterns": ["**/molecules/**"],
+            "description": "Simple combinations of atoms",
+            "stereotype": "Molecule"
+          },
+          "organisms": {
+            "pathPatterns": ["**/organisms/**"],
+            "description": "Complex UI sections",
+            "stereotype": "Organism"
+          },
+          "templates": {
+            "pathPatterns": ["**/templates/**"],
+            "description": "Page layouts without data",
+            "stereotype": "Template"
+          },
+          "pages": {
+            "pathPatterns": ["**/pages/**"],
+            "description": "Complete pages with data",
+            "stereotype": "Page"
+          }
+        }
+      }
+    },
+
+    "typescript-nestjs": {
+      "name": "TypeScript NestJS",
+      "supportedArchitectures": ["modular", "clean-architecture", "cqrs", "hexagonal"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "modular": {
+          "requiredPattern": "*.module.ts",
+          "indicators": ["@Module", "@Controller", "@Injectable"],
+          "confidence": 0.85
+        },
+        "cqrs": {
+          "requiredDirs": ["commands", "queries", "events"],
+          "indicators": ["@CommandHandler", "@QueryHandler", "@EventsHandler"],
+          "confidence": 0.9
+        },
+        "hexagonal": {
+          "requiredDirs": ["domain", "ports", "adapters"],
+          "confidence": 0.85
+        }
+      },
+      "layerMappings": {
+        "modular": {
+          "module": {
+            "pathPatterns": ["**/*.module.ts"],
+            "markers": ["@Module"],
+            "stereotype": "Module"
+          },
+          "controller": {
+            "pathPatterns": ["**/*.controller.ts"],
+            "markers": ["@Controller"],
+            "stereotype": "Controller"
+          },
+          "service": {
+            "pathPatterns": ["**/*.service.ts"],
+            "markers": ["@Injectable"],
+            "stereotype": "Service"
+          },
+          "repository": {
+            "pathPatterns": ["**/*.repository.ts"],
+            "markers": ["@Injectable", "@InjectRepository"],
+            "stereotype": "Repository"
+          },
+          "entity": {
+            "pathPatterns": ["**/*.entity.ts"],
+            "markers": ["@Entity"],
+            "stereotype": "Entity"
+          }
+        }
+      }
+    },
+
+    "csharp-dotnet-core": {
+      "name": "C# .NET Core",
+      "supportedArchitectures": ["clean-architecture", "onion", "layered", "vertical-slices", "cqrs"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "clean-architecture": {
+          "requiredProjects": ["*.Domain", "*.Application", "*.Infrastructure", "*.Api"],
+          "alternativePattern": "Domain/, Application/, Infrastructure/, Api/",
+          "confidence": 0.9
+        },
+        "onion": {
+          "requiredProjects": ["*.Core", "*.Domain", "*.Infrastructure"],
+          "confidence": 0.85
+        },
+        "vertical-slices": {
+          "requiredDirs": ["Features"],
+          "pattern": "Features/*/{Command,Query,Handler}.cs",
+          "indicators": ["MediatR"],
+          "confidence": 0.85
+        },
+        "layered": {
+          "requiredDirs": ["Controllers", "Services", "Data"],
+          "confidence": 0.7
+        }
+      },
+      "layerMappings": {
+        "clean-architecture": {
+          "domain": {
+            "pathPatterns": ["**/Domain/**", "**/Entities/**", "**/Core/**"],
+            "attributes": ["Table", "Entity"],
+            "baseClasses": ["EntityBase", "BaseEntity", "AggregateRoot"],
+            "stereotype": "DomainEntity"
+          },
+          "application": {
+            "pathPatterns": ["**/Application/**", "**/Services/**", "**/Handlers/**"],
+            "interfaces": ["IRequestHandler", "INotificationHandler"],
+            "nameSuffix": ["Service", "Handler", "Manager"],
+            "stereotype": "ApplicationService"
+          },
+          "infrastructure": {
+            "pathPatterns": ["**/Infrastructure/**", "**/Persistence/**", "**/Data/**"],
+            "baseClasses": ["DbContext"],
+            "stereotype": "InfrastructureAdapter"
+          },
+          "presentation": {
+            "pathPatterns": ["**/Controllers/**", "**/Api/**", "**/Endpoints/**"],
+            "attributes": ["ApiController"],
+            "baseClasses": ["ControllerBase"],
+            "stereotype": "PresentationController"
+          }
+        },
+        "vertical-slices": {
+          "features": {
+            "pathPatterns": ["**/Features/**"],
+            "pattern": "Features/{FeatureName}/{Command,Query,Handler,Validator}.cs",
+            "stereotype": "Feature"
+          }
+        }
+      },
+      "databasePatterns": {
+        "entity-framework": {
+          "detection": {
+            "classes": ["DbContext", "DbSet"],
+            "namespaces": ["Microsoft.EntityFrameworkCore"]
+          },
+          "technology": "Entity Framework Core",
+          "patterns": ["Repository", "UnitOfWork", "Specification"],
+          "reactive": false
+        },
+        "dapper": {
+          "detection": {
+            "namespaces": ["Dapper"],
+            "methods": ["Query", "Execute", "QueryAsync"]
+          },
+          "technology": "Dapper",
+          "reactive": false
+        }
+      }
+    },
+
+    "php-laravel": {
+      "name": "PHP Laravel",
+      "supportedArchitectures": ["mvc", "clean-architecture", "modular-monolith", "ddd"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "mvc": {
+          "requiredDirs": ["app/Http/Controllers", "app/Models", "resources/views"],
+          "confidence": 0.8
+        },
+        "clean-architecture": {
+          "requiredDirs": ["app/Domain", "app/Application", "app/Infrastructure"],
+          "alternativeDirs": ["src/Domain", "src/Application"],
+          "confidence": 0.85
+        },
+        "modular-monolith": {
+          "requiredPattern": "Modules/*",
+          "confidence": 0.85
+        },
+        "ddd": {
+          "requiredDirs": ["Domain", "Application", "Infrastructure"],
+          "indicators": ["AggregateRoot", "ValueObject", "DomainEvent"],
+          "confidence": 0.85
+        }
+      },
+      "layerMappings": {
+        "mvc": {
+          "model": {
+            "pathPatterns": ["app/Models/**"],
+            "baseClasses": ["Model", "Authenticatable"],
+            "stereotype": "Model"
+          },
+          "view": {
+            "pathPatterns": ["resources/views/**"],
+            "extensions": [".blade.php"],
+            "stereotype": "View"
+          },
+          "controller": {
+            "pathPatterns": ["app/Http/Controllers/**"],
+            "baseClasses": ["Controller"],
+            "stereotype": "Controller"
+          }
+        },
+        "clean-architecture": {
+          "domain": {
+            "pathPatterns": ["app/Domain/**", "app/Models/**"],
+            "baseClasses": ["Model"],
+            "stereotype": "DomainEntity"
+          },
+          "application": {
+            "pathPatterns": ["app/Services/**", "app/Actions/**", "app/Jobs/**"],
+            "nameSuffix": ["Service", "Action", "Job"],
+            "stereotype": "ApplicationService"
+          },
+          "infrastructure": {
+            "pathPatterns": ["app/Repositories/**", "app/Providers/**"],
+            "baseClasses": ["ServiceProvider"],
+            "stereotype": "InfrastructureAdapter"
+          },
+          "presentation": {
+            "pathPatterns": ["app/Http/Controllers/**", "app/Http/Requests/**"],
+            "baseClasses": ["Controller", "FormRequest"],
+            "stereotype": "PresentationController"
+          }
+        }
+      },
+      "databasePatterns": {
+        "eloquent": {
+          "detection": {
+            "baseClasses": ["Model"],
+            "traits": ["HasFactory", "SoftDeletes"]
+          },
+          "technology": "Eloquent ORM",
+          "pattern": "Active Record",
+          "reactive": false
+        },
+        "query-builder": {
+          "detection": {
+            "facades": ["DB"],
+            "methods": ["table", "select", "where"]
+          },
+          "technology": "Laravel Query Builder",
+          "reactive": false
+        }
+      }
+    },
+
+    "python-fastapi": {
+      "name": "Python FastAPI",
+      "supportedArchitectures": ["layered", "clean-architecture", "modular"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "layered": {
+          "requiredDirs": ["routers", "services", "models"],
+          "alternativeDirs": ["api", "core", "db"],
+          "confidence": 0.75
+        },
+        "clean-architecture": {
+          "requiredDirs": ["domain", "application", "infrastructure", "presentation"],
+          "confidence": 0.85
+        },
+        "modular": {
+          "pattern": "app/{module_name}/{routers,services,models}",
+          "confidence": 0.8
+        }
+      },
+      "layerMappings": {
+        "layered": {
+          "routers": {
+            "pathPatterns": ["**/routers/**", "**/api/**"],
+            "decorators": ["@router", "@app"],
+            "stereotype": "Router"
+          },
+          "services": {
+            "pathPatterns": ["**/services/**", "**/core/**"],
+            "stereotype": "Service"
+          },
+          "models": {
+            "pathPatterns": ["**/models/**", "**/schemas/**"],
+            "baseClasses": ["BaseModel", "Base"],
+            "stereotype": "Model"
+          },
+          "repositories": {
+            "pathPatterns": ["**/repositories/**", "**/db/**"],
+            "stereotype": "Repository"
+          }
+        }
+      },
+      "databasePatterns": {
+        "sqlalchemy": {
+          "detection": {
+            "imports": ["sqlalchemy"],
+            "baseClasses": ["Base", "DeclarativeBase"]
+          },
+          "technology": "SQLAlchemy",
+          "reactive": false
+        },
+        "tortoise": {
+          "detection": {
+            "imports": ["tortoise"],
+            "baseClasses": ["Model"]
+          },
+          "technology": "Tortoise ORM",
+          "reactive": true
+        }
+      }
+    },
+
+    "python-django": {
+      "name": "Python Django",
+      "supportedArchitectures": ["mtv", "clean-architecture", "modular"],
+      "defaultArchitecture": null,
+      "autoDetection": {
+        "mtv": {
+          "requiredFiles": ["models.py", "views.py", "urls.py"],
+          "requiredDirs": ["templates"],
+          "confidence": 0.9
+        }
+      },
+      "layerMappings": {
+        "mtv": {
+          "model": {
+            "files": ["models.py"],
+            "baseClasses": ["Model"],
+            "stereotype": "Model"
+          },
+          "template": {
+            "pathPatterns": ["**/templates/**"],
+            "extensions": [".html"],
+            "stereotype": "Template"
+          },
+          "view": {
+            "files": ["views.py"],
+            "baseClasses": ["View", "APIView"],
+            "stereotype": "View"
+          }
+        }
+      },
+      "databasePatterns": {
+        "django-orm": {
+          "detection": {
+            "imports": ["django.db.models"],
+            "baseClasses": ["Model"]
+          },
+          "technology": "Django ORM",
+          "reactive": false
+        }
+      }
+    }
+  },
+
+  "detectionStrategy": {
+    "order": [
+      "projectConfig",
+      "directoryStructure",
+      "filePatterns",
+      "markers",
+      "imports"
+    ],
+    "fallback": "layered",
+    "confidenceThreshold": 0.7,
+    "multipleArchitectureSupport": true,
+    "notes": [
+      "If project-config.json specifies architecture, use that",
+      "Otherwise, auto-detect based on directory structure",
+      "If confidence < threshold, ask user for clarification",
+      "Some projects may use different architectures in different modules"
+    ]
+  },
+
+  "projectConfigOverride": {
+    "key": "architecture",
+    "example": {
+      "architecture": {
+        "pattern": "clean-architecture",
+        "customLayers": {},
+        "moduleArchitectures": {
+          "module-a": "hexagonal",
+          "module-b": "cqrs"
+        }
+      }
+    }
+  },
+
+  "edgeTypes": {
+    "structure": {
+      "BELONGS_TO_LAYER": "Class belongs to architecture layer",
+      "DEPENDS_ON": "Cross-layer dependency",
+      "VIOLATES_RULE": "Architecture rule violation"
+    },
+    "database": {
+      "PERSISTS": "Entity is persisted by repository",
+      "QUERIES": "Service queries repository",
+      "TRANSACTS": "Method is transactional"
+    },
+    "api": {
+      "EXPOSES": "Controller exposes endpoint",
+      "CONSUMES": "Component consumes external API"
+    }
+  }
+}

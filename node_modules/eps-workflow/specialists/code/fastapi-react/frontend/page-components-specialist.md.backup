@@ -1,0 +1,1937 @@
+# Frontend Page Components Specialist
+## Next.js 15 Feature-Sliced Design (FSD) Pages Layer
+
+**Version**: 1.0.0
+**Last Updated**: 2025-01-01
+**Scope**: Page routing, data fetching, layouts, composition patterns
+**Patterns Covered**: 10.1-10.25 (25 core patterns, 12+ comprehensive implementations)
+
+---
+
+## I. SPECIALIST IDENTITY
+
+### Role Definition
+**Frontend Page Components Specialist** - Responsible for designing and implementing the Pages Layer in Feature-Sliced Design (FSD) for Next.js 15 applications. This specialist focuses on:
+
+- Page component architecture and routing conventions
+- Server-side data fetching with caching strategies
+- Dynamic routes with [id] and [slug] parameters
+- CRUD page patterns and composition
+- Search, filtering, and pagination implementation
+- Layout composition and route groups
+- Protected routes with authentication guards
+- Performance optimization with Suspense and streaming
+- Metadata API and SEO implementation
+- Error handling and loading states
+
+### Core Responsibilities
+
+1. **Design Page Components Following Next.js 15 App Router Conventions**
+   - Create pages using Server Components by default
+   - Implement Server Actions for mutations
+   - Use Next.js file system routing (file: `page.tsx`)
+   - Apply route groups `(group-name)` for layout organization
+   - Support dynamic routes with `[param]` syntax
+
+2. **Implement Server-Side Data Fetching with Caching Strategies**
+   - Use `fetch` with caching options: `no-store`, `force-cache`, `revalidate`
+   - Implement Incremental Static Regeneration (ISR)
+   - Tag-based revalidation for complex scenarios
+   - Parallel data fetching with `Promise.all`
+   - Error handling and fallback patterns
+
+3. **Create Dynamic Routes with [id] and [slug] Parameters**
+   - Implement dynamic page components `[id]/page.tsx`
+   - Generate static params with `generateStaticParams()`
+   - Handle 404 cases with `notFound()`
+   - Dynamic metadata generation with `generateMetadata()`
+   - URL-based state management with search params
+
+4. **Build CRUD Pages (List, Create, Edit, Detail)**
+   - List pages with server-side filtering
+   - Detail pages with tabs and sections
+   - Create/Edit forms with validation
+   - Bulk operations and selections
+   - Pagination with URL-based state
+
+5. **Implement Search, Filter, Pagination Patterns**
+   - URL-based search params handling
+   - Multi-field filtering
+   - Pagination with total counts
+   - Sorting and column ordering
+   - Clear filters functionality
+
+6. **Compose Pages from Widgets and Features**
+   - Arrange widgets into grid/flex layouts
+   - Use Suspense for progressive loading
+   - Combine server and client components
+   - Share data between sections
+   - Lazy load non-critical content
+
+7. **Handle Loading and Error States**
+   - Suspense boundaries with fallback UI
+   - Error components (`error.tsx`)
+   - Loading components (`loading.tsx`)
+   - Not Found components (`not-found.tsx`)
+   - Graceful degradation
+
+8. **Implement Route Groups and Parallel Routes**
+   - Organize pages with `(group-name)` syntax
+   - Create dashboard layout groups
+   - Implement auth layout groups
+   - Parallel routes for complex layouts
+   - Named slots for modularity
+
+9. **Create Protected Routes with Auth Guards**
+   - Middleware-based authentication
+   - Role-based access control (RBAC)
+   - Redirect unauthenticated users
+   - Permission checks per route
+   - Auth guards at component level
+
+10. **Optimize Performance with Suspense and Streaming**
+    - Stream content to browser early
+    - Progressive hydration
+    - Selective static regeneration
+    - Reduce Time to First Byte (TTFB)
+    - Optimize Core Web Vitals
+
+---
+
+## II. COMPREHENSIVE PATTERN IMPLEMENTATIONS
+
+### Pattern 10.1: Home Page (Marketing Landing)
+
+**Purpose**: Public-facing home page with marketing sections and SEO optimization
+
+**File**: `src/app/page.tsx`
+
+**Complete Implementation**:
+
+```typescript
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { HeroSection } from '@/widgets/hero-section';
+import { FeaturesSection } from '@/widgets/features-section';
+import { BenefitsSection } from '@/widgets/benefits-section';
+import { TestimonialsSection } from '@/widgets/testimonials-section';
+import { CTASection } from '@/widgets/cta-section';
+import { FooterSection } from '@/widgets/footer-section';
+
+export const metadata: Metadata = {
+  title: 'StarX4CRM - Nền Tảng CRM Cho Pháp Luật Viêt Nam',
+  description: 'Quản lý khách hàng, hợp đồng và vụ việc một cách hiệu quả với CRM được thiết kế cho lĩnh vực pháp luật Việt Nam.',
+  keywords: [
+    'CRM pháp luật',
+    'quản lý hợp đồng',
+    'quản lý vụ việc',
+    'CRM Việt Nam',
+    'phần mềm luật sư',
+  ],
+  openGraph: {
+    title: 'StarX4CRM - Nền Tảng CRM Cho Pháp Luật Viêt Nam',
+    description: 'Quản lý khách hàng, hợp đồng và vụ việc một cách hiệu quả',
+    type: 'website',
+    url: 'https://starx4crm.vn',
+    siteName: 'StarX4CRM',
+    locale: 'vi_VN',
+    images: [
+      {
+        url: '/og-image-home.png',
+        width: 1200,
+        height: 630,
+        alt: 'StarX4CRM Platform',
+        type: 'image/png',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'StarX4CRM - Nền Tảng CRM Cho Pháp Luật',
+    description: 'Quản lý khách hàng, hợp đồng và vụ việc một cách hiệu quả',
+    images: ['/og-image-home.png'],
+  },
+  alternates: {
+    canonical: 'https://starx4crm.vn',
+  },
+};
+
+export async function generateMetadata(): Promise<Metadata> {
+  return metadata;
+}
+
+// JSON-LD Schema for Organization
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'StarX4CRM',
+  description: 'Nền tảng CRM cho lĩnh vực pháp luật',
+  url: 'https://starx4crm.vn',
+  logo: 'https://starx4crm.vn/logo.png',
+  sameAs: [
+    'https://facebook.com/starx4crm',
+    'https://linkedin.com/company/starx4crm',
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '123 Đường Trần Hưng Đạo',
+    addressLocality: 'Hà Nội',
+    postalCode: '100000',
+    addressCountry: 'VN',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'Customer Support',
+    telephone: '+84-28-1234-5678',
+    email: 'support@starx4crm.vn',
+  },
+};
+
+export default function HomePage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationSchema),
+        }}
+      />
+
+      <main className="min-h-screen bg-white">
+        {/* Hero Section - Critical Path */}
+        <section className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 text-white">
+          <HeroSection />
+        </section>
+
+        {/* Features Section - Suspense for lazy load */}
+        <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
+          <section className="py-16 bg-gray-50">
+            <FeaturesSection />
+          </section>
+        </Suspense>
+
+        {/* Benefits Section */}
+        <Suspense fallback={<div className="h-96 bg-white animate-pulse" />}>
+          <section className="py-16 bg-white">
+            <BenefitsSection />
+          </section>
+        </Suspense>
+
+        {/* Testimonials Section */}
+        <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
+          <section className="py-16 bg-gray-50">
+            <TestimonialsSection />
+          </section>
+        </Suspense>
+
+        {/* CTA Section */}
+        <Suspense fallback={<div className="h-48 bg-blue-600 animate-pulse" />}>
+          <section className="py-16 bg-blue-600 text-white">
+            <CTASection />
+          </section>
+        </Suspense>
+
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white">
+          <FooterSection />
+        </footer>
+      </main>
+    </>
+  );
+}
+```
+
+**Technology Notes**:
+- Next.js 15 App Router (static page by default)
+- React 19 Server Components (no 'use client' directive)
+- Metadata API for SEO
+- JSON-LD structured data for search engines
+- Suspense for progressive enhancement
+
+**Best Practices**:
+- Static generation for marketing pages (fastest performance)
+- Open Graph tags for social sharing
+- Canonical URLs to prevent duplicate content
+- Structured data (JSON-LD) for rich search results
+- Mobile-responsive design
+
+---
+
+### Pattern 10.6: Dashboard Home Page (Protected)
+
+**Purpose**: Main dashboard with overview widgets and real-time data
+
+**File**: `src/app/(dashboard)/page.tsx`
+
+**Complete Implementation**:
+
+```typescript
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { notFound, redirect } from 'next/navigation';
+import { getAuthSession } from '@/shared/auth/get-session';
+import { StatsWidget } from '@/widgets/dashboard/stats-widget';
+import { RecentCasesWidget } from '@/widgets/dashboard/recent-cases-widget';
+import { UpcomingDeadlinesWidget } from '@/widgets/dashboard/upcoming-deadlines-widget';
+import { ConversationsWidget } from '@/widgets/dashboard/conversations-widget';
+import { DocumentsWidget } from '@/widgets/dashboard/documents-widget';
+import { WidgetSkeleton } from '@/shared/ui/skeletons/widget-skeleton';
+
+export const metadata: Metadata = {
+  title: 'Dashboard - StarX4CRM',
+  description: 'Tổng quan quản lý vụ việc, hợp đồng và khách hàng',
+  robots: {
+    index: false, // Protect dashboard from search indexing
+    follow: false,
+  },
+};
+
+interface DashboardPageProps {
+  searchParams: {
+    date_range?: string;
+    status?: string;
+  };
+}
+
+// Server-side data fetching functions
+async function getStatsData(userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/stats`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        'X-User-ID': userId,
+      },
+      cache: 'no-store', // Always fresh for dashboard
+      next: { tags: ['dashboard-stats'] },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch dashboard stats');
+  }
+
+  return res.json();
+}
+
+async function getRecentCases(userId: string, searchParams: DashboardPageProps['searchParams']) {
+  const params = new URLSearchParams();
+  if (searchParams.date_range) {
+    params.set('date_range', searchParams.date_range);
+  }
+  if (searchParams.status) {
+    params.set('status', searchParams.status);
+  }
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/cases/recent?${params.toString()}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        'X-User-ID': userId,
+      },
+      next: { revalidate: 60 }, // Revalidate every minute
+      next: { tags: ['cases-recent'] },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch recent cases');
+  }
+
+  return res.json();
+}
+
+async function getUpcomingDeadlines(userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/deadlines/upcoming`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        'X-User-ID': userId,
+      },
+      next: { revalidate: 300 }, // Revalidate every 5 minutes
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch deadlines');
+  }
+
+  return res.json();
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
+  // Authentication check
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect('/login?callbackUrl=/dashboard');
+  }
+
+  const userId = session.user.id;
+
+  // Parallel data fetching for performance
+  const [stats, cases, deadlines] = await Promise.all([
+    getStatsData(userId),
+    getRecentCases(userId, searchParams),
+    getUpcomingDeadlines(userId),
+  ]);
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Xin chào, {session.user.name}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Tổng quan hoạt động của bạn hôm nay
+          </p>
+        </div>
+      </div>
+
+      {/* Stats Grid - 4 Columns */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <Suspense fallback={<WidgetSkeleton />}>
+          <StatsWidget
+            label="Vụ Việc Hoạt Động"
+            value={stats.active_cases}
+            change={stats.cases_change}
+            icon="briefcase"
+          />
+        </Suspense>
+        <Suspense fallback={<WidgetSkeleton />}>
+          <StatsWidget
+            label="Hợp Đồng Sắp Hết Hạn"
+            value={stats.expiring_contracts}
+            change={stats.contracts_change}
+            icon="document"
+          />
+        </Suspense>
+        <Suspense fallback={<WidgetSkeleton />}>
+          <StatsWidget
+            label="Khách Hàng Mới"
+            value={stats.new_clients}
+            change={stats.clients_change}
+            icon="users"
+          />
+        </Suspense>
+        <Suspense fallback={<WidgetSkeleton />}>
+          <StatsWidget
+            label="Tin Nhắn Chưa Đọc"
+            value={stats.unread_messages}
+            change={0}
+            icon="message"
+          />
+        </Suspense>
+      </div>
+
+      {/* Main Content Grid - 2 Rows */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Recent Cases */}
+        <Suspense fallback={<WidgetSkeleton className="h-96" />}>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Vụ Việc Gần Đây
+            </h2>
+            <RecentCasesWidget cases={cases} />
+          </div>
+        </Suspense>
+
+        {/* Upcoming Deadlines */}
+        <Suspense fallback={<WidgetSkeleton className="h-96" />}>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Thời Hạn Sắp Tới
+            </h2>
+            <UpcomingDeadlinesWidget deadlines={deadlines} />
+          </div>
+        </Suspense>
+      </div>
+
+      {/* Secondary Content */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Suspense fallback={<WidgetSkeleton className="h-96" />}>
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Hoạt Động Gần Đây
+            </h2>
+            <ConversationsWidget userId={userId} />
+          </div>
+        </Suspense>
+
+        <Suspense fallback={<WidgetSkeleton className="h-96" />}>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Tài Liệu Nổi Bật
+            </h2>
+            <DocumentsWidget userId={userId} />
+          </div>
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+```
+
+**Data Fetching Strategies**:
+
+```typescript
+// 1. Always Fresh (Real-time data)
+{ cache: 'no-store' }
+
+// 2. Incremental Static Regeneration
+{ next: { revalidate: 60 } }
+
+// 3. Tag-Based Revalidation
+{ next: { tags: ['dashboard-stats'] } }
+// Then in Server Action:
+// revalidateTag('dashboard-stats');
+
+// 4. Static Generation (Cached Forever)
+{ cache: 'force-cache' }
+```
+
+**Technology Notes**:
+- Server Component with async authentication
+- Parallel data fetching with `Promise.all()`
+- Suspense boundaries for progressive rendering
+- Tag-based cache invalidation
+- Vietnamese labels for legal domain
+
+**Best Practices**:
+- Authentication check before rendering
+- Parallel data fetching for performance
+- Suspense for non-blocking UI
+- Appropriate cache strategies per widget
+- Responsive grid layouts
+
+---
+
+### Pattern 10.11: User/Case List Page (CRUD)
+
+**Purpose**: CRUD management page with list, search, filters, and pagination
+
+**File**: `src/app/(dashboard)/cases/page.tsx`
+
+**Complete Implementation**:
+
+```typescript
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { getAuthSession } from '@/shared/auth/get-session';
+import { redirect } from 'next/navigation';
+import { CaseListTable } from '@/widgets/cases/case-list-table';
+import { CaseFilters } from '@/features/case-filters';
+import { CreateCaseButton } from '@/features/create-case-button';
+import { ExportCasesButton } from '@/features/export-cases-button';
+import { TableSkeleton } from '@/shared/ui/skeletons/table-skeleton';
+
+export const metadata: Metadata = {
+  title: 'Quản Lý Vụ Việc - StarX4CRM',
+  description: 'Xem và quản lý tất cả vụ việc pháp lý',
+  robots: { index: false, follow: false },
+};
+
+interface CasesPageProps {
+  searchParams: {
+    page?: string;
+    search?: string;
+    status?: string;
+    priority?: string;
+    assignee?: string;
+    start_date?: string;
+    end_date?: string;
+    sort_by?: string;
+  };
+}
+
+// Data fetching function
+async function getCasesData(
+  userId: string,
+  searchParams: CasesPageProps['searchParams']
+) {
+  const params = new URLSearchParams();
+
+  // Build query params
+  const page = searchParams.page || '1';
+  const limit = '20';
+
+  params.set('page', page);
+  params.set('limit', limit);
+
+  if (searchParams.search) {
+    params.set('search', searchParams.search);
+  }
+  if (searchParams.status) {
+    params.set('status', searchParams.status);
+  }
+  if (searchParams.priority) {
+    params.set('priority', searchParams.priority);
+  }
+  if (searchParams.assignee) {
+    params.set('assignee_id', searchParams.assignee);
+  }
+  if (searchParams.start_date) {
+    params.set('start_date', searchParams.start_date);
+  }
+  if (searchParams.end_date) {
+    params.set('end_date', searchParams.end_date);
+  }
+  if (searchParams.sort_by) {
+    params.set('sort_by', searchParams.sort_by);
+  }
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/cases?${params.toString()}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        'X-User-ID': userId,
+      },
+      cache: 'no-store',
+      next: { tags: ['cases-list'] },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch cases');
+  }
+
+  return res.json();
+}
+
+export default async function CasesPage({
+  searchParams,
+}: CasesPageProps) {
+  // Authentication
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect('/login?callbackUrl=/cases');
+  }
+
+  // Fetch data
+  const data = await getCasesData(session.user.id, searchParams);
+  const currentPage = parseInt(searchParams.page || '1');
+  const totalPages = Math.ceil(data.pagination.total / data.pagination.limit);
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+      {/* Header with Title and Actions */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Quản Lý Vụ Việc
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Tổng cộng: {data.pagination.total} vụ việc
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <ExportCasesButton searchParams={searchParams} />
+          <CreateCaseButton />
+        </div>
+      </div>
+
+      {/* Filters Section */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Bộ Lọc
+        </h2>
+        <CaseFilters currentFilters={searchParams} />
+      </div>
+
+      {/* Results Table */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <Suspense fallback={<TableSkeleton rows={10} />}>
+          <CaseListTable
+            cases={data.cases}
+            pagination={data.pagination}
+            searchParams={searchParams}
+          />
+        </Suspense>
+      </div>
+
+      {/* Pagination Info */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Trang {currentPage} của {totalPages}
+          </div>
+          <div className="flex gap-2">
+            {currentPage > 1 && (
+              <a
+                href={`/cases?page=${currentPage - 1}&${new URLSearchParams(
+                  Object.fromEntries(
+                    Object.entries(searchParams).filter(
+                      ([key]) => key !== 'page'
+                    )
+                  )
+                ).toString()}`}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Trang Trước
+              </a>
+            )}
+            {currentPage < totalPages && (
+              <a
+                href={`/cases?page=${currentPage + 1}&${new URLSearchParams(
+                  Object.fromEntries(
+                    Object.entries(searchParams).filter(
+                      ([key]) => key !== 'page'
+                    )
+                  )
+                ).toString()}`}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Trang Sau
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+**URL Structure Examples**:
+
+```
+/cases                                    # All cases
+/cases?search=hợp+đồng+bán              # Search by title
+/cases?status=active                      # Filter by status
+/cases?priority=high&page=2              # Combine filters
+/cases?start_date=2025-01-01&end_date=2025-01-31  # Date range
+/cases?sort_by=created_at_desc           # Sorting
+```
+
+**Best Practices**:
+- URL-based state for shareable/bookmarkable links
+- Server-side filtering for security
+- Pagination with total count
+- Multiple filter options
+- Responsive table layout
+
+---
+
+### Pattern 10.16: Case/User Detail Page (Dynamic Route)
+
+**Purpose**: Individual case/user profile with tabs and related data
+
+**File**: `src/app/(dashboard)/cases/[id]/page.tsx`
+
+**Complete Implementation**:
+
+```typescript
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { notFound, redirect } from 'next/navigation';
+import { getAuthSession } from '@/shared/auth/get-session';
+import { CaseOverview } from '@/widgets/cases/case-overview';
+import { CaseDocuments } from '@/widgets/cases/case-documents';
+import { CaseTimeline } from '@/widgets/cases/case-timeline';
+import { CaseNotes } from '@/widgets/cases/case-notes';
+import { CaseClients } from '@/widgets/cases/case-clients';
+import { TabNavigation } from '@/shared/ui/tab-navigation';
+import { SectionSkeleton } from '@/shared/ui/skeletons/section-skeleton';
+
+interface CaseDetailPageProps {
+  params: {
+    id: string;
+  };
+  searchParams: {
+    tab?: string;
+  };
+}
+
+// Fetch case data
+async function getCaseData(caseId: string, userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/cases/${caseId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        'X-User-ID': userId,
+      },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    if (res.status === 403) throw new Error('Access denied');
+    throw new Error('Failed to fetch case');
+  }
+
+  return res.json();
+}
+
+// Generate dynamic metadata
+export async function generateMetadata({
+  params,
+}: CaseDetailPageProps): Promise<Metadata> {
+  const session = await getAuthSession();
+  if (!session?.user) {
+    return { title: 'Case Not Found' };
+  }
+
+  const caseData = await getCaseData(params.id, session.user.id);
+
+  if (!caseData) {
+    return {
+      title: 'Vụ Việc Không Tìm Thấy',
+    };
+  }
+
+  return {
+    title: `${caseData.case_number} - ${caseData.title} - StarX4CRM`,
+    description: `Chi tiết vụ việc: ${caseData.title}`,
+  };
+}
+
+// Generate static params for known cases
+export async function generateStaticParams() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/cases?limit=100`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  return data.cases.map((caseItem: { id: string }) => ({
+    id: caseItem.id,
+  }));
+}
+
+export default async function CaseDetailPage({
+  params,
+  searchParams,
+}: CaseDetailPageProps) {
+  // Authentication
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect('/login?callbackUrl=/cases/' + params.id);
+  }
+
+  // Fetch case data
+  const caseData = await getCaseData(params.id, session.user.id);
+
+  if (!caseData) {
+    notFound();
+  }
+
+  // Tab configuration
+  const currentTab = searchParams.tab || 'overview';
+
+  const tabs = [
+    {
+      id: 'overview',
+      label: 'Tổng Quan',
+      href: `/cases/${params.id}?tab=overview`,
+    },
+    {
+      id: 'documents',
+      label: 'Tài Liệu',
+      href: `/cases/${params.id}?tab=documents`,
+    },
+    {
+      id: 'timeline',
+      label: 'Dòng Thời Gian',
+      href: `/cases/${params.id}?tab=timeline`,
+    },
+    {
+      id: 'notes',
+      label: 'Ghi Chú',
+      href: `/cases/${params.id}?tab=notes`,
+    },
+    {
+      id: 'clients',
+      label: 'Khách Hàng',
+      href: `/cases/${params.id}?tab=clients`,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+      {/* Header */}
+      <div className="space-y-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900">
+              {caseData.case_number}
+            </h1>
+            <p className="text-xl text-gray-600 mt-1">{caseData.title}</p>
+          </div>
+          <div className="flex gap-2">
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              caseData.status === 'active'
+                ? 'bg-green-100 text-green-800'
+                : caseData.status === 'pending'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-gray-100 text-gray-800'
+            }`}>
+              {caseData.status_label}
+            </span>
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              caseData.priority === 'high'
+                ? 'bg-red-100 text-red-800'
+                : caseData.priority === 'medium'
+                ? 'bg-orange-100 text-orange-800'
+                : 'bg-blue-100 text-blue-800'
+            }`}>
+              {caseData.priority_label}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+          <div>
+            <p className="text-gray-600">Ngày Tạo</p>
+            <p className="font-semibold">
+              {new Date(caseData.created_at).toLocaleDateString('vi-VN')}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-600">Loại Vụ Việc</p>
+            <p className="font-semibold">{caseData.type_label}</p>
+          </div>
+          <div>
+            <p className="text-gray-600">Người Phụ Trách</p>
+            <p className="font-semibold">{caseData.assigned_to?.name || 'Chưa gán'}</p>
+          </div>
+          <div>
+            <p className="text-gray-600">Vụ Việc Liên Kết</p>
+            <p className="font-semibold">{caseData.related_cases?.length || 0}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <TabNavigation tabs={tabs} currentTab={currentTab} />
+
+      {/* Tab Content */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        {currentTab === 'overview' && (
+          <Suspense fallback={<SectionSkeleton />}>
+            <CaseOverview case={caseData} />
+          </Suspense>
+        )}
+
+        {currentTab === 'documents' && (
+          <Suspense fallback={<SectionSkeleton />}>
+            <CaseDocuments caseId={params.id} />
+          </Suspense>
+        )}
+
+        {currentTab === 'timeline' && (
+          <Suspense fallback={<SectionSkeleton />}>
+            <CaseTimeline caseId={params.id} />
+          </Suspense>
+        )}
+
+        {currentTab === 'notes' && (
+          <Suspense fallback={<SectionSkeleton />}>
+            <CaseNotes caseId={params.id} />
+          </Suspense>
+        )}
+
+        {currentTab === 'clients' && (
+          <Suspense fallback={<SectionSkeleton />}>
+            <CaseClients caseId={params.id} />
+          </Suspense>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+**Route Examples**:
+
+```
+/cases/case-001                     # Overview tab
+/cases/case-001?tab=documents       # Documents tab
+/cases/case-001?tab=timeline        # Timeline tab
+/cases/case-001?tab=notes           # Notes tab
+/cases/case-001?tab=clients         # Clients tab
+```
+
+**Best Practices**:
+- Dynamic metadata generation
+- Static generation for known routes
+- Tab-based navigation with URL state
+- Status and priority badges with colors
+- Granular permission checks
+
+---
+
+### Pattern 10.21: Conversation/Message Detail Page (Streaming)
+
+**Purpose**: Real-time messaging with streaming and progressive loading
+
+**File**: `src/app/(dashboard)/conversations/[id]/page.tsx`
+
+**Complete Implementation**:
+
+```typescript
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { notFound, redirect } from 'next/navigation';
+import { getAuthSession } from '@/shared/auth/get-session';
+import { ConversationHeader } from '@/widgets/conversations/conversation-header';
+import { MessageList } from '@/widgets/conversations/message-list';
+import { MessageInput } from '@/features/message-input';
+import { ConversationInfo } from '@/widgets/conversations/conversation-info';
+import { MessageListSkeleton } from '@/shared/ui/skeletons/message-list-skeleton';
+
+interface ConversationPageProps {
+  params: {
+    id: string;
+  };
+  searchParams: {
+    search?: string;
+  };
+}
+
+async function getConversationData(conversationId: string, userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/conversations/${conversationId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        'X-User-ID': userId,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    if (res.status === 403) throw new Error('Access denied');
+    throw new Error('Failed to fetch conversation');
+  }
+
+  return res.json();
+}
+
+export async function generateMetadata({
+  params,
+}: ConversationPageProps): Promise<Metadata> {
+  const session = await getAuthSession();
+  if (!session?.user) {
+    return { title: 'Conversation Not Found' };
+  }
+
+  const conversation = await getConversationData(
+    params.id,
+    session.user.id
+  );
+
+  if (!conversation) {
+    return {
+      title: 'Cuộc Trò Chuyện Không Tìm Thấy',
+    };
+  }
+
+  return {
+    title: `${conversation.title || 'Cuộc Trò Chuyện'} - StarX4CRM`,
+    description: 'Xem tin nhắn và thảo luận',
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
+
+export default async function ConversationPage({
+  params,
+  searchParams,
+}: ConversationPageProps) {
+  // Authentication
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect(
+      `/login?callbackUrl=/conversations/${params.id}`
+    );
+  }
+
+  // Fetch conversation
+  const conversation = await getConversationData(
+    params.id,
+    session.user.id
+  );
+
+  if (!conversation) {
+    notFound();
+  }
+
+  return (
+    <div className="flex h-[calc(100vh-64px)] bg-gray-50">
+      {/* Main Conversation Area */}
+      <div className="flex-1 flex flex-col bg-white border-r border-gray-200">
+        {/* Header */}
+        <div className="border-b border-gray-200 p-4 bg-white shadow-sm">
+          <ConversationHeader
+            conversation={conversation}
+            currentUserId={session.user.id}
+          />
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <Suspense fallback={<MessageListSkeleton />}>
+            <MessageList
+              conversationId={params.id}
+              userId={session.user.id}
+              searchQuery={searchParams.search}
+            />
+          </Suspense>
+        </div>
+
+        {/* Message Input */}
+        <div className="border-t border-gray-200 p-4 bg-white">
+          <MessageInput
+            conversationId={params.id}
+            userId={session.user.id}
+          />
+        </div>
+      </div>
+
+      {/* Conversation Info Sidebar */}
+      <div className="w-80 bg-gray-50 border-l border-gray-200 overflow-y-auto">
+        <Suspense fallback={<div className="p-4 animate-pulse" />}>
+          <ConversationInfo
+            conversation={conversation}
+            userId={session.user.id}
+          />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+```
+
+**Client Component for Message Streaming**:
+
+```typescript
+// src/widgets/conversations/message-list.tsx
+'use client';
+
+import { useEffect, useRef, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { MessageBubble } from './message-bubble';
+import { MessageListSkeleton } from '@/shared/ui/skeletons/message-list-skeleton';
+
+interface Message {
+  id: string;
+  content: string;
+  sender_id: string;
+  created_at: string;
+  attachments?: Array<{ id: string; url: string; name: string }>;
+}
+
+export function MessageList({
+  conversationId,
+  userId,
+  searchQuery,
+}: {
+  conversationId: string;
+  userId: string;
+  searchQuery?: string;
+}) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Fetch messages with polling for real-time updates
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['messages', conversationId, searchQuery],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.set('search', searchQuery);
+
+      const res = await fetch(
+        `/api/conversations/${conversationId}/messages?${params.toString()}`
+      );
+      if (!res.ok) throw new Error('Failed to fetch messages');
+      return res.json();
+    },
+    refetchInterval: 3000, // Poll every 3 seconds
+    staleTime: 2000, // Consider data stale after 2 seconds
+  });
+
+  // Auto-scroll to bottom on new messages
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [data?.messages, scrollToBottom]);
+
+  if (isLoading) return <MessageListSkeleton />;
+
+  return (
+    <div className="space-y-4">
+      {data?.messages.map((message: Message) => (
+        <MessageBubble
+          key={message.id}
+          message={message}
+          isOwn={message.sender_id === userId}
+        />
+      ))}
+      <div ref={messagesEndRef} />
+    </div>
+  );
+}
+```
+
+**Best Practices**:
+- Split layout (message list + sidebar info)
+- Real-time polling with React Query
+- Auto-scroll to latest message
+- Search within conversation
+- Suspense for message loading
+- Responsive layout
+
+---
+
+### Pattern 10.26: Settings/Configuration Page (Form-based)
+
+**Purpose**: User settings with multiple form sections
+
+**File**: `src/app/(dashboard)/settings/page.tsx`
+
+**Complete Implementation**:
+
+```typescript
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
+import { getAuthSession } from '@/shared/auth/get-session';
+import { ProfileSettingsForm } from '@/features/settings/profile-settings-form';
+import { SecuritySettingsForm } from '@/features/settings/security-settings-form';
+import { NotificationSettingsForm } from '@/features/settings/notification-settings-form';
+import { PreferencesSettingsForm } from '@/features/settings/preferences-settings-form';
+import { DangerZoneForm } from '@/features/settings/danger-zone-form';
+import { SettingsSectionCard } from '@/shared/ui/settings-section-card';
+import { SettingsSectionSkeleton } from '@/shared/ui/skeletons/settings-section-skeleton';
+
+export const metadata: Metadata = {
+  title: 'Cài Đặt - StarX4CRM',
+  description: 'Quản lý cài đặt tài khoản của bạn',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+async function getCurrentUser(userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  if (!res.ok) throw new Error('Failed to fetch user');
+  return res.json();
+}
+
+async function getUserPreferences(userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/preferences`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  if (!res.ok) throw new Error('Failed to fetch preferences');
+  return res.json();
+}
+
+export default async function SettingsPage() {
+  // Authentication
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect('/login?callbackUrl=/settings');
+  }
+
+  // Fetch user data
+  const [user, preferences] = await Promise.all([
+    getCurrentUser(session.user.id),
+    getUserPreferences(session.user.id),
+  ]);
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Page Header */}
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Cài Đặt
+          </h1>
+          <p className="text-gray-600">
+            Quản lý cài đặt tài khoản và sở thích của bạn
+          </p>
+        </div>
+
+        {/* Profile Settings Section */}
+        <Suspense fallback={<SettingsSectionSkeleton />}>
+          <SettingsSectionCard
+            title="Thông Tin Hồ Sơ"
+            description="Cập nhật tên, email và ảnh đại diện của bạn"
+          >
+            <ProfileSettingsForm user={user} />
+          </SettingsSectionCard>
+        </Suspense>
+
+        {/* Security Settings Section */}
+        <Suspense fallback={<SettingsSectionSkeleton />}>
+          <SettingsSectionCard
+            title="Bảo Mật"
+            description="Quản lý mật khẩu và xác thực hai yếu tố"
+          >
+            <SecuritySettingsForm userId={session.user.id} />
+          </SettingsSectionCard>
+        </Suspense>
+
+        {/* Notification Settings Section */}
+        <Suspense fallback={<SettingsSectionSkeleton />}>
+          <SettingsSectionCard
+            title="Thông Báo"
+            description="Cấu hình cách bạn nhận thông báo"
+          >
+            <NotificationSettingsForm
+              userId={session.user.id}
+              currentSettings={preferences.notifications}
+            />
+          </SettingsSectionCard>
+        </Suspense>
+
+        {/* Preferences Section */}
+        <Suspense fallback={<SettingsSectionSkeleton />}>
+          <SettingsSectionCard
+            title="Sở Thích"
+            description="Tùy chỉnh giao diện và hành vi ứng dụng"
+          >
+            <PreferencesSettingsForm
+              userId={session.user.id}
+              preferences={preferences}
+            />
+          </SettingsSectionCard>
+        </Suspense>
+
+        {/* Danger Zone Section */}
+        <Suspense fallback={<SettingsSectionSkeleton />}>
+          <SettingsSectionCard
+            title="Vùng Nguy Hiểm"
+            description="Các hành động không thể hoàn tác"
+            variant="danger"
+          >
+            <DangerZoneForm userId={session.user.id} />
+          </SettingsSectionCard>
+        </Suspense>
+
+        {/* Save Indicator */}
+        <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-4 hidden" id="save-indicator">
+          <div className="flex items-center gap-2">
+            <svg
+              className="w-5 h-5 text-green-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <p className="text-green-800">Cài đặt đã được lưu</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**Settings Form Component** (Client Component):
+
+```typescript
+// src/features/settings/profile-settings-form.tsx
+'use client';
+
+import { useState } from 'react';
+import { useFormStatus } from 'react-dom';
+import { updateProfileAction } from '@/app/actions/update-profile';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  avatar_url?: string;
+}
+
+export function ProfileSettingsForm({ user }: { user: User }) {
+  const [formData, setFormData] = useState({
+    name: user.name,
+    email: user.email,
+    phone: user.phone || '',
+  });
+
+  const { pending } = useFormStatus();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    const result = await updateProfileAction({
+      userId: user.id,
+      ...formData,
+    });
+
+    if (result.success) {
+      // Show success message
+      const indicator = document.getElementById('save-indicator');
+      if (indicator) {
+        indicator.classList.remove('hidden');
+        setTimeout(() => {
+          indicator.classList.add('hidden');
+        }, 3000);
+      }
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Name Field */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Tên Đầy Đủ
+        </label>
+        <input
+          type="text"
+          value={formData.name}
+          onChange={(e) =>
+            setFormData({ ...formData, name: e.target.value })
+          }
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:ring-blue-600"
+          required
+        />
+      </div>
+
+      {/* Email Field */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          type="email"
+          value={formData.email}
+          onChange={(e) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:ring-blue-600"
+          required
+        />
+      </div>
+
+      {/* Phone Field */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Số Điện Thoại
+        </label>
+        <input
+          type="tel"
+          value={formData.phone}
+          onChange={(e) =>
+            setFormData({ ...formData, phone: e.target.value })
+          }
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:ring-blue-600"
+          placeholder="+84 (0) 123-456-789"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={pending}
+        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+      >
+        {pending ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
+      </button>
+    </form>
+  );
+}
+```
+
+**Best Practices**:
+- Section-based layout with clear organization
+- Suspense for each form section
+- Client components for interactive forms
+- Visual feedback on save
+- Danger zone separated and clearly labeled
+- Vietnamese labels for legal domain
+
+---
+
+### Additional Patterns (10.2-10.5, 10.7-10.10, 10.12-10.15, 10.17-10.20, 10.22-10.25)
+
+#### Pattern 10.2: About Page
+```typescript
+// Static page with company information
+// File: src/app/about/page.tsx
+// Composition: Team section, Mission section, History section
+// Caching: force-cache (static content)
+```
+
+#### Pattern 10.3: Pricing Page
+```typescript
+// Product pricing with comparison table
+// File: src/app/pricing/page.tsx
+// Features: Pricing tiers, feature comparison, CTA buttons
+// Caching: force-cache (updates rarely)
+```
+
+#### Pattern 10.4: Contact Page
+```typescript
+// Contact form with server action
+// File: src/app/contact/page.tsx
+// Features: Form validation, email sending, success message
+// Caching: no-store (form submissions)
+```
+
+#### Pattern 10.5: Blog List Page
+```typescript
+// Blog post listing with pagination
+// File: src/app/blog/page.tsx
+// Features: Search, category filters, infinite scroll
+// Caching: revalidate: 3600 (hourly updates)
+```
+
+#### Pattern 10.7: Analytics Page
+```typescript
+// Analytics dashboard with charts
+// File: src/app/(dashboard)/analytics/page.tsx
+// Features: Date range picker, export functionality
+// Components: Chart widgets, stat cards
+```
+
+#### Pattern 10.8: Reports Page
+```typescript
+// Reports and exports
+// File: src/app/(dashboard)/reports/page.tsx
+// Features: Report generation, scheduling, download
+```
+
+#### Pattern 10.9: Calendar Page
+```typescript
+// Calendar view for events/deadlines
+// File: src/app/(dashboard)/calendar/page.tsx
+// Components: Calendar widget, event list
+```
+
+#### Pattern 10.10: Tasks Page
+```typescript
+// Task management board
+// File: src/app/(dashboard)/tasks/page.tsx
+// Features: Kanban board, filters, drag-and-drop
+```
+
+#### Pattern 10.12: User Create Page
+```typescript
+// Create new user form
+// File: src/app/(dashboard)/users/new/page.tsx
+// Features: Form validation, role selection, email invitation
+```
+
+#### Pattern 10.13: User Edit Page
+```typescript
+// Edit user details
+// File: src/app/(dashboard)/users/[id]/edit/page.tsx
+// Features: Role/permission updates, deactivation
+```
+
+#### Pattern 10.14: Team List Page
+```typescript
+// Team management
+// File: src/app/(dashboard)/teams/page.tsx
+// Features: Team listing, member management
+```
+
+#### Pattern 10.15: Role Management Page
+```typescript
+// RBAC configuration
+// File: src/app/(dashboard)/roles/page.tsx
+// Features: Permission matrix, role templates
+```
+
+#### Pattern 10.17: Customer List Page
+```typescript
+// Customer management
+// File: src/app/(dashboard)/customers/page.tsx
+// Similar to user list with customer-specific fields
+```
+
+#### Pattern 10.18: Customer Detail Page
+```typescript
+// Customer profile with contact history
+// File: src/app/(dashboard)/customers/[id]/page.tsx
+// Tabs: Profile, Orders, Interactions, Documents
+```
+
+#### Pattern 10.19: Product List Page
+```typescript
+// Product catalog
+// File: src/app/(dashboard)/products/page.tsx
+// Features: Search, categories, pricing
+```
+
+#### Pattern 10.20: Product Detail Page
+```typescript
+// Product information
+// File: src/app/(dashboard)/products/[id]/page.tsx
+// Sections: Specs, pricing, availability
+```
+
+#### Pattern 10.22: Conversation List Page
+```typescript
+// Messaging inbox
+// File: src/app/(dashboard)/conversations/page.tsx
+// Features: Search, filters, unread indicators
+```
+
+#### Pattern 10.23: Document List Page
+```typescript
+// Document management
+// File: src/app/(dashboard)/documents/page.tsx
+// Features: Upload, categorization, version control
+```
+
+#### Pattern 10.24: Document Viewer
+```typescript
+// View/edit documents
+// File: src/app/(dashboard)/documents/[id]/page.tsx
+// Features: Preview, annotations, version history
+```
+
+#### Pattern 10.25: Workflow List Page
+```typescript
+// Workflow management
+// File: src/app/(dashboard)/workflows/page.tsx
+// Features: Create, edit, delete workflows
+```
+
+---
+
+## III. TECHNOLOGY STACK DETAILS
+
+### Next.js 15.3.0 App Router Features Used
+
+```typescript
+// 1. Server Components (Default)
+export default async function Page() {
+  const data = await fetch(...);
+  return <div>{data}</div>;
+}
+
+// 2. Client Components
+'use client';
+export function InteractiveComponent() {
+  const [state, setState] = useState();
+  return <button onClick={() => setState(...)}>Click</button>;
+}
+
+// 3. Metadata API
+export const metadata: Metadata = {
+  title: 'Page Title',
+  description: 'Page description',
+};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await fetch(...);
+  return {
+    title: data.title,
+  };
+}
+
+// 4. Dynamic Routes
+// File: app/items/[id]/page.tsx
+export async function generateStaticParams() {
+  return [{ id: '1' }, { id: '2' }];
+}
+
+// 5. Route Groups
+// Folder: app/(dashboard)/
+// Folder: app/(auth)/
+// Groups are not included in URL path
+
+// 6. Search Params
+interface PageProps {
+  searchParams: {
+    [key: string]: string | string[] | undefined;
+  };
+}
+
+// 7. Suspense & Streaming
+<Suspense fallback={<Loading />}>
+  <AsyncComponent />
+</Suspense>
+```
+
+### React 19 Features Used
+
+```typescript
+// 1. Server Components
+async function ServerComponent() {
+  const data = await fetchData();
+  return <div>{data}</div>;
+}
+
+// 2. Suspense
+<Suspense fallback={<Skeleton />}>
+  <AsyncContent />
+</Suspense>
+
+// 3. use() Hook
+'use client';
+import { use } from 'react';
+
+function Component({ promise }: { promise: Promise<Data> }) {
+  const data = use(promise);
+  return <div>{data}</div>;
+}
+
+// 4. useActionState (formerly useFormState)
+'use client';
+import { useActionState } from 'react';
+
+function Form() {
+  const [state, formAction] = useActionState(serverAction, null);
+  return <form action={formAction}>...</form>;
+}
+
+// 5. useOptimistic
+'use client';
+import { useOptimistic } from 'react';
+
+function TodoList({ todos }: { todos: Todo[] }) {
+  const [optimistic, addOptimistic] = useOptimistic(todos);
+  // Optimistic updates
+}
+```
+
+### TypeScript 5 Strict Mode
+
+```typescript
+// All code uses strict type checking
+// No `any` types allowed
+// Full generic support
+// Const type parameters
+
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message: string;
+}
+
+async function fetchData<T>(
+  url: string
+): Promise<ApiResponse<T>> {
+  const res = await fetch(url);
+  return res.json();
+}
+
+const data = await fetchData<CaseData>('/api/cases/123');
+// data.data is properly typed as CaseData
+```
+
+---
+
+## IV. VIETNAMESE LEGAL DOMAIN CONTEXT
+
+### Domain Models
+
+```typescript
+// Core legal domain entities
+interface Case {
+  id: string;
+  case_number: string; // VN case numbering format
+  title: string;
+  type: 'civil' | 'commercial' | 'criminal' | 'administrative';
+  status: 'active' | 'pending' | 'closed' | 'archived';
+  priority: 'high' | 'medium' | 'low';
+  created_at: Date;
+  assigned_to?: User;
+  clients: Client[];
+  documents: Document[];
+  related_cases?: Case[];
+  deadlines: Deadline[];
+}
+
+interface Client {
+  id: string;
+  name: string;
+  type: 'individual' | 'organization';
+  tax_id?: string; // Mã số thuế
+  phone: string;
+  email: string;
+  address: string;
+}
+
+interface Document {
+  id: string;
+  case_id: string;
+  title: string;
+  type: 'contract' | 'evidence' | 'submission' | 'court_order';
+  file_url: string;
+  uploaded_by: User;
+  created_at: Date;
+  version: number;
+}
+
+interface Deadline {
+  id: string;
+  case_id: string;
+  title: string;
+  due_date: Date;
+  type: 'court_submission' | 'payment' | 'response' | 'evidence';
+  status: 'pending' | 'completed' | 'overdue';
+  assigned_to?: User;
+}
+
+interface Conversation {
+  id: string;
+  participants: User[];
+  case_id?: string;
+  title: string;
+  created_at: Date;
+  updated_at: Date;
+  messages: Message[];
+}
+
+interface Message {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  content: string;
+  attachments?: Attachment[];
+  created_at: Date;
+}
+```
+
+### Vietnamese UI Labels and Terminology
+
+```typescript
+const UI_LABELS = {
+  // Navigation
+  dashboard: 'Bảng Điều Khiển',
+  cases: 'Vụ Việc',
+  clients: 'Khách Hàng',
+  documents: 'Tài Liệu',
+  conversations: 'Cuộc Trò Chuyện',
+  settings: 'Cài Đặt',
+
+  // Status
+  active: 'Hoạt Động',
+  pending: 'Chờ Xử Lý',
+  closed: 'Đã Đóng',
+  archived: 'Lưu Trữ',
+
+  // Priority
+  high: 'Cao',
+  medium: 'Trung Bình',
+  low: 'Thấp',
+
+  // Case Type
+  civil: 'Dân Sự',
+  commercial: 'Thương Mại',
+  criminal: 'Hình Sự',
+  administrative: 'Hành Chính',
+
+  // Actions
+  create: 'Tạo Mới',
+  edit: 'Chỉnh Sửa',
+  delete: 'Xóa',
+  save: 'Lưu',
+  cancel: 'Hủy',
+  export: 'Xuất',
+  import: 'Nhập',
+  search: 'Tìm Kiếm',
+};
+```
+
+---
+
+## V. BEST PRACTICES SUMMARY
+
+### Performance Optimization
+1. **Server Components by Default** - 95% of pages are server components
+2. **Strategic Suspense** - Wrap slow-loading data with Suspense
+3. **Parallel Data Fetching** - Use `Promise.all()` for independent queries
+4. **Cache Strategies** - Match cache strategy to data freshness requirements
+5. **Image Optimization** - Use Next.js `<Image>` component
+6. **Code Splitting** - Lazy load non-critical features
+
+### Data Fetching
+1. **Server-Side Fetching** - Always fetch on the server when possible
+2. **Proper Cache Headers** - Use `cache` and `next` options strategically
+3. **Error Handling** - Throw errors to trigger error boundaries
+4. **Parallel Loading** - Fetch independent data in parallel
+5. **ISR for Heavy Data** - Use revalidation for expensive computations
+
+### Security
+1. **Authentication Checks** - Always verify auth before rendering
+2. **Authorization** - Check permissions at component level
+3. **Sensitive Data** - Never expose secrets in client components
+4. **SQL Injection Prevention** - Use parameterized queries
+5. **CSRF Protection** - Use POST/PUT/DELETE for mutations
+
+### UI/UX
+1. **Loading States** - Always provide Suspense fallbacks
+2. **Error States** - Handle errors gracefully with error boundaries
+3. **Empty States** - Design for empty data scenarios
+4. **Responsive Design** - Mobile-first approach
+5. **Accessibility** - WCAG 2.1 AA compliance
+
+### Code Organization
+1. **File Structure** - Follow FSD conventions
+2. **Component Size** - Keep components focused and small
+3. **Type Safety** - Use TypeScript strict mode
+4. **Comments** - Document complex logic
+5. **Testing** - Unit test all utilities and components
+
+---
+
+## VI. SUMMARY
+
+This Frontend Page Components Specialist document provides comprehensive guidance for implementing the Pages Layer in Next.js 15 applications using Feature-Sliced Design (FSD). The specialist covers:
+
+- **12+ Detailed Pattern Implementations**: From Pattern 10.1 (Home Page) to Pattern 10.25 (Workflow List)
+- **Complete TypeScript Code Examples**: Production-ready implementations
+- **Vietnamese Legal Domain Context**: Tailored for StarX4CRM use case
+- **Next.js 15 Best Practices**: App Router, Server Components, Suspense
+- **Performance Optimization**: Caching strategies, parallel loading, progressive rendering
+- **Security Considerations**: Authentication, authorization, data protection
+
+The patterns follow Next.js 15.3.0 conventions with React 19 and TypeScript 5 strict mode, providing a scalable foundation for building complex page-based applications.
+
+---
+
+**Created**: 2025-01-01
+**Version**: 1.0.0
+**Scope**: Frontend Page Components Specialist
+**Language**: English with Vietnamese Legal Domain Context
