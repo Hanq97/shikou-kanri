@@ -3,6 +3,7 @@ import { Alert, Button, Form, Input } from 'antd';
 import { Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { ApiError } from '@/shared/api/types';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -11,6 +12,7 @@ import { AuthLayout } from '../components/AuthLayout';
 import { LoginSchema, type LoginFormValues } from '../schemas/login.schema';
 
 export function LoginPage(): JSX.Element {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -46,10 +48,10 @@ export function LoginPage(): JSX.Element {
   }
 
   return (
-    <AuthLayout title="ログイン" subtitle="メールアドレスとパスワードでログインしてください">
+    <AuthLayout title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)} autoComplete="on">
         <Form.Item
-          label="メールアドレス"
+          label={t('auth.login.email')}
           validateStatus={errors.email ? 'error' : ''}
           help={errors.email?.message}
         >
@@ -62,7 +64,7 @@ export function LoginPage(): JSX.Element {
                 type="email"
                 size="large"
                 autoFocus
-                placeholder="example@towa.example.com"
+                placeholder={t('auth.login.emailPlaceholder')}
                 autoComplete="email"
                 prefix={<Mail size={16} className="text-zinc-400" />}
               />
@@ -71,7 +73,7 @@ export function LoginPage(): JSX.Element {
         </Form.Item>
 
         <Form.Item
-          label="パスワード"
+          label={t('auth.login.password')}
           validateStatus={errors.password ? 'error' : ''}
           help={errors.password?.message}
         >
@@ -82,7 +84,7 @@ export function LoginPage(): JSX.Element {
               <Input.Password
                 {...field}
                 size="large"
-                placeholder="パスワード"
+                placeholder={t('auth.login.passwordPlaceholder')}
                 autoComplete="current-password"
                 prefix={<Lock size={16} className="text-zinc-400" />}
               />
@@ -101,7 +103,7 @@ export function LoginPage(): JSX.Element {
         )}
 
         <Button type="primary" htmlType="submit" size="large" block loading={submitting}>
-          ログイン
+          {t('auth.login.submit')}
         </Button>
 
         <div className="text-center mt-4">
@@ -109,7 +111,7 @@ export function LoginPage(): JSX.Element {
             to="/forgot-password"
             className="text-sm text-zinc-500 hover:text-brand-600 transition-colors"
           >
-            パスワードを忘れた場合
+            {t('auth.login.forgotPassword')}
           </Link>
         </div>
       </Form>

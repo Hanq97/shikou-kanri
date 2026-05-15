@@ -3,6 +3,7 @@ import { Alert, App, Button, Form, Input } from 'antd';
 import { Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '@/shared/api/auth.api';
 import { extractApiError } from '@/shared/api/client';
@@ -15,6 +16,7 @@ import {
 import { SettingsLayout } from '../components/SettingsLayout';
 
 export function ChangePasswordPage(): JSX.Element {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const user = useAuthStore((s) => s.user);
   const reload = useAuthStore((s) => s.loadCurrentUser);
@@ -38,7 +40,7 @@ export function ChangePasswordPage(): JSX.Element {
     try {
       await authApi.changePassword(values.oldPassword, values.password);
       await reload();
-      message.success('パスワードを変更しました');
+      message.success(t('settings.password.successMessage'));
       reset();
       if (forceFlow) navigate('/home', { replace: true });
     } catch (err) {
@@ -49,11 +51,14 @@ export function ChangePasswordPage(): JSX.Element {
   }
 
   return (
-    <SettingsLayout title="パスワード変更" description="安全のため定期的に変更してください">
+    <SettingsLayout
+      title={t('settings.password.title')}
+      description={t('settings.password.description')}
+    >
       {forceFlow && (
         <Alert
           type="warning"
-          message="初回ログインのため、パスワード変更が必要です。"
+          message={t('settings.password.forceMessage')}
           showIcon
           className="!mb-5"
         />
@@ -61,7 +66,7 @@ export function ChangePasswordPage(): JSX.Element {
 
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
-          label="現在のパスワード"
+          label={t('settings.password.labelOld')}
           validateStatus={errors.oldPassword ? 'error' : ''}
           help={errors.oldPassword?.message}
         >
@@ -79,9 +84,9 @@ export function ChangePasswordPage(): JSX.Element {
         </Form.Item>
 
         <Form.Item
-          label="新しいパスワード"
+          label={t('settings.password.labelNew')}
           validateStatus={errors.password ? 'error' : ''}
-          help={errors.password?.message ?? '12文字以上 + 大文字 + 小文字 + 数字 + 記号'}
+          help={errors.password?.message ?? t('auth.resetPassword.policyHint')}
         >
           <Controller
             name="password"
@@ -97,7 +102,7 @@ export function ChangePasswordPage(): JSX.Element {
         </Form.Item>
 
         <Form.Item
-          label="新しいパスワード（確認）"
+          label={t('settings.password.labelNewConfirm')}
           validateStatus={errors.passwordConfirm ? 'error' : ''}
           help={errors.passwordConfirm?.message}
         >
@@ -116,7 +121,7 @@ export function ChangePasswordPage(): JSX.Element {
 
         <div className="flex justify-end">
           <Button type="primary" htmlType="submit" loading={submitting}>
-            パスワードを変更
+            {t('settings.password.submit')}
           </Button>
         </div>
       </Form>

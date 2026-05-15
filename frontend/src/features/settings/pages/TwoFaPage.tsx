@@ -1,6 +1,7 @@
 import { Alert, App, Button, Form, Input, Modal } from 'antd';
 import { AlertTriangle, Copy, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/shared/api/auth.api';
 import { extractApiError } from '@/shared/api/client';
 import { useAuthStore } from '@/shared/stores/authStore';
@@ -14,6 +15,7 @@ type EnrollState =
   | { stage: 'backup'; backupCodes: string[] };
 
 export function TwoFaPage(): JSX.Element {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const user = useAuthStore((s) => s.user);
   const reload = useAuthStore((s) => s.loadCurrentUser);
@@ -55,36 +57,39 @@ export function TwoFaPage(): JSX.Element {
 
   function copyBackupCodes(codes: string[]): void {
     navigator.clipboard.writeText(codes.join('\n')).then(() => {
-      message.success('バックアップコードをコピーしました');
+      message.success(t('settings.twoFa.backupCopiedMessage'));
     });
   }
 
   // ===== ENABLED — show disable button =====
   if (user.twoFaEnabled && enroll.stage === 'idle') {
     return (
-      <SettingsLayout title="2要素認証" description="ログイン時の追加セキュリティ">
+      <SettingsLayout
+        title={t('settings.twoFa.title')}
+        description={t('settings.twoFa.descriptionEnabled')}
+      >
         <div className="flex items-start gap-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg mb-6">
           <ShieldCheck className="text-emerald-600 shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
-            <p className="m-0 text-sm font-medium text-emerald-900">2要素認証は有効です</p>
-            <p className="m-0 mt-0.5 text-sm text-emerald-700">
-              ログイン時に認証アプリの6桁コードが必要です。
+            <p className="m-0 text-sm font-medium text-emerald-900">
+              {t('settings.twoFa.enabledMessage')}
             </p>
+            <p className="m-0 mt-0.5 text-sm text-emerald-700">{t('settings.twoFa.enabledHint')}</p>
           </div>
         </div>
 
         <div className="border border-zinc-200/70 rounded-lg p-4">
-          <h3 className="m-0 text-sm font-semibold text-zinc-900">2要素認証を無効化</h3>
-          <p className="m-0 mt-1 text-sm text-zinc-500">
-            無効化すると、ログイン時のセキュリティが低下します。
-          </p>
+          <h3 className="m-0 text-sm font-semibold text-zinc-900">
+            {t('settings.twoFa.disableTitle')}
+          </h3>
+          <p className="m-0 mt-1 text-sm text-zinc-500">{t('settings.twoFa.disableHint')}</p>
           <Button
             danger
             icon={<ShieldOff size={14} />}
             onClick={() => setDisableOpen(true)}
             className="!mt-3"
           >
-            無効化する
+            {t('settings.twoFa.disableButton')}
           </Button>
         </div>
 
@@ -94,7 +99,7 @@ export function TwoFaPage(): JSX.Element {
           onSuccess={async () => {
             setDisableOpen(false);
             await reload();
-            message.success('2要素認証を無効化しました');
+            message.success(t('settings.twoFa.disableSuccess'));
           }}
         />
       </SettingsLayout>
@@ -103,21 +108,18 @@ export function TwoFaPage(): JSX.Element {
 
   // ===== DISABLED — enrollment flow =====
   return (
-    <SettingsLayout title="2要素認証" description="認証アプリで追加のセキュリティを設定">
+    <SettingsLayout
+      title={t('settings.twoFa.title')}
+      description={t('settings.twoFa.description')}
+    >
       {forceFlow && enroll.stage === 'idle' && (
-        <Alert
-          type="warning"
-          message="管理者は2要素認証の設定が必要です。"
-          showIcon
-          className="!mb-5"
-        />
+        <Alert type="warning" message={t('settings.twoFa.forceMessage')} showIcon className="!mb-5" />
       )}
 
       {enroll.stage === 'idle' && (
         <>
           <p className="m-0 mt-0 mb-4 text-sm text-zinc-600 leading-relaxed">
-            Google Authenticator、Microsoft Authenticator、1Password 等の TOTP
-            対応アプリでQRコードをスキャンして設定します。
+            {t('settings.twoFa.intro')}
           </p>
           <Button
             type="primary"
@@ -125,7 +127,7 @@ export function TwoFaPage(): JSX.Element {
             loading={submitting}
             onClick={startEnroll}
           >
-            2要素認証を設定する
+            {t('settings.twoFa.startButton')}
           </Button>
         </>
       )}
@@ -133,9 +135,7 @@ export function TwoFaPage(): JSX.Element {
       {(enroll.stage === 'qr' || enroll.stage === 'verifying') && (
         <div className="space-y-5">
           <div>
-            <p className="m-0 text-sm text-zinc-600 mb-3">
-              1. 認証アプリでQRコードをスキャン、または下記のシークレットを手動入力:
-            </p>
+            <p className="m-0 text-sm text-zinc-600 mb-3">{t('settings.twoFa.step1Title')}</p>
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <img
                 src={enroll.qrCodeDataUrl}
@@ -143,7 +143,7 @@ export function TwoFaPage(): JSX.Element {
                 className="w-44 h-44 border border-zinc-200/70 rounded-lg p-2 bg-white"
               />
               <div className="flex-1 w-full">
-                <p className="m-0 text-xs text-zinc-500 mb-1">シークレットキー（手動入力用）</p>
+                <p className="m-0 text-xs text-zinc-500 mb-1">{t('settings.twoFa.secretLabel')}</p>
                 <code className="block bg-zinc-50 border border-zinc-200/70 rounded px-3 py-2 text-sm font-mono break-all">
                   {enroll.secret}
                 </code>
@@ -152,15 +152,13 @@ export function TwoFaPage(): JSX.Element {
           </div>
 
           <div>
-            <p className="m-0 text-sm text-zinc-600 mb-2">
-              2. 認証アプリに表示された6桁のコードを入力:
-            </p>
+            <p className="m-0 text-sm text-zinc-600 mb-2">{t('settings.twoFa.step2Title')}</p>
             <div className="flex gap-2">
               <Input
                 size="large"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="123456"
+                placeholder={t('settings.twoFa.codePlaceholder')}
                 maxLength={6}
                 className="!font-mono !tracking-widest !text-lg"
                 style={{ maxWidth: 200 }}
@@ -172,10 +170,10 @@ export function TwoFaPage(): JSX.Element {
                 disabled={code.length !== 6}
                 onClick={verifyEnroll}
               >
-                確認する
+                {t('settings.twoFa.verifyButton')}
               </Button>
               <Button size="large" onClick={() => setEnroll({ stage: 'idle' })}>
-                キャンセル
+                {t('common.cancel')}
               </Button>
             </div>
           </div>
@@ -186,15 +184,14 @@ export function TwoFaPage(): JSX.Element {
         <div className="space-y-5">
           <Alert
             type="success"
-            message="2要素認証を有効化しました"
-            description="下記のバックアップコードを安全な場所に保存してください。認証アプリにアクセスできない場合に使用します。"
+            message={t('settings.twoFa.backupTitle')}
+            description={t('settings.twoFa.backupSubtitle')}
             showIcon
           />
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
             <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
             <p className="m-0 text-sm text-amber-900 leading-relaxed">
-              バックアップコードは <strong>一度しか表示されません</strong>
-              。各コードは1回のみ使用可能です。今すぐコピーまたはダウンロードしてください。
+              {t('settings.twoFa.backupWarning')}
             </p>
           </div>
           <div className="bg-zinc-50 border border-zinc-200/70 rounded-lg p-4">
@@ -210,11 +207,11 @@ export function TwoFaPage(): JSX.Element {
               onClick={() => copyBackupCodes(enroll.backupCodes)}
               className="!mt-4"
             >
-              全てコピー
+              {t('common.copyAll')}
             </Button>
           </div>
           <Button type="primary" onClick={() => setEnroll({ stage: 'idle' })}>
-            完了
+            {t('settings.twoFa.doneButton')}
           </Button>
         </div>
       )}
@@ -229,6 +226,7 @@ interface DisableModalProps {
 }
 
 function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX.Element {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
@@ -252,7 +250,7 @@ function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX
   return (
     <Modal
       open={open}
-      title="2要素認証を無効化"
+      title={t('settings.twoFa.disableModalTitle')}
       onCancel={() => {
         onClose();
         setPassword('');
@@ -261,11 +259,9 @@ function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX
       footer={null}
       destroyOnClose
     >
-      <p className="text-sm text-zinc-500 mb-4">
-        パスワードと現在の認証コード（またはバックアップコード）を入力してください。
-      </p>
+      <p className="text-sm text-zinc-500 mb-4">{t('settings.twoFa.disableModalIntro')}</p>
       <Form layout="vertical" onFinish={onSubmit}>
-        <Form.Item label="パスワード">
+        <Form.Item label={t('settings.twoFa.labelPassword')}>
           <Input.Password
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -273,11 +269,13 @@ function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX
             size="large"
           />
         </Form.Item>
-        <Form.Item label={useBackup ? 'バックアップコード' : '認証コード'}>
+        <Form.Item label={useBackup ? t('auth.twoFa.labelBackup') : t('auth.twoFa.labelTotp')}>
           <Input
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, useBackup ? 10 : 6))}
-            placeholder={useBackup ? '10文字' : '6桁'}
+            placeholder={
+              useBackup ? t('auth.twoFa.placeholderBackup') : t('auth.twoFa.placeholderTotp')
+            }
             size="large"
             className="!font-mono !tracking-widest"
           />
@@ -290,7 +288,7 @@ function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX
           }}
           className="text-sm text-brand-600 hover:underline bg-transparent border-0 cursor-pointer p-0 mb-4"
         >
-          {useBackup ? '認証コードを使う' : 'バックアップコードを使う'}
+          {useBackup ? t('settings.twoFa.useTotp') : t('settings.twoFa.useBackup')}
         </button>
         <div className="flex justify-end gap-2">
           <Button
@@ -300,7 +298,7 @@ function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX
               setCode('');
             }}
           >
-            キャンセル
+            {t('common.cancel')}
           </Button>
           <Button
             danger
@@ -309,7 +307,7 @@ function DisableTwoFaModal({ open, onClose, onSuccess }: DisableModalProps): JSX
             loading={submitting}
             disabled={!password || code.length !== (useBackup ? 10 : 6)}
           >
-            無効化する
+            {t('settings.twoFa.disableButton')}
           </Button>
         </div>
       </Form>

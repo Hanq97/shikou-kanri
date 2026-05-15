@@ -1,6 +1,7 @@
 import { Alert, Button, Form, Input } from 'antd';
 import { ShieldCheck, Timer } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import type { ApiError } from '@/shared/api/types';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -9,6 +10,7 @@ import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
 
 export function TwoFaChallengePage(): JSX.Element {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { verifyTwoFa } = useAuth();
   const pendingTwoFa = useAuthStore((s) => s.pendingTwoFa);
@@ -58,20 +60,18 @@ export function TwoFaChallengePage(): JSX.Element {
 
   return (
     <AuthLayout
-      title="2要素認証"
-      subtitle={
-        useBackupCode
-          ? 'バックアップコードを入力してください'
-          : '認証アプリの6桁コードを入力してください'
-      }
+      title={t('auth.twoFa.title')}
+      subtitle={useBackupCode ? t('auth.twoFa.subtitleBackup') : t('auth.twoFa.subtitleTotp')}
     >
       <Form layout="vertical" onFinish={onSubmit}>
-        <Form.Item label={useBackupCode ? 'バックアップコード' : '認証コード'}>
+        <Form.Item label={useBackupCode ? t('auth.twoFa.labelBackup') : t('auth.twoFa.labelTotp')}>
           <Input
             size="large"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder={useBackupCode ? '10文字のコード' : '6桁の数字'}
+            placeholder={
+              useBackupCode ? t('auth.twoFa.placeholderBackup') : t('auth.twoFa.placeholderTotp')
+            }
             maxLength={expectedLength}
             autoFocus
             prefix={<ShieldCheck size={16} className="text-zinc-400" />}
@@ -97,7 +97,7 @@ export function TwoFaChallengePage(): JSX.Element {
           loading={submitting}
           disabled={code.length !== expectedLength}
         >
-          確認
+          {t('auth.twoFa.submit')}
         </Button>
 
         <div className="text-center mt-4">
@@ -110,7 +110,7 @@ export function TwoFaChallengePage(): JSX.Element {
             }}
             className="text-sm text-brand-600 hover:text-brand-700 hover:underline bg-transparent border-0 cursor-pointer p-0"
           >
-            {useBackupCode ? '認証コードで確認' : 'バックアップコードを使用'}
+            {useBackupCode ? t('auth.twoFa.switchToTotp') : t('auth.twoFa.switchToBackup')}
           </button>
         </div>
 
@@ -120,7 +120,10 @@ export function TwoFaChallengePage(): JSX.Element {
           }`}
         >
           <Timer size={12} />
-          <span>残り時間: {secondsLeft}秒</span>
+          <span>
+            {t('auth.twoFa.timeRemaining')}: {secondsLeft}
+            {t('common.seconds')}
+          </span>
         </div>
       </Form>
     </AuthLayout>

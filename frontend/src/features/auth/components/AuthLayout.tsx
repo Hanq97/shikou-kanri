@@ -1,5 +1,6 @@
 import { HardHat } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface AuthLayoutProps {
   title?: string;
@@ -8,6 +9,8 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps): JSX.Element {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-zinc-50 via-white to-brand-50/40 flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
@@ -17,11 +20,9 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps): JSX.
             <HardHat size={28} strokeWidth={2} />
           </div>
           <h1 className="text-xl font-semibold text-zinc-900 m-0 tracking-tight">
-            施工管理システム
+            {t('brand.appName')}
           </h1>
-          <p className="text-xs text-zinc-500 mt-1 m-0">
-            藤和建設様 / Construction Management
-          </p>
+          <p className="text-xs text-zinc-500 mt-1 m-0">{t('brand.tagline')}</p>
         </div>
 
         {/* Card */}
@@ -38,9 +39,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps): JSX.
           {children}
         </div>
 
-        <p className="text-center text-xs text-zinc-400 mt-6 m-0">
-          © 2026 DEHA Solutions
-        </p>
+        <p className="text-center text-xs text-zinc-400 mt-6 m-0">{t('brand.copyright')}</p>
       </div>
     </div>
   );

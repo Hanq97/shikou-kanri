@@ -1,6 +1,7 @@
 import { Alert, Button, Form, Input } from 'antd';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { authApi } from '@/shared/api/auth.api';
 import { extractApiError } from '@/shared/api/client';
@@ -8,6 +9,7 @@ import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
 
 export function ForgotPasswordPage(): JSX.Element {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -28,19 +30,15 @@ export function ForgotPasswordPage(): JSX.Element {
 
   if (submitted) {
     return (
-      <AuthLayout title="メールを送信しました">
-        <Alert
-          type="success"
-          message="登録されたメールアドレスの場合、パスワードリセットリンクをお送りしました。メールをご確認ください。"
-          showIcon
-        />
+      <AuthLayout title={t('auth.forgotPassword.sentTitle')}>
+        <Alert type="success" message={t('auth.forgotPassword.sentMessage')} showIcon />
         <div className="text-center mt-6">
           <Link
             to="/login"
             className="inline-flex items-center gap-1.5 text-sm text-zinc-600 hover:text-brand-600 transition-colors"
           >
             <ArrowLeft size={14} />
-            ログインに戻る
+            {t('common.backToLogin')}
           </Link>
         </div>
       </AuthLayout>
@@ -48,18 +46,15 @@ export function ForgotPasswordPage(): JSX.Element {
   }
 
   return (
-    <AuthLayout
-      title="パスワードリセット"
-      subtitle="登録メールアドレスを入力すると、リセットリンクをお送りします"
-    >
+    <AuthLayout title={t('auth.forgotPassword.title')} subtitle={t('auth.forgotPassword.subtitle')}>
       <Form layout="vertical" onFinish={onSubmit}>
-        <Form.Item label="メールアドレス">
+        <Form.Item label={t('auth.forgotPassword.email')}>
           <Input
             type="email"
             size="large"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="example@towa.example.com"
+            placeholder={t('auth.login.emailPlaceholder')}
             autoFocus
             required
             prefix={<Mail size={16} className="text-zinc-400" />}
@@ -84,7 +79,7 @@ export function ForgotPasswordPage(): JSX.Element {
           loading={submitting}
           disabled={!email}
         >
-          リセットリンクを送信
+          {t('auth.forgotPassword.submit')}
         </Button>
 
         <div className="text-center mt-4">
@@ -93,7 +88,7 @@ export function ForgotPasswordPage(): JSX.Element {
             className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-brand-600 transition-colors"
           >
             <ArrowLeft size={14} />
-            ログインに戻る
+            {t('common.backToLogin')}
           </Link>
         </div>
       </Form>

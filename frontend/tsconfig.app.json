@@ -22,6 +22,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
 
     /* Path aliases (per ADR-003 + 03-frontend-architecture) */
     "baseUrl": "./",

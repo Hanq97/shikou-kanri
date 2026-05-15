@@ -3,6 +3,7 @@ import { Alert, Button, Form, Input, Result, Spin } from 'antd';
 import { Lock, Mail, UserCog } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi, type InvitationInfo } from '@/shared/api/auth.api';
 import { extractApiError } from '@/shared/api/client';
@@ -11,14 +12,8 @@ import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AuthLayout } from '../components/AuthLayout';
 import { ResetPasswordSchema, type ResetPasswordFormValues } from '../schemas/password.schema';
 
-const ROLE_DISPLAY: Record<string, string> = {
-  system_admin: 'システム管理者',
-  manager: 'マネージャー',
-  employee: '社員',
-  invited: '招待ユーザー（職人・協力業者）',
-};
-
 export function AcceptInvitePage(): JSX.Element {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const token = params.get('token');
   const navigate = useNavigate();
@@ -79,14 +74,14 @@ export function AcceptInvitePage(): JSX.Element {
 
   if (loadError || !invitation) {
     return (
-      <AuthLayout title="招待リンクエラー">
+      <AuthLayout title={t('auth.invite.errorTitle')}>
         <Result
           status="error"
           title={mapErrorMessage(loadError ?? 'AUTH_INVITATION_INVALID')}
-          subTitle="招待者にご確認のうえ、新しい招待をリクエストしてください。"
+          subTitle={t('auth.invite.errorSubtitle')}
           extra={
             <Link to="/login">
-              <Button type="primary">ログイン画面へ</Button>
+              <Button type="primary">{t('auth.invite.toLogin')}</Button>
             </Link>
           }
         />
@@ -95,31 +90,27 @@ export function AcceptInvitePage(): JSX.Element {
   }
 
   return (
-    <AuthLayout
-      title="アカウントの有効化"
-      subtitle="パスワードを設定してアカウントを有効化してください"
-    >
-      {/* Invitation info — modern card style instead of Descriptions */}
+    <AuthLayout title={t('auth.invite.title')} subtitle={t('auth.invite.subtitle')}>
       <div className="bg-zinc-50 border border-zinc-200/70 rounded-lg p-4 mb-6 space-y-2.5">
         <div className="flex items-center gap-2.5 text-sm">
           <Mail size={15} className="text-zinc-400 shrink-0" />
-          <span className="text-zinc-500 w-24">メールアドレス</span>
+          <span className="text-zinc-500 w-24">{t('auth.invite.labelEmail')}</span>
           <span className="text-zinc-900 font-medium truncate">{invitation.email}</span>
         </div>
         <div className="flex items-center gap-2.5 text-sm">
           <UserCog size={15} className="text-zinc-400 shrink-0" />
-          <span className="text-zinc-500 w-24">ロール</span>
+          <span className="text-zinc-500 w-24">{t('auth.invite.labelRole')}</span>
           <span className="text-zinc-900 font-medium">
-            {ROLE_DISPLAY[invitation.role] ?? invitation.role}
+            {t(`users.roles.${invitation.role}`, { defaultValue: invitation.role })}
           </span>
         </div>
       </div>
 
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
-          label="パスワード"
+          label={t('auth.invite.labelPassword')}
           validateStatus={errors.password ? 'error' : ''}
-          help={errors.password?.message ?? '12文字以上 + 大文字 + 小文字 + 数字 + 記号'}
+          help={errors.password?.message ?? t('auth.resetPassword.policyHint')}
         >
           <Controller
             name="password"
@@ -136,7 +127,7 @@ export function AcceptInvitePage(): JSX.Element {
         </Form.Item>
 
         <Form.Item
-          label="パスワード（確認）"
+          label={t('auth.invite.labelPasswordConfirm')}
           validateStatus={errors.passwordConfirm ? 'error' : ''}
           help={errors.passwordConfirm?.message}
         >
@@ -164,7 +155,7 @@ export function AcceptInvitePage(): JSX.Element {
         )}
 
         <Button type="primary" htmlType="submit" size="large" block loading={submitting}>
-          アカウントを有効化
+          {t('auth.invite.submit')}
         </Button>
       </Form>
     </AuthLayout>

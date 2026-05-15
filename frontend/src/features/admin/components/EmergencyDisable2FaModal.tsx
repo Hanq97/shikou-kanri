@@ -1,5 +1,6 @@
 import { Alert, App, Button, Form, Input, Modal } from 'antd';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { extractApiError } from '@/shared/api/client';
 import { usersApi, type UserSummary } from '@/shared/api/users.api';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function EmergencyDisable2FaModal({ open, user, onClose, onSuccess }: Props): JSX.Element {
+  const { t } = useTranslation();
   const { message } = App.useApp();
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +23,7 @@ export function EmergencyDisable2FaModal({ open, user, onClose, onSuccess }: Pro
     setSubmitting(true);
     try {
       await usersApi.emergencyDisable2Fa(user.id, reason.trim());
-      message.success('2要素認証を強制的に無効化しました');
+      message.success(t('users.emergencyDisable2Fa.success'));
       setReason('');
       onSuccess();
     } catch (err) {
@@ -34,7 +36,7 @@ export function EmergencyDisable2FaModal({ open, user, onClose, onSuccess }: Pro
   return (
     <Modal
       open={open}
-      title="2要素認証を強制的に無効化"
+      title={t('users.emergencyDisable2Fa.title')}
       onCancel={() => {
         setReason('');
         onClose();
@@ -44,20 +46,21 @@ export function EmergencyDisable2FaModal({ open, user, onClose, onSuccess }: Pro
     >
       <Alert
         type="warning"
-        message="この操作はAudit Logに記録されます"
-        description="ユーザーが認証アプリにアクセスできない場合の緊急措置です。理由（10文字以上）を入力してください。"
+        message={t('users.emergencyDisable2Fa.auditWarning')}
+        description={t('users.emergencyDisable2Fa.auditDescription')}
         showIcon
         className="!mb-4"
       />
       <p className="text-sm text-zinc-600 mb-2">
-        対象ユーザー: <strong className="text-zinc-900">{user?.email}</strong>
+        {t('users.emergencyDisable2Fa.target')}:{' '}
+        <strong className="text-zinc-900">{user?.email}</strong>
       </p>
       <Form layout="vertical" onFinish={onSubmit}>
-        <Form.Item label="理由（必須、10文字以上）" required>
+        <Form.Item label={t('users.emergencyDisable2Fa.labelReason')} required>
           <Input.TextArea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="例: ユーザーがスマートフォンを紛失したため"
+            placeholder={t('users.emergencyDisable2Fa.reasonPlaceholder')}
             rows={3}
             maxLength={500}
             showCount
@@ -70,7 +73,7 @@ export function EmergencyDisable2FaModal({ open, user, onClose, onSuccess }: Pro
               onClose();
             }}
           >
-            キャンセル
+            {t('common.cancel')}
           </Button>
           <Button
             danger
@@ -79,7 +82,7 @@ export function EmergencyDisable2FaModal({ open, user, onClose, onSuccess }: Pro
             loading={submitting}
             disabled={reason.trim().length < 10}
           >
-            無効化を実行
+            {t('users.emergencyDisable2Fa.submit')}
           </Button>
         </div>
       </Form>

@@ -13,6 +13,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { extractApiError } from '@/shared/api/client';
 import type { UserRole, UserStatus } from '@/shared/api/types';
 import { usersApi, type ListUsersParams, type UserSummary } from '@/shared/api/users.api';
@@ -21,9 +22,10 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { EmergencyDisable2FaModal } from '../components/EmergencyDisable2FaModal';
 import { InviteUserModal } from '../components/InviteUserModal';
-import { ROLE_LABEL, RoleTag, STATUS_LABEL, StatusTag } from '../components/StatusTag';
+import { RoleTag, StatusTag } from '../components/StatusTag';
 
 export function UsersListPage(): JSX.Element {
+  const { t } = useTranslation();
   const { user: currentUser } = useAuth();
   const { message, modal } = App.useApp();
   const qc = useQueryClient();
@@ -50,7 +52,7 @@ export function UsersListPage(): JSX.Element {
   const changeRoleMutation = useMutation({
     mutationFn: ({ id, role }: { id: string; role: UserRole }) => usersApi.changeRole(id, role),
     onSuccess: () => {
-      message.success('ロールを変更しました');
+      message.success(t('users.messages.roleChanged'));
       refresh();
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
@@ -60,7 +62,7 @@ export function UsersListPage(): JSX.Element {
     mutationFn: ({ id, status }: { id: string; status: UserStatus }) =>
       usersApi.changeStatus(id, status),
     onSuccess: () => {
-      message.success('ステータスを変更しました');
+      message.success(t('users.messages.statusChanged'));
       refresh();
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
@@ -69,7 +71,7 @@ export function UsersListPage(): JSX.Element {
   const unlockMutation = useMutation({
     mutationFn: (id: string) => usersApi.unlock(id),
     onSuccess: () => {
-      message.success('アカウントロックを解除しました');
+      message.success(t('users.messages.unlocked'));
       refresh();
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
@@ -78,7 +80,7 @@ export function UsersListPage(): JSX.Element {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => usersApi.softDelete(id),
     onSuccess: () => {
-      message.success('ユーザーを削除しました');
+      message.success(t('users.messages.deleted'));
       refresh();
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
@@ -87,7 +89,7 @@ export function UsersListPage(): JSX.Element {
   const cancelInviteMutation = useMutation({
     mutationFn: (id: string) => usersApi.cancelInvitation(id),
     onSuccess: () => {
-      message.success('招待を取り消しました');
+      message.success(t('users.messages.inviteCancelled'));
       refresh();
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
@@ -107,7 +109,7 @@ export function UsersListPage(): JSX.Element {
       content: args.content,
       okText: args.okText,
       okType: args.danger ? 'danger' : 'primary',
-      cancelText: 'キャンセル',
+      cancelText: t('common.cancel'),
       onOk: args.onOk,
     });
   }
@@ -124,9 +126,12 @@ export function UsersListPage(): JSX.Element {
             currentRole={row.role}
             onChange={(role) =>
               confirmAction({
-                title: 'ロールを変更',
-                content: `${row.email} のロールを「${ROLE_LABEL[role]}」に変更しますか？`,
-                okText: '変更する',
+                title: t('users.confirms.changeRoleTitle'),
+                content: t('users.confirms.changeRoleContent', {
+                  email: row.email,
+                  role: t(`users.roles.${role}`),
+                }),
+                okText: t('users.confirms.changeRoleOk'),
                 onOk: () => changeRoleMutation.mutate({ id: row.id, role }),
               })
             }
@@ -143,13 +148,16 @@ export function UsersListPage(): JSX.Element {
             currentStatus={row.status}
             onChange={(status) =>
               confirmAction({
-                title: 'ステータスを変更',
-                content: `${row.email} を「${STATUS_LABEL[status]}」にしますか？${
-                  status === 'suspended' || status === 'disabled'
-                    ? ' このユーザーの全セッションが無効化されます。'
-                    : ''
-                }`,
-                okText: '変更する',
+                title: t('users.confirms.changeStatusTitle'),
+                content:
+                  t('users.confirms.changeStatusContent', {
+                    email: row.email,
+                    status: t(`users.statuses.${status}`),
+                  }) +
+                  (status === 'suspended' || status === 'disabled'
+                    ? t('users.confirms.changeStatusContentRevoke')
+                    : ''),
+                okText: t('users.confirms.changeRoleOk'),
                 danger: status !== 'active',
                 onOk: () => changeStatusMutation.mutate({ id: row.id, status }),
               })
@@ -163,12 +171,12 @@ export function UsersListPage(): JSX.Element {
       items.push({
         key: 'unlock',
         icon: <LockOpen size={14} />,
-        label: 'ロック解除',
+        label: t('users.menu.unlock'),
         onClick: () =>
           confirmAction({
-            title: 'アカウントロックを解除',
-            content: `${row.email} のロックを解除しますか？`,
-            okText: '解除する',
+            title: t('users.confirms.unlockTitle'),
+            content: t('users.confirms.unlockContent', { email: row.email }),
+            okText: t('users.confirms.unlockOk'),
             onOk: () => unlockMutation.mutate(row.id),
           }),
       });
@@ -178,7 +186,7 @@ export function UsersListPage(): JSX.Element {
       items.push({
         key: '2fa',
         icon: <ShieldOff size={14} />,
-        label: '2FAを強制無効化',
+        label: t('users.menu.disable2Fa'),
         onClick: () => setDisable2FaTarget(row),
       });
     }
@@ -188,13 +196,13 @@ export function UsersListPage(): JSX.Element {
       items.push({
         key: 'delete',
         icon: <Trash2 size={14} />,
-        label: 'ユーザーを削除',
+        label: t('users.menu.delete'),
         danger: true,
         onClick: () =>
           confirmAction({
-            title: 'ユーザーを削除',
-            content: `${row.email} を削除しますか？（ソフトデリート、後で復元可能）`,
-            okText: '削除する',
+            title: t('users.confirms.deleteTitle'),
+            content: t('users.confirms.deleteContent', { email: row.email }),
+            okText: t('users.confirms.deleteOk'),
             danger: true,
             onOk: () => deleteMutation.mutate(row.id),
           }),
@@ -205,53 +213,51 @@ export function UsersListPage(): JSX.Element {
       items.push({
         key: 'cancel-invite',
         icon: <Trash2 size={14} />,
-        label: '招待を取り消す',
+        label: t('users.menu.cancelInvite'),
         danger: true,
         onClick: () =>
           confirmAction({
-            title: '招待を取り消す',
-            content: `${row.email} への招待を取り消しますか？`,
-            okText: '取り消す',
+            title: t('users.confirms.cancelInviteTitle'),
+            content: t('users.confirms.cancelInviteContent', { email: row.email }),
+            okText: t('users.confirms.cancelInviteOk'),
             danger: true,
-            // Backend cancels by invitation ID — but UsersListPage doesn't have invitation ID for pending_invite users.
-            // For now use user.id since backend expects invitation.id. Actual handling: skip via dedicated invitations list page (future).
             onOk: () => cancelInviteMutation.mutate(row.id),
           }),
       });
     }
 
-    if (items.length === 0) return [{ key: 'empty', disabled: true, label: '操作なし' }];
+    if (items.length === 0) return [{ key: 'empty', disabled: true, label: t('common.noActions') }];
     return items;
   }
 
   const columns: ColumnsType<UserSummary> = [
     {
-      title: '氏名',
+      title: t('users.columns.name'),
       dataIndex: 'name',
       key: 'name',
       render: (_: string, row) => (
         <div>
-          <div className="font-medium text-zinc-900">{row.name || '(未設定)'}</div>
+          <div className="font-medium text-zinc-900">{row.name || t('users.nameNotSet')}</div>
           <div className="text-xs text-zinc-500">{row.email}</div>
         </div>
       ),
     },
     {
-      title: 'ロール',
+      title: t('users.columns.role'),
       dataIndex: 'role',
       key: 'role',
       width: 140,
       render: (role: UserRole) => <RoleTag role={role} />,
     },
     {
-      title: 'ステータス',
+      title: t('users.columns.status'),
       dataIndex: 'status',
       key: 'status',
       width: 110,
       render: (status: UserStatus) => <StatusTag status={status} />,
     },
     {
-      title: '2FA',
+      title: t('users.columns.twoFa'),
       dataIndex: 'twoFaEnabled',
       key: 'twoFaEnabled',
       width: 70,
@@ -259,14 +265,14 @@ export function UsersListPage(): JSX.Element {
         enabled ? (
           <span className="inline-flex items-center gap-1 text-xs text-emerald-700">
             <KeyRound size={12} />
-            有効
+            {t('users.twoFaEnabled')}
           </span>
         ) : (
           <span className="text-xs text-zinc-400">—</span>
         ),
     },
     {
-      title: '最終ログイン',
+      title: t('users.columns.lastLogin'),
       dataIndex: 'lastLoginAt',
       key: 'lastLoginAt',
       width: 160,
@@ -274,7 +280,7 @@ export function UsersListPage(): JSX.Element {
         date ? (
           <span className="text-sm text-zinc-600">{dayjs(date).format('YYYY/MM/DD HH:mm')}</span>
         ) : (
-          <span className="text-xs text-zinc-400">未ログイン</span>
+          <span className="text-xs text-zinc-400">{t('users.neverLoggedIn')}</span>
         ),
     },
     {
@@ -287,7 +293,7 @@ export function UsersListPage(): JSX.Element {
           <button
             type="button"
             className="w-8 h-8 rounded-lg grid place-items-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors bg-transparent border-0 cursor-pointer"
-            aria-label="操作"
+            aria-label={t('common.actions')}
           >
             <MoreVertical size={16} />
           </button>
@@ -303,21 +309,19 @@ export function UsersListPage(): JSX.Element {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
-              ユーザー管理
+              {t('users.title')}
             </h1>
-            <p className="m-0 mt-1 text-sm text-zinc-500">
-              アカウントの招待・ロール・ステータスを管理
-            </p>
+            <p className="m-0 mt-1 text-sm text-zinc-500">{t('users.subtitle')}</p>
           </div>
           <Button type="primary" icon={<UserPlus size={14} />} onClick={() => setInviteOpen(true)}>
-            ユーザーを招待
+            {t('users.inviteButton')}
           </Button>
         </div>
 
         {/* Filter bar */}
         <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 flex flex-wrap gap-3 items-center">
           <Input
-            placeholder="氏名・メールで検索"
+            placeholder={t('users.searchPlaceholder')}
             prefix={<Search size={14} className="text-zinc-400" />}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -332,34 +336,34 @@ export function UsersListPage(): JSX.Element {
             style={{ maxWidth: 280 }}
           />
           <Select
-            placeholder="ロール"
+            placeholder={t('users.roleFilter')}
             allowClear
             value={filters.role}
             onChange={(role) => setFilters((f) => ({ ...f, role, page: 1 }))}
             style={{ minWidth: 140 }}
             options={[
-              { value: 'system_admin', label: 'システム管理者' },
-              { value: 'manager', label: 'マネージャー' },
-              { value: 'employee', label: '社員' },
-              { value: 'invited', label: '招待ユーザー' },
+              { value: 'system_admin', label: t('users.roles.system_admin') },
+              { value: 'manager', label: t('users.roles.manager') },
+              { value: 'employee', label: t('users.roles.employee') },
+              { value: 'invited', label: t('users.roles.invited') },
             ]}
           />
           <Select
-            placeholder="ステータス"
+            placeholder={t('users.statusFilter')}
             allowClear
             value={filters.status}
             onChange={(status) => setFilters((f) => ({ ...f, status, page: 1 }))}
             style={{ minWidth: 140 }}
             options={[
-              { value: 'active', label: '有効' },
-              { value: 'pending_invite', label: '招待中' },
-              { value: 'suspended', label: '停止中' },
-              { value: 'disabled', label: '無効' },
+              { value: 'active', label: t('users.statuses.active') },
+              { value: 'pending_invite', label: t('users.statuses.pending_invite') },
+              { value: 'suspended', label: t('users.statuses.suspended') },
+              { value: 'disabled', label: t('users.statuses.disabled') },
             ]}
           />
           <div className="flex-1" />
           <Button icon={<RefreshCw size={14} />} onClick={() => refetch()} loading={isFetching}>
-            更新
+            {t('common.refresh')}
           </Button>
         </div>
 
@@ -375,7 +379,7 @@ export function UsersListPage(): JSX.Element {
               pageSize: filters.pageSize,
               total: data?.total ?? 0,
               showSizeChanger: true,
-              showTotal: (total) => `全 ${total} 件`,
+              showTotal: (total) => t('users.totalCount', { total }),
               onChange: (page, pageSize) => setFilters((f) => ({ ...f, page, pageSize })),
             }}
             size="middle"
@@ -415,10 +419,11 @@ function RoleSubmenu({
   currentRole: UserRole;
   onChange: (role: UserRole) => void;
 }): JSX.Element {
+  const { t } = useTranslation();
   const roles: UserRole[] = ['system_admin', 'manager', 'employee', 'invited'];
   return (
     <div onClick={(e) => e.stopPropagation()}>
-      <div className="text-xs text-zinc-500 px-2 py-1">ロール変更</div>
+      <div className="text-xs text-zinc-500 px-2 py-1">{t('users.menu.changeRole')}</div>
       {roles.map((r) => (
         <button
           key={r}
@@ -431,7 +436,7 @@ function RoleSubmenu({
               : 'text-zinc-700 hover:bg-zinc-100 cursor-pointer'
           }`}
         >
-          {ROLE_LABEL[r]} {r === currentRole && '(現在)'}
+          {t(`users.roles.${r}`)} {r === currentRole && t('users.menu.current')}
         </button>
       ))}
     </div>
@@ -445,10 +450,11 @@ function StatusSubmenu({
   currentStatus: UserStatus;
   onChange: (status: UserStatus) => void;
 }): JSX.Element {
+  const { t } = useTranslation();
   const statuses: UserStatus[] = ['active', 'suspended', 'disabled'];
   return (
     <div onClick={(e) => e.stopPropagation()}>
-      <div className="text-xs text-zinc-500 px-2 py-1">ステータス変更</div>
+      <div className="text-xs text-zinc-500 px-2 py-1">{t('users.menu.changeStatus')}</div>
       {statuses.map((s) => (
         <button
           key={s}
@@ -461,7 +467,7 @@ function StatusSubmenu({
               : 'text-zinc-700 hover:bg-zinc-100 cursor-pointer'
           }`}
         >
-          {STATUS_LABEL[s]} {s === currentStatus && '(現在)'}
+          {t(`users.statuses.${s}`)} {s === currentStatus && t('users.menu.current')}
         </button>
       ))}
     </div>

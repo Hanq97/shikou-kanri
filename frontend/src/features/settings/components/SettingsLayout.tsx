@@ -1,14 +1,8 @@
 import { KeyRound, Monitor, ShieldCheck, UserCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { AppLayout } from '@/shared/components/layout/AppLayout';
-
-const TABS = [
-  { key: 'profile', to: '/settings/profile', label: 'プロフィール', icon: UserCircle },
-  { key: 'password', to: '/settings/password', label: 'パスワード', icon: KeyRound },
-  { key: '2fa', to: '/settings/2fa', label: '2要素認証', icon: ShieldCheck },
-  { key: 'sessions', to: '/settings/sessions', label: 'セッション', icon: Monitor },
-];
 
 interface SettingsLayoutProps {
   title: string;
@@ -17,16 +11,24 @@ interface SettingsLayoutProps {
 }
 
 export function SettingsLayout({ title, description, children }: SettingsLayoutProps): JSX.Element {
+  const { t } = useTranslation();
   const location = useLocation();
+
+  const TABS = [
+    { key: 'profile', to: '/settings/profile', label: t('settings.tabs.profile'), icon: UserCircle },
+    { key: 'password', to: '/settings/password', label: t('settings.tabs.password'), icon: KeyRound },
+    { key: '2fa', to: '/settings/2fa', label: t('settings.tabs.twoFa'), icon: ShieldCheck },
+    { key: 'sessions', to: '/settings/sessions', label: t('settings.tabs.sessions'), icon: Monitor },
+  ];
 
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
-          <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">アカウント設定</h1>
-          <p className="m-0 mt-1 text-sm text-zinc-500">
-            プロフィール、パスワード、2要素認証、セッションを管理
-          </p>
+          <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
+            {t('settings.title')}
+          </h1>
+          <p className="m-0 mt-1 text-sm text-zinc-500">{t('settings.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6">

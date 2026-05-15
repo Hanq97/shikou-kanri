@@ -3,6 +3,7 @@ import { Alert, Button, Form, Input, Result } from 'antd';
 import { ArrowLeft, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi } from '@/shared/api/auth.api';
 import { extractApiError } from '@/shared/api/client';
@@ -11,6 +12,7 @@ import { AuthLayout } from '../components/AuthLayout';
 import { ResetPasswordSchema, type ResetPasswordFormValues } from '../schemas/password.schema';
 
 export function ResetPasswordPage(): JSX.Element {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const token = params.get('token');
   const navigate = useNavigate();
@@ -29,14 +31,14 @@ export function ResetPasswordPage(): JSX.Element {
 
   if (!token) {
     return (
-      <AuthLayout title="無効なリンク">
+      <AuthLayout title={t('auth.resetPassword.invalidTitle')}>
         <Result
           status="error"
-          title="リセットリンクが無効です"
-          subTitle="リンクを再度確認するか、新しいリセットリンクをリクエストしてください。"
+          title={t('auth.resetPassword.invalidTitle')}
+          subTitle={t('auth.resetPassword.invalidSubtitle')}
           extra={
             <Link to="/forgot-password">
-              <Button type="primary">リセットリンクを再送信</Button>
+              <Button type="primary">{t('auth.resetPassword.resendLink')}</Button>
             </Link>
           }
         />
@@ -60,23 +62,23 @@ export function ResetPasswordPage(): JSX.Element {
 
   if (success) {
     return (
-      <AuthLayout title="パスワードを変更しました">
+      <AuthLayout title={t('auth.resetPassword.successTitle')}>
         <Result
           status="success"
-          title="パスワード変更完了"
-          subTitle="新しいパスワードでログインしてください。3秒後にログイン画面へ移動します。"
+          title={t('auth.resetPassword.successTitle')}
+          subTitle={t('auth.resetPassword.successSubtitle')}
         />
       </AuthLayout>
     );
   }
 
   return (
-    <AuthLayout title="新しいパスワード" subtitle="新しいパスワードを設定してください">
+    <AuthLayout title={t('auth.resetPassword.title')} subtitle={t('auth.resetPassword.subtitle')}>
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
-          label="新しいパスワード"
+          label={t('auth.resetPassword.newPassword')}
           validateStatus={errors.password ? 'error' : ''}
-          help={errors.password?.message ?? '12文字以上 + 大文字 + 小文字 + 数字 + 記号'}
+          help={errors.password?.message ?? t('auth.resetPassword.policyHint')}
         >
           <Controller
             name="password"
@@ -93,7 +95,7 @@ export function ResetPasswordPage(): JSX.Element {
         </Form.Item>
 
         <Form.Item
-          label="新しいパスワード（確認）"
+          label={t('auth.resetPassword.newPasswordConfirm')}
           validateStatus={errors.passwordConfirm ? 'error' : ''}
           help={errors.passwordConfirm?.message}
         >
@@ -121,7 +123,7 @@ export function ResetPasswordPage(): JSX.Element {
         )}
 
         <Button type="primary" htmlType="submit" size="large" block loading={submitting}>
-          パスワードを変更
+          {t('auth.resetPassword.submit')}
         </Button>
 
         <div className="text-center mt-4">
@@ -130,7 +132,7 @@ export function ResetPasswordPage(): JSX.Element {
             className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-brand-600 transition-colors"
           >
             <ArrowLeft size={14} />
-            ログインに戻る
+            {t('common.backToLogin')}
           </Link>
         </div>
       </Form>

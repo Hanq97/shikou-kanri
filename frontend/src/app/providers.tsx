@@ -1,7 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App as AntdApp, ConfigProvider, theme as antdTheme } from 'antd';
+import enUS from 'antd/locale/en_US';
 import jaJP from 'antd/locale/ja_JP';
-import type { ReactNode } from 'react';
+import viVN from 'antd/locale/vi_VN';
+import { useMemo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/shared/i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,6 +16,12 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const ANTD_LOCALES: Record<string, typeof jaJP> = {
+  ja: jaJP,
+  en: enUS,
+  vi: viVN,
+};
 
 const theme = {
   algorithm: antdTheme.defaultAlgorithm,
@@ -80,8 +90,11 @@ const theme = {
 };
 
 export function AppProviders({ children }: { children: ReactNode }): JSX.Element {
+  const { i18n } = useTranslation();
+  const antdLocale = useMemo(() => ANTD_LOCALES[i18n.language] ?? jaJP, [i18n.language]);
+
   return (
-    <ConfigProvider locale={jaJP} theme={theme}>
+    <ConfigProvider locale={antdLocale} theme={theme}>
       <AntdApp>
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       </AntdApp>
