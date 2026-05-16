@@ -71,7 +71,7 @@ export function ChangeStatusModal({
       onCancel={onClose}
       onOk={submit}
       confirmLoading={submitting}
-      okText={t('common.ok')}
+      okText={t('common.confirm')}
       cancelText={t('common.cancel')}
       destroyOnClose
     >
