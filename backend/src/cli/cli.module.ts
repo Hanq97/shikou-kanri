@@ -7,6 +7,7 @@ import { PrismaModule } from '../shared/database/prisma.module';
 import { HttpHelpersModule } from '../shared/http/http.module';
 import { AppLoggerModule } from '../shared/observability/logger.module';
 import { BootstrapCreateAdminCommand } from './bootstrap-create-admin.command';
+import { EmergencyDisable2FaCommand } from './emergency-disable-2fa.command';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { BootstrapCreateAdminCommand } from './bootstrap-create-admin.command';
     NotificationModule,
     AuthModule,
   ],
-  providers: [BootstrapCreateAdminCommand],
+  providers: [BootstrapCreateAdminCommand, EmergencyDisable2FaCommand],
 })
 export class CliModule {}

@@ -186,3 +186,9 @@ export class AuthRateLimitedError extends AppError {
     );
   }
 }
+
+export class AuthCannotSelfActionError extends AppError {
+  constructor(message = '自分自身に対してこの操作を実行できません。') {
+    super('AUTH_CANNOT_SELF_ACTION', 403, message);
+  }
+}

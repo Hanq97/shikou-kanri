@@ -27,6 +27,16 @@ const TEST_USERS = [
     role: 'system_admin' as const,
   },
   {
+    // Backup admin for 2FA emergency recovery — when primary admin loses authenticator app,
+    // log in as admin2 → /admin/users → primary admin → 「2FA強制無効化」.
+    // Without a 2nd admin, primary admin locked out of 2FA recovery (self-disable is blocked
+    // by policy). For prod, use CLI: `pnpm --filter backend cli emergency:disable-2fa <email>`.
+    email: 'admin2@dev.shikou-kanri.local',
+    name: '管理者次郎',
+    nameKana: 'カンリシャジロウ',
+    role: 'system_admin' as const,
+  },
+  {
     email: 'manager@dev.shikou-kanri.local',
     name: '営業マネージャー',
     nameKana: 'エイギョウマネージャー',
@@ -48,7 +58,9 @@ async function main(): Promise<void> {
   console.log('🌱 Seeding dev users...');
 
   for (const user of TEST_USERS) {
-    const existing = await prisma.user.findUnique({ where: { email: user.email } });
+    const existing = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
     if (existing) {
       // eslint-disable-next-line no-console
       console.log(`  ↩  ${user.email} already exists, skipping`);
@@ -69,7 +81,9 @@ async function main(): Promise<void> {
   // eslint-disable-next-line no-console
   console.log('');
   // eslint-disable-next-line no-console
-  console.log(`✅ Seed complete. Password for ALL test users: ${SEED_PASSWORD}`);
+  console.log(
+    `✅ Seed complete. Password for ALL test users: ${SEED_PASSWORD}`,
+  );
   // eslint-disable-next-line no-console
   console.log('   ⚠️  DEV ONLY — never seed prod with hardcoded credentials.');
 

@@ -151,14 +151,15 @@ export class AuditStubService {
 
   log2FaDisable(
     userId: string,
-    reason: 'user_self' | 'admin_emergency',
+    reason: 'user_self' | 'admin_emergency' | 'cli_emergency',
     actorId: string | null,
     ctx: RequestContext,
     tx?: Tx,
   ): Promise<void> {
     return this.log(
       {
-        actorUserId: actorId ?? userId,
+        // cli_emergency: actor = system (null). user_self / admin_emergency: actor = explicit or target.
+        actorUserId: reason === 'cli_emergency' ? null : (actorId ?? userId),
         action: 'auth.2fa.disable',
         entityType: 'user',
         entityId: userId,
