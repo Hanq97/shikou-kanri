@@ -10,7 +10,11 @@ import {
 } from '../../../shared/exceptions/auth-errors';
 import { NotFoundError } from '../../../shared/exceptions/app-error';
 import { EmailService } from '../../notification/email.service';
-import { AuthenticatedUser, RequestContext, UserRoleName } from '../domain/types';
+import {
+  AuthenticatedUser,
+  RequestContext,
+  UserRoleName,
+} from '../domain/types';
 import { AuditStubService } from '../internal/audit-stub.service';
 import { InvitationRepository } from '../repositories/invitation.repository';
 import { UserRepository } from '../repositories/user.repository';
@@ -24,7 +28,11 @@ const ROLE_DISPLAY: Record<UserRoleName, string> = {
   invited: '招待ユーザー（職人・協力業者）',
 };
 
-const MANAGER_ALLOWED_ROLES: UserRoleName[] = ['manager', 'employee', 'invited'];
+const MANAGER_ALLOWED_ROLES: UserRoleName[] = [
+  'manager',
+  'employee',
+  'invited',
+];
 
 export interface CreateInvitationInput {
   email: string;
@@ -53,17 +61,24 @@ export class InvitationsService {
     // Permission check
     if (inviter.role !== 'system_admin') {
       if (!MANAGER_ALLOWED_ROLES.includes(input.role as UserRoleName)) {
-        throw new AuthInsufficientPermissionError('管理者ロールへの招待は管理者のみが行えます');
+        throw new AuthInsufficientPermissionError(
+          '管理者ロールへの招待は管理者のみが行えます',
+        );
       }
     }
 
     const normalizedEmail = input.email.toLowerCase();
 
     // Check user does not already exist
-    const existing = await this.users.findByEmail(normalizedEmail, undefined, true);
+    const existing = await this.users.findByEmail(
+      normalizedEmail,
+      undefined,
+      true,
+    );
     if (existing) throw new AuthUserExistsError();
 
-    const existingPending = await this.invitations.findActiveByEmail(normalizedEmail);
+    const existingPending =
+      await this.invitations.findActiveByEmail(normalizedEmail);
     if (existingPending) {
       // Cancel old pending, allow re-invite
       await this.invitations.cancel(existingPending.id);
@@ -85,7 +100,14 @@ export class InvitationsService {
         },
         tx,
       );
-      await this.audit.logInvitationCreated(inv.id, normalizedEmail, input.role, inviter.id, ctx, tx);
+      await this.audit.logInvitationCreated(
+        inv.id,
+        normalizedEmail,
+        input.role,
+        inviter.id,
+        ctx,
+        tx,
+      );
       return inv;
     });
 
@@ -105,10 +127,19 @@ export class InvitationsService {
       },
     });
 
-    return { id: invitation.id, email: invitation.email, role: invitation.role, expiresAt };
+    return {
+      id: invitation.id,
+      email: invitation.email,
+      role: invitation.role,
+      expiresAt,
+    };
   }
 
-  async cancelInvitation(id: string, actor: AuthenticatedUser, ctx: RequestContext): Promise<void> {
+  async cancelInvitation(
+    id: string,
+    actor: AuthenticatedUser,
+    ctx: RequestContext,
+  ): Promise<void> {
     const inv = await this.invitations.findById(id);
     if (!inv) throw new NotFoundError('invitation', id);
 

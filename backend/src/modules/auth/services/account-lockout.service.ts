@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../shared/database/prisma.service';
-import {
-  AuthAccountLockedError,
-} from '../../../shared/exceptions/auth-errors';
+import { AuthAccountLockedError } from '../../../shared/exceptions/auth-errors';
 import { RequestContext } from '../domain/types';
 import { AuditStubService } from '../internal/audit-stub.service';
 import { UserRepository } from '../repositories/user.repository';
@@ -11,7 +9,6 @@ import { UserRepository } from '../repositories/user.repository';
 export type Tx = Prisma.TransactionClient | PrismaService;
 
 const LAYER_1_THRESHOLD = 5;
-const LAYER_1_WINDOW_MS = 15 * 60 * 1000;
 const LAYER_1_LOCK_MS = 15 * 60 * 1000;
 const LAYER_2_THRESHOLD = 10;
 
@@ -35,7 +32,10 @@ export class AccountLockoutService {
     const user = await this.users.findById(userId, tx);
     if (!user) return;
     if (user.requireAdminUnlock) {
-      throw new AuthAccountLockedError(new Date(Date.now() + 24 * 60 * 60 * 1000), true);
+      throw new AuthAccountLockedError(
+        new Date(Date.now() + 24 * 60 * 60 * 1000),
+        true,
+      );
     }
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       throw new AuthAccountLockedError(user.lockedUntil, false);
@@ -99,7 +99,12 @@ export class AccountLockoutService {
     );
   }
 
-  async manualUnlock(userId: string, actorId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
+  async manualUnlock(
+    userId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
     await this.users.update(
       userId,
       {

@@ -1,4 +1,10 @@
-import { IsBoolean, IsString, Length, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsString,
+  Length,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class Disable2FaDto {
   @IsString()

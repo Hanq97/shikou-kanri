@@ -16,12 +16,19 @@ export class CookieService {
   }
 
   get refreshCookieName(): string {
-    return this.config.isProduction() ? REFRESH_COOKIE_PROD : REFRESH_COOKIE_DEV;
+    return this.config.isProduction()
+      ? REFRESH_COOKIE_PROD
+      : REFRESH_COOKIE_DEV;
   }
 
   setAuthCookies(
     res: Response,
-    tokens: { accessToken: string; refreshToken: string; accessExpiresIn: number; refreshExpiresIn: number },
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+      accessExpiresIn: number;
+      refreshExpiresIn: number;
+    },
   ): void {
     const isProd = this.config.isProduction();
     const baseOpts: CookieOptions = {
@@ -55,12 +62,16 @@ export class CookieService {
   }
 
   extractAccessToken(req: Request): string | null {
-    const cookies = req.cookies as Record<string, string | undefined> | undefined;
+    const cookies = req.cookies as
+      | Record<string, string | undefined>
+      | undefined;
     return cookies?.[this.accessCookieName] ?? null;
   }
 
   extractRefreshToken(req: Request): string | null {
-    const cookies = req.cookies as Record<string, string | undefined> | undefined;
+    const cookies = req.cookies as
+      | Record<string, string | undefined>
+      | undefined;
     return cookies?.[this.refreshCookieName] ?? null;
   }
 }

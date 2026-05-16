@@ -6,7 +6,10 @@ const cache = new Map<string, HandlebarsTemplateDelegate>();
 
 const TEMPLATE_DIR = path.resolve(__dirname);
 
-export function renderTemplate<TVars extends object>(name: string, vars: TVars): string {
+export function renderTemplate<TVars extends object>(
+  name: string,
+  vars: TVars,
+): string {
   let compiled = cache.get(name);
   if (!compiled) {
     const file = path.join(TEMPLATE_DIR, `${name}.hbs`);

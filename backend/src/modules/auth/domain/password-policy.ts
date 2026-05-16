@@ -18,7 +18,9 @@ const RULES: PasswordPolicyFailure[] = [
 
 export const PASSWORD_MIN_LENGTH = 12;
 
-export function validatePasswordPolicy(plaintext: string): PasswordPolicyResult {
+export function validatePasswordPolicy(
+  plaintext: string,
+): PasswordPolicyResult {
   const failures: PasswordPolicyFailure[] = [];
 
   if (plaintext.length < PASSWORD_MIN_LENGTH) failures.push(RULES[0]);

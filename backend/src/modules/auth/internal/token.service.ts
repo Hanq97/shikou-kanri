@@ -12,7 +12,12 @@ import {
   AuthTokenExpiredError,
   AuthTokenInvalidError,
 } from '../../../shared/exceptions/auth-errors';
-import { JwtAccessPayload, RequestContext, TokenPair, UserRoleName } from '../domain/types';
+import {
+  JwtAccessPayload,
+  RequestContext,
+  TokenPair,
+  UserRoleName,
+} from '../domain/types';
 
 const MAX_ACTIVE_REFRESH_PER_USER = 5;
 const ACCESS_TTL_SECONDS = 30 * 60; // 30 min
@@ -38,7 +43,10 @@ export class TokenService {
     return REFRESH_TTL_SECONDS;
   }
 
-  signAccessToken(payload: Omit<JwtAccessPayload, 'jti'>): { token: string; jti: string } {
+  signAccessToken(payload: Omit<JwtAccessPayload, 'jti'>): {
+    token: string;
+    jti: string;
+  } {
     const jti = randomUUID();
     const token = this.jwt.sign(
       { ...payload, jti },
@@ -56,7 +64,8 @@ export class TokenService {
         secret: this.config.get('JWT_ACCESS_SECRET'),
       });
     } catch (err) {
-      if ((err as Error).name === 'TokenExpiredError') throw new AuthTokenExpiredError();
+      if ((err as Error).name === 'TokenExpiredError')
+        throw new AuthTokenExpiredError();
       throw new AuthTokenInvalidError();
     }
   }
@@ -100,7 +109,11 @@ export class TokenService {
       },
     });
 
-    const { token: accessToken } = this.signAccessToken({ sub: userId, email, role });
+    const { token: accessToken } = this.signAccessToken({
+      sub: userId,
+      email,
+      role,
+    });
 
     return {
       accessToken,
@@ -226,7 +239,10 @@ export class TokenService {
     if (active.length < MAX_ACTIVE_REFRESH_PER_USER) return;
 
     // Revoke oldest to bring count back to MAX-1 (so we can add 1 new)
-    const toRevoke = active.slice(0, active.length - MAX_ACTIVE_REFRESH_PER_USER + 1);
+    const toRevoke = active.slice(
+      0,
+      active.length - MAX_ACTIVE_REFRESH_PER_USER + 1,
+    );
     await client.refreshToken.updateMany({
       where: { id: { in: toRevoke.map((t) => t.id) } },
       data: { revokedAt: new Date(), revokedReason: 'admin_revoke' },

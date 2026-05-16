@@ -40,14 +40,23 @@ export class UserRepository {
     });
   }
 
-  findByEmail(email: string, tx?: Tx, includeDeleted = false): Promise<User | null> {
+  findByEmail(
+    email: string,
+    tx?: Tx,
+    includeDeleted = false,
+  ): Promise<User | null> {
     const client = tx ?? this.prisma;
     return client.user.findFirst({
-      where: { email: email.toLowerCase(), ...(includeDeleted ? {} : { deletedAt: null }) },
+      where: {
+        email: email.toLowerCase(),
+        ...(includeDeleted ? {} : { deletedAt: null }),
+      },
     });
   }
 
-  async list(filter: ListUsersFilter): Promise<{ data: User[]; total: number }> {
+  async list(
+    filter: ListUsersFilter,
+  ): Promise<{ data: User[]; total: number }> {
     const where: Prisma.UserWhereInput = {
       ...(filter.includeDeleted ? {} : { deletedAt: null }),
       ...(filter.role ? { role: filter.role } : {}),
@@ -130,6 +139,9 @@ export class UserRepository {
 
   setLastLoginAt(id: string, timestamp: Date, tx?: Tx): Promise<User> {
     const client = tx ?? this.prisma;
-    return client.user.update({ where: { id }, data: { lastLoginAt: timestamp } });
+    return client.user.update({
+      where: { id },
+      data: { lastLoginAt: timestamp },
+    });
   }
 }

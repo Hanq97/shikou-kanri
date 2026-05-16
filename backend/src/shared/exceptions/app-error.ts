@@ -29,7 +29,9 @@ export class NotFoundError extends AppError {
     super(
       'NOT_FOUND',
       404,
-      identifier ? `${resource} không tìm thấy: ${identifier}` : `${resource} không tìm thấy`,
+      identifier
+        ? `${resource} không tìm thấy: ${identifier}`
+        : `${resource} không tìm thấy`,
       identifier ? { resource, identifier } : { resource },
     );
   }
@@ -42,7 +44,11 @@ export class ValidationError extends AppError {
 }
 
 export class ConflictError extends AppError {
-  constructor(code: string, message: string, details?: Record<string, unknown>) {
+  constructor(
+    code: string,
+    message: string,
+    details?: Record<string, unknown>,
+  ) {
     super(code, 409, message, details);
   }
 }

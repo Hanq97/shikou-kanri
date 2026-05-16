@@ -49,18 +49,30 @@ export class AuthService {
 
   // === Login ===
 
-  async login(email: string, password: string, ctx: RequestContext): Promise<LoginResult> {
+  async login(
+    email: string,
+    password: string,
+    ctx: RequestContext,
+  ): Promise<LoginResult> {
     const normalizedEmail = email.toLowerCase();
     const user = await this.users.findByEmail(normalizedEmail);
 
     // Constant-time-ish: verify password even if user not found
-    const passwordValid = await this.password.verify(user?.passwordHash ?? null, password);
+    const passwordValid = await this.password.verify(
+      user?.passwordHash ?? null,
+      password,
+    );
 
     if (!user || !passwordValid || user.deletedAt !== null) {
       if (user) {
         await this.prisma.$transaction(async (tx) => {
           await this.lockout.recordFailedAttempt(user.id, ctx, tx);
-          await this.audit.logLoginFailure(normalizedEmail, 'invalid_credentials', ctx, tx);
+          await this.audit.logLoginFailure(
+            normalizedEmail,
+            'invalid_credentials',
+            ctx,
+            tx,
+          );
         });
       } else {
         await this.audit.logLoginFailure(normalizedEmail, 'unknown_email', ctx);
@@ -78,27 +90,37 @@ export class AuthService {
     await this.lockout.resetAttempts(user.id);
 
     if (user.twoFaEnabled && user.twoFaSecret) {
-      const { token: intermediateToken, expiresIn } = this.intermediate.issue(user.id);
-      await this.audit.log(
-        {
-          actorUserId: user.id,
-          action: 'auth.login.pending_2fa',
-          entityType: 'user',
-          entityId: user.id,
-          ctx,
-        },
+      const { token: intermediateToken, expiresIn } = this.intermediate.issue(
+        user.id,
       );
+      await this.audit.log({
+        actorUserId: user.id,
+        action: 'auth.login.pending_2fa',
+        entityType: 'user',
+        entityId: user.id,
+        ctx,
+      });
       return { kind: 'requires2fa', intermediateToken, expiresIn };
     }
 
     const tokens = await this.prisma.$transaction(async (tx) => {
-      const pair = await this.tokens.issueTokenPair(user.id, user.role, user.email, ctx, tx);
+      const pair = await this.tokens.issueTokenPair(
+        user.id,
+        user.role,
+        user.email,
+        ctx,
+        tx,
+      );
       await this.users.setLastLoginAt(user.id, new Date(), tx);
       await this.audit.logLoginSuccess(user.id, ctx, tx);
       return pair;
     });
 
-    return { kind: 'success', user: this.toAuthenticatedUser(user, false), tokens };
+    return {
+      kind: 'success',
+      user: this.toAuthenticatedUser(user, false),
+      tokens,
+    };
   }
 
   // === 2FA verify (TOTP) ===
@@ -108,10 +130,19 @@ export class AuthService {
     code: string,
     useBackupCode: boolean,
     ctx: RequestContext,
-  ): Promise<{ user: AuthenticatedUser; tokens: TokenPair; remainingBackupCodes?: number }> {
+  ): Promise<{
+    user: AuthenticatedUser;
+    tokens: TokenPair;
+    remainingBackupCodes?: number;
+  }> {
     const { userId } = this.intermediate.verify(intermediateToken);
     const user = await this.users.findById(userId);
-    if (!user || user.deletedAt !== null || !user.twoFaEnabled || !user.twoFaSecret) {
+    if (
+      !user ||
+      user.deletedAt !== null ||
+      !user.twoFaEnabled ||
+      !user.twoFaSecret
+    ) {
       throw new Auth2FaInvalidError();
     }
 
@@ -119,7 +150,10 @@ export class AuthService {
 
     if (useBackupCode) {
       if (!user.twoFaRecoveryCodes) throw new Auth2FaInvalidError();
-      const result = this.totp.verifyAndConsumeBackupCode(code, user.twoFaRecoveryCodes);
+      const result = this.totp.verifyAndConsumeBackupCode(
+        code,
+        user.twoFaRecoveryCodes,
+      );
       if (!result.valid || !result.updatedEncrypted) {
         await this.audit.log({
           actorUserId: user.id,
@@ -130,7 +164,9 @@ export class AuthService {
         });
         throw new Auth2FaInvalidError();
       }
-      await this.users.update(user.id, { twoFaRecoveryCodes: result.updatedEncrypted });
+      await this.users.update(user.id, {
+        twoFaRecoveryCodes: result.updatedEncrypted,
+      });
       remainingBackupCodes = result.remaining;
     } else {
       const secret = this.totp.decryptSecret(user.twoFaSecret);
@@ -147,7 +183,13 @@ export class AuthService {
     }
 
     const tokens = await this.prisma.$transaction(async (tx) => {
-      const pair = await this.tokens.issueTokenPair(user.id, user.role, user.email, ctx, tx);
+      const pair = await this.tokens.issueTokenPair(
+        user.id,
+        user.role,
+        user.email,
+        ctx,
+        tx,
+      );
       await this.users.setLastLoginAt(user.id, new Date(), tx);
       await this.audit.logLoginSuccess(user.id, ctx, tx);
       return pair;
@@ -162,21 +204,31 @@ export class AuthService {
 
   // === Refresh ===
 
-  async refresh(refreshTokenPlaintext: string, ctx: RequestContext): Promise<TokenPair> {
+  async refresh(
+    refreshTokenPlaintext: string,
+    ctx: RequestContext,
+  ): Promise<TokenPair> {
     if (!refreshTokenPlaintext) throw new AuthRefreshInvalidError();
     return this.tokens.rotateTokenPair(refreshTokenPlaintext, ctx);
   }
 
   // === Logout ===
 
-  async logout(refreshTokenPlaintext: string | null, userId: string, ctx: RequestContext): Promise<void> {
+  async logout(
+    refreshTokenPlaintext: string | null,
+    userId: string,
+    ctx: RequestContext,
+  ): Promise<void> {
     if (refreshTokenPlaintext) {
       await this.tokens.revokeByPlaintext(refreshTokenPlaintext, 'logout');
     }
     await this.audit.logLogout(userId, ctx);
   }
 
-  async logoutAll(userId: string, ctx: RequestContext): Promise<{ revokedCount: number }> {
+  async logoutAll(
+    userId: string,
+    ctx: RequestContext,
+  ): Promise<{ revokedCount: number }> {
     const revokedCount = await this.tokens.revokeAllForUser(userId, 'logout');
     await this.audit.logLogoutAll(userId, revokedCount, ctx);
     return { revokedCount };
@@ -225,7 +277,12 @@ export class AuthService {
         ? this.tokens.hashRefreshToken(currentRefreshTokenPlaintext)
         : null;
       if (currentHash) {
-        await this.tokens.revokeAllForUserExcept(userId, currentHash, 'password_change', tx);
+        await this.tokens.revokeAllForUserExcept(
+          userId,
+          currentHash,
+          'password_change',
+          tx,
+        );
       } else {
         await this.tokens.revokeAllForUser(userId, 'password_change', tx);
       }
@@ -240,17 +297,25 @@ export class AuthService {
 
   // === Password reset ===
 
-  async requestPasswordReset(email: string, ctx: RequestContext): Promise<void> {
+  async requestPasswordReset(
+    email: string,
+    ctx: RequestContext,
+  ): Promise<void> {
     const normalizedEmail = email.toLowerCase();
     const user = await this.users.findByEmail(normalizedEmail);
     if (!user || user.deletedAt !== null) {
       // No-op to prevent enumeration; small artificial delay
-      await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 50 + Math.random() * 100),
+      );
       return;
     }
 
     // Rate limit: 3 per hour
-    const recentCount = await this.passwordResets.countRecentForUser(user.id, 60 * 60 * 1000);
+    const recentCount = await this.passwordResets.countRecentForUser(
+      user.id,
+      60 * 60 * 1000,
+    );
     if (recentCount >= 3) {
       // Silently skip to avoid enumeration; could still be valid in practice
       return;
@@ -282,13 +347,18 @@ export class AuthService {
     });
   }
 
-  async resetPassword(token: string, newPassword: string, ctx: RequestContext): Promise<void> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+    ctx: RequestContext,
+  ): Promise<void> {
     if (!token) throw new AuthPasswordResetInvalidError();
     const tokenHash = this.hashes.sha256(token);
     const record = await this.passwordResets.findByHash(tokenHash);
     if (!record) throw new AuthPasswordResetInvalidError();
     if (record.usedAt) throw new AuthPasswordResetInvalidError();
-    if (record.expiresAt < new Date()) throw new AuthPasswordResetExpiredError();
+    if (record.expiresAt < new Date())
+      throw new AuthPasswordResetExpiredError();
 
     this.password.validatePolicy(newPassword);
     const passwordHash = await this.password.hash(newPassword);
@@ -313,7 +383,9 @@ export class AuthService {
 
   // === 2FA enrollment ===
 
-  async start2FaEnrollment(userId: string): Promise<{ secret: string; otpauthUri: string; qrCodeDataUrl: string }> {
+  async start2FaEnrollment(
+    userId: string,
+  ): Promise<{ secret: string; otpauthUri: string; qrCodeDataUrl: string }> {
     const user = await this.users.findById(userId);
     if (!user) throw new AuthRefreshInvalidError();
 
@@ -330,7 +402,11 @@ export class AuthService {
     return { secret, otpauthUri, qrCodeDataUrl };
   }
 
-  async verify2FaEnrollment(userId: string, code: string, ctx: RequestContext): Promise<{ backupCodes: string[] }> {
+  async verify2FaEnrollment(
+    userId: string,
+    code: string,
+    ctx: RequestContext,
+  ): Promise<{ backupCodes: string[] }> {
     const user = await this.users.findById(userId);
     if (!user || !user.twoFaPendingSecret) throw new Auth2FaInvalidError();
     if (user.twoFaPendingUntil && user.twoFaPendingUntil < new Date()) {
@@ -378,12 +454,18 @@ export class AuthService {
       throw new AuthInvalidCredentialsError();
     }
 
-    const passwordValid = await this.password.verify(user.passwordHash, password);
+    const passwordValid = await this.password.verify(
+      user.passwordHash,
+      password,
+    );
     if (!passwordValid) throw new AuthInvalidCredentialsError();
 
     if (useBackupCode) {
       if (!user.twoFaRecoveryCodes) throw new Auth2FaInvalidError();
-      const result = this.totp.verifyAndConsumeBackupCode(code, user.twoFaRecoveryCodes);
+      const result = this.totp.verifyAndConsumeBackupCode(
+        code,
+        user.twoFaRecoveryCodes,
+      );
       if (!result.valid) throw new Auth2FaInvalidError();
     } else {
       if (!user.twoFaSecret) throw new Auth2FaInvalidError();
@@ -440,11 +522,14 @@ export class AuthService {
   ): Promise<{ user: AuthenticatedUser; tokens: TokenPair }> {
     if (!token) throw new AuthInvitationInvalidError();
     const tokenHash = this.hashes.sha256(token);
-    const invitation = await this.prisma.invitation.findUnique({ where: { tokenHash } });
+    const invitation = await this.prisma.invitation.findUnique({
+      where: { tokenHash },
+    });
     if (!invitation) throw new AuthInvitationInvalidError();
     if (invitation.cancelledAt) throw new AuthInvitationInvalidError();
     if (invitation.usedAt) throw new AuthInvitationUsedError();
-    if (invitation.expiresAt < new Date()) throw new AuthInvitationExpiredError();
+    if (invitation.expiresAt < new Date())
+      throw new AuthInvitationExpiredError();
 
     this.password.validatePolicy(password);
     const passwordHash = await this.password.hash(password);
@@ -487,7 +572,13 @@ export class AuthService {
 
       await this.audit.logInvitationAccepted(invitation.id, user.id, ctx, tx);
 
-      const pair = await this.tokens.issueTokenPair(user.id, user.role, user.email, ctx, tx);
+      const pair = await this.tokens.issueTokenPair(
+        user.id,
+        user.role,
+        user.email,
+        ctx,
+        tx,
+      );
       await this.users.setLastLoginAt(user.id, new Date(), tx);
 
       return { user, tokens: pair };
@@ -498,16 +589,19 @@ export class AuthService {
 
   // === Helpers ===
 
-  toAuthenticatedUser(user: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    status: string;
-    twoFaEnabled: boolean;
-    forcePasswordChange: boolean;
-    forceTwoFaEnrollment: boolean;
-  }, _includeSensitive: boolean): AuthenticatedUser {
+  toAuthenticatedUser(
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      role: string;
+      status: string;
+      twoFaEnabled: boolean;
+      forcePasswordChange: boolean;
+      forceTwoFaEnrollment: boolean;
+    },
+    _includeSensitive: boolean,
+  ): AuthenticatedUser {
     return {
       id: user.id,
       email: user.email,

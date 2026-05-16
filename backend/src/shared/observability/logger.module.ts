@@ -47,7 +47,9 @@ const REDACT_PATHS = [
             url: req.url,
             traceId: req.traceId,
           }),
-          res: (res: { statusCode: number }) => ({ statusCode: res.statusCode }),
+          res: (res: { statusCode: number }) => ({
+            statusCode: res.statusCode,
+          }),
         },
       },
     }),

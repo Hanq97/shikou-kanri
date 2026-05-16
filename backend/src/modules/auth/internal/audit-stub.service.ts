@@ -41,31 +41,112 @@ export class AuditStubService {
   // === Convenience methods ===
 
   logLoginSuccess(userId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.login.success', entityType: 'user', entityId: userId, ctx }, tx);
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.login.success',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
-  logLoginFailure(email: string, reason: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ action: 'auth.login.failure', entityType: 'auth', changes: { email, reason }, ctx }, tx);
+  logLoginFailure(
+    email: string,
+    reason: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        action: 'auth.login.failure',
+        entityType: 'auth',
+        changes: { email, reason },
+        ctx,
+      },
+      tx,
+    );
   }
 
   logLogout(userId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.logout', entityType: 'user', entityId: userId, ctx }, tx);
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.logout',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
-  logLogoutAll(userId: string, revokedCount: number, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.logout_all', entityType: 'user', entityId: userId, changes: { revokedCount }, ctx }, tx);
+  logLogoutAll(
+    userId: string,
+    revokedCount: number,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.logout_all',
+        entityType: 'user',
+        entityId: userId,
+        changes: { revokedCount },
+        ctx,
+      },
+      tx,
+    );
   }
 
-  logPasswordChange(userId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.password.change', entityType: 'user', entityId: userId, ctx }, tx);
+  logPasswordChange(
+    userId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.password.change',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
-  logPasswordReset(userId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.password.reset', entityType: 'user', entityId: userId, ctx }, tx);
+  logPasswordReset(
+    userId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.password.reset',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
   log2FaEnroll(userId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.2fa.enroll', entityType: 'user', entityId: userId, ctx }, tx);
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.2fa.enroll',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
   log2FaDisable(
@@ -88,12 +169,40 @@ export class AuditStubService {
     );
   }
 
-  logAccountLocked(userId: string, layer: 1 | 2, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ action: 'auth.account.locked', entityType: 'user', entityId: userId, changes: { layer }, ctx }, tx);
+  logAccountLocked(
+    userId: string,
+    layer: 1 | 2,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        action: 'auth.account.locked',
+        entityType: 'user',
+        entityId: userId,
+        changes: { layer },
+        ctx,
+      },
+      tx,
+    );
   }
 
-  logAccountUnlocked(userId: string, actorId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: actorId, action: 'auth.account.unlocked', entityType: 'user', entityId: userId, ctx }, tx);
+  logAccountUnlocked(
+    userId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'auth.account.unlocked',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
   logInvitationCreated(
@@ -117,12 +226,40 @@ export class AuditStubService {
     );
   }
 
-  logInvitationAccepted(invitationId: string, userId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: userId, action: 'auth.invitation.accepted', entityType: 'invitation', entityId: invitationId, ctx }, tx);
+  logInvitationAccepted(
+    invitationId: string,
+    userId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: userId,
+        action: 'auth.invitation.accepted',
+        entityType: 'invitation',
+        entityId: invitationId,
+        ctx,
+      },
+      tx,
+    );
   }
 
-  logInvitationCancelled(invitationId: string, actorId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: actorId, action: 'auth.invitation.cancelled', entityType: 'invitation', entityId: invitationId, ctx }, tx);
+  logInvitationCancelled(
+    invitationId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'auth.invitation.cancelled',
+        entityType: 'invitation',
+        entityId: invitationId,
+        ctx,
+      },
+      tx,
+    );
   }
 
   logRoleChange(
@@ -167,8 +304,22 @@ export class AuditStubService {
     );
   }
 
-  logUserDeleted(userId: string, actorId: string, ctx: RequestContext, tx?: Tx): Promise<void> {
-    return this.log({ actorUserId: actorId, action: 'user.deleted', entityType: 'user', entityId: userId, ctx }, tx);
+  logUserDeleted(
+    userId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'user.deleted',
+        entityType: 'user',
+        entityId: userId,
+        ctx,
+      },
+      tx,
+    );
   }
 
   logUserBootstrap(userId: string, email: string): Promise<void> {
@@ -187,6 +338,9 @@ export class AuditStubService {
     ctx?: RequestContext,
     tx?: Tx,
   ): Promise<void> {
-    return this.log({ action, entityType: 'security', changes: details, ctx }, tx);
+    return this.log(
+      { action, entityType: 'security', changes: details, ctx },
+      tx,
+    );
   }
 }

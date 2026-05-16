@@ -14,7 +14,10 @@ export interface CreatePasswordResetInput {
 export class PasswordResetRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(input: CreatePasswordResetInput, tx?: Tx): Promise<PasswordResetToken> {
+  create(
+    input: CreatePasswordResetInput,
+    tx?: Tx,
+  ): Promise<PasswordResetToken> {
     const client = tx ?? this.prisma;
     return client.passwordResetToken.create({ data: input });
   }
@@ -40,7 +43,9 @@ export class PasswordResetRepository {
 
   async cleanupExpired(): Promise<number> {
     const result = await this.prisma.passwordResetToken.deleteMany({
-      where: { OR: [{ expiresAt: { lt: new Date() } }, { usedAt: { not: null } }] },
+      where: {
+        OR: [{ expiresAt: { lt: new Date() } }, { usedAt: { not: null } }],
+      },
     });
     return result.count;
   }

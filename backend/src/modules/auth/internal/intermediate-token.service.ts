@@ -31,7 +31,10 @@ export class IntermediateTokenService {
   issue(userId: string): { token: string; expiresIn: number } {
     const jti = randomUUID();
     const token = this.jwt.sign(
-      { sub: userId, typ: '2fa_challenge', jti } satisfies Omit<IntermediatePayload, 'iat' | 'exp'>,
+      { sub: userId, typ: '2fa_challenge', jti } satisfies Omit<
+        IntermediatePayload,
+        'iat' | 'exp'
+      >,
       {
         secret: this.config.get('JWT_ACCESS_SECRET'),
         expiresIn: INTERMEDIATE_TTL_SECONDS,
@@ -48,7 +51,8 @@ export class IntermediateTokenService {
       if (payload.typ !== '2fa_challenge') throw new AuthTokenInvalidError();
       return { userId: payload.sub };
     } catch (err) {
-      if ((err as Error).name === 'TokenExpiredError') throw new AuthTokenExpiredError();
+      if ((err as Error).name === 'TokenExpiredError')
+        throw new AuthTokenExpiredError();
       if (err instanceof AuthTokenInvalidError) throw err;
       throw new AuthTokenInvalidError();
     }

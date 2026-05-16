@@ -1,9 +1,13 @@
 import { z } from 'zod';
 
 export const EnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'staging', 'production', 'test'])
+    .default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
-  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  LOG_LEVEL: z
+    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
+    .default('info'),
   TZ: z.string().default('Asia/Tokyo'),
 
   DATABASE_URL: z.string().url(),
@@ -16,7 +20,10 @@ export const EnvSchema = z.object({
 
   TWOFA_ENCRYPTION_KEY: z
     .string()
-    .regex(/^[0-9a-fA-F]{64}$/, 'TWOFA_ENCRYPTION_KEY must be 64 hex chars (32 bytes)'),
+    .regex(
+      /^[0-9a-fA-F]{64}$/,
+      'TWOFA_ENCRYPTION_KEY must be 64 hex chars (32 bytes)',
+    ),
 
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
 

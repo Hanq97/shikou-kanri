@@ -8,7 +8,12 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
-import { AppError, ConflictError, NotFoundError, ValidationError } from './app-error';
+import {
+  AppError,
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+} from './app-error';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -18,7 +23,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const traceId = request.traceId ?? response.getHeader('x-trace-id')?.toString();
+    const traceId =
+      request.traceId ?? response.getHeader('x-trace-id')?.toString();
 
     if (exception instanceof AppError) {
       this.logger.warn(
@@ -34,15 +40,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const message =
         typeof res === 'string'
           ? res
-          : (res as { message?: string | string[] }).message ?? exception.message;
+          : ((res as { message?: string | string[] }).message ??
+            exception.message);
 
       const code = this.codeForHttpStatus(status);
-      this.logger.warn(`[${code}] ${exception.message} (traceId=${traceId ?? 'n/a'})`);
+      this.logger.warn(
+        `[${code}] ${exception.message} (traceId=${traceId ?? 'n/a'})`,
+      );
       response.status(status).json({
         code,
         message: Array.isArray(message) ? message.join('; ') : message,
         traceId,
-        ...(typeof res === 'object' && res !== null ? { details: this.extractDetails(res) } : {}),
+        ...(typeof res === 'object' && res !== null
+          ? { details: this.extractDetails(res) }
+          : {}),
       });
       return;
     }
@@ -50,7 +61,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       // P2002 = unique violation
       if (exception.code === 'P2002') {
-        const err = new ConflictError('CONFLICT_UNIQUE', 'リソースが既に存在します');
+        const err = new ConflictError(
+          'CONFLICT_UNIQUE',
+          'リソースが既に存在します',
+        );
         this.logger.warn(`[${err.code}] ${err.message}`);
         response.status(err.statusCode).json(err.toJSON(traceId));
         return;
@@ -63,7 +77,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
     }
 
-    if (exception instanceof ValidationError || exception instanceof NotFoundError) {
+    if (
+      exception instanceof ValidationError ||
+      exception instanceof NotFoundError
+    ) {
       this.logger.warn(`[${exception.code}] ${exception.message}`);
       response.status(exception.statusCode).json(exception.toJSON(traceId));
       return;
@@ -103,7 +120,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
   private extractDetails(res: unknown): Record<string, unknown> | undefined {
     if (typeof res !== 'object' || res === null) return undefined;
-    const { message: _m, statusCode: _s, error: _e, ...rest } = res as Record<string, unknown>;
+    const {
+      message: _m,
+      statusCode: _s,
+      error: _e,
+      ...rest
+    } = res as Record<string, unknown>;
     return Object.keys(rest).length > 0 ? rest : undefined;
   }
 }

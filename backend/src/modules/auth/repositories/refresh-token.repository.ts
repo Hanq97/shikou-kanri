@@ -30,7 +30,9 @@ export class RefreshTokenRepository {
 
   async cleanupExpired(): Promise<number> {
     const result = await this.prisma.refreshToken.deleteMany({
-      where: { OR: [{ expiresAt: { lt: new Date() } }, { revokedAt: { not: null } }] },
+      where: {
+        OR: [{ expiresAt: { lt: new Date() } }, { revokedAt: { not: null } }],
+      },
     });
     return result.count;
   }

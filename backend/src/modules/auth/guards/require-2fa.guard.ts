@@ -10,12 +10,14 @@ export class Require2FaGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const required = this.reflector.getAllAndOverride<boolean>(REQUIRE_2FA_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const required = this.reflector.getAllAndOverride<boolean>(
+      REQUIRE_2FA_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
-    const req = context.switchToHttp().getRequest<Request & { user?: AuthenticatedUser }>();
+    const req = context
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthenticatedUser }>();
     const user = req.user;
 
     // For admin role: always enforce 2FA enrollment

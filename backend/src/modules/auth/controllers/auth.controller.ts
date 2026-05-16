@@ -13,11 +13,7 @@ import {
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { CookieService } from '../../../shared/http/cookie.service';
-import {
-  Auth2FaEnrollmentRequiredError,
-  AuthForcePasswordChangeError,
-  AuthRefreshInvalidError,
-} from '../../../shared/exceptions/auth-errors';
+import { AuthRefreshInvalidError } from '../../../shared/exceptions/auth-errors';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { Public } from '../decorators/public.decorator';
 import { AuthenticatedUser, RequestContext } from '../domain/types';
@@ -57,7 +53,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.auth.login(dto.email, dto.password, buildCtx(req));
+    const result = await this.auth.login(
+      dto.email,
+      dto.password,
+      buildCtx(req),
+    );
     if (result.kind === 'requires2fa') {
       return {
         requires2fa: true,
@@ -97,7 +97,10 @@ export class AuthController {
   @Public()
   @SkipThrottle()
   @Post('refresh')
-  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const refreshToken = this.cookies.extractRefreshToken(req);
     if (!refreshToken) throw new AuthRefreshInvalidError();
     const tokens = await this.auth.refresh(refreshToken, buildCtx(req));
@@ -169,11 +172,15 @@ export class AuthController {
   @Public()
   @Throttle({ login: { limit: 3, ttl: 3600_000 } })
   @Post('password/reset-request')
-  async requestPasswordReset(@Body() dto: PasswordResetRequestDto, @Req() req: Request) {
+  async requestPasswordReset(
+    @Body() dto: PasswordResetRequestDto,
+    @Req() req: Request,
+  ) {
     await this.auth.requestPasswordReset(dto.email, buildCtx(req));
     return {
       success: true,
-      message: '登録されたメールアドレスの場合、パスワードリセットリンクをお送りしました。',
+      message:
+        '登録されたメールアドレスの場合、パスワードリセットリンクをお送りしました。',
     };
   }
 
@@ -181,7 +188,10 @@ export class AuthController {
   @Post('password/reset')
   async resetPassword(@Body() dto: PasswordResetDto, @Req() req: Request) {
     await this.auth.resetPassword(dto.token, dto.newPassword, buildCtx(req));
-    return { success: true, message: 'パスワードを変更しました。再度ログインしてください。' };
+    return {
+      success: true,
+      message: 'パスワードを変更しました。再度ログインしてください。',
+    };
   }
 
   // === 2FA enrollment ===
@@ -210,7 +220,13 @@ export class AuthController {
     @Req() req: Request,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    await this.auth.disable2Fa(user.id, dto.password, dto.code, dto.useBackupCode, buildCtx(req));
+    await this.auth.disable2Fa(
+      user.id,
+      dto.password,
+      dto.code,
+      dto.useBackupCode,
+      buildCtx(req),
+    );
   }
 
   // === Invitation ===
@@ -229,7 +245,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.auth.acceptInvitation(dto.token, dto.password, buildCtx(req));
+    const result = await this.auth.acceptInvitation(
+      dto.token,
+      dto.password,
+      buildCtx(req),
+    );
     this.cookies.setAuthCookies(res, result.tokens);
     return { user: result.user, message: 'アカウントが有効化されました。' };
   }

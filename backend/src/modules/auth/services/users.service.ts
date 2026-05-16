@@ -9,7 +9,10 @@ import { NotFoundError } from '../../../shared/exceptions/app-error';
 import { AuthenticatedUser, RequestContext } from '../domain/types';
 import { AuditStubService } from '../internal/audit-stub.service';
 import { TokenService } from '../internal/token.service';
-import { ListUsersFilter, UserRepository } from '../repositories/user.repository';
+import {
+  ListUsersFilter,
+  UserRepository,
+} from '../repositories/user.repository';
 import { AccountLockoutService } from './account-lockout.service';
 
 export interface UserDto {
@@ -36,7 +39,12 @@ export class UsersService {
     private readonly audit: AuditStubService,
   ) {}
 
-  async list(filter: ListUsersFilter): Promise<{ data: UserDto[]; total: number; page: number; pageSize: number }> {
+  async list(filter: ListUsersFilter): Promise<{
+    data: UserDto[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }> {
     const result = await this.users.list(filter);
     return {
       data: result.data.map((u) => this.toDto(u)),
@@ -48,10 +56,17 @@ export class UsersService {
 
   async findById(id: string, requester: AuthenticatedUser): Promise<UserDto> {
     const isSelf = id === requester.id;
-    const allowed = isSelf || requester.role === 'system_admin' || requester.role === 'manager';
+    const allowed =
+      isSelf ||
+      requester.role === 'system_admin' ||
+      requester.role === 'manager';
     if (!allowed) throw new AuthInsufficientPermissionError();
 
-    const user = await this.users.findById(id, undefined, requester.role === 'system_admin');
+    const user = await this.users.findById(
+      id,
+      undefined,
+      requester.role === 'system_admin',
+    );
     if (!user) throw new NotFoundError('user', id);
     return this.toDto(user);
   }
@@ -62,7 +77,8 @@ export class UsersService {
     actor: AuthenticatedUser,
     ctx: RequestContext,
   ): Promise<UserDto> {
-    if (actor.role !== 'system_admin') throw new AuthInsufficientPermissionError();
+    if (actor.role !== 'system_admin')
+      throw new AuthInsufficientPermissionError();
 
     return this.prisma.$transaction(async (tx) => {
       const user = await this.users.findById(userId, tx);
@@ -71,7 +87,11 @@ export class UsersService {
 
       // Last admin protection
       if (user.role === 'system_admin' && newRole !== 'system_admin') {
-        const adminCount = await this.users.countByRole('system_admin', true, tx);
+        const adminCount = await this.users.countByRole(
+          'system_admin',
+          true,
+          tx,
+        );
         if (adminCount <= 1) throw new AuthLastAdminError();
       }
 
@@ -85,7 +105,14 @@ export class UsersService {
       };
 
       const updated = await this.users.update(userId, updatePayload, tx);
-      await this.audit.logRoleChange(userId, user.role, newRole, actor.id, ctx, tx);
+      await this.audit.logRoleChange(
+        userId,
+        user.role,
+        newRole,
+        actor.id,
+        ctx,
+        tx,
+      );
       return this.toDto(updated);
     });
   }
@@ -96,7 +123,8 @@ export class UsersService {
     actor: AuthenticatedUser,
     ctx: RequestContext,
   ): Promise<UserDto> {
-    if (actor.role !== 'system_admin') throw new AuthInsufficientPermissionError();
+    if (actor.role !== 'system_admin')
+      throw new AuthInsufficientPermissionError();
 
     return this.prisma.$transaction(async (tx) => {
       const user = await this.users.findById(userId, tx);
@@ -105,7 +133,11 @@ export class UsersService {
 
       // Last admin protection
       if (user.role === 'system_admin' && newStatus !== 'active') {
-        const adminCount = await this.users.countByRole('system_admin', true, tx);
+        const adminCount = await this.users.countByRole(
+          'system_admin',
+          true,
+          tx,
+        );
         if (adminCount <= 1) throw new AuthLastAdminError();
       }
 
@@ -123,7 +155,14 @@ export class UsersService {
         );
       }
 
-      await this.audit.logStatusChange(userId, user.status, newStatus, actor.id, ctx, tx);
+      await this.audit.logStatusChange(
+        userId,
+        user.status,
+        newStatus,
+        actor.id,
+        ctx,
+        tx,
+      );
       return this.toDto(updated);
     });
   }
@@ -173,8 +212,13 @@ export class UsersService {
     });
   }
 
-  async unlockUser(userId: string, actor: AuthenticatedUser, ctx: RequestContext): Promise<UserDto> {
-    if (actor.role !== 'system_admin') throw new AuthInsufficientPermissionError();
+  async unlockUser(
+    userId: string,
+    actor: AuthenticatedUser,
+    ctx: RequestContext,
+  ): Promise<UserDto> {
+    if (actor.role !== 'system_admin')
+      throw new AuthInsufficientPermissionError();
 
     const user = await this.users.findById(userId);
     if (!user) throw new NotFoundError('user', userId);
@@ -190,9 +234,12 @@ export class UsersService {
     actor: AuthenticatedUser,
     ctx: RequestContext,
   ): Promise<UserDto> {
-    if (actor.role !== 'system_admin') throw new AuthInsufficientPermissionError();
+    if (actor.role !== 'system_admin')
+      throw new AuthInsufficientPermissionError();
     if (userId === actor.id) {
-      throw new AuthInsufficientPermissionError('管理者自身の2要素認証を緊急解除することはできません');
+      throw new AuthInsufficientPermissionError(
+        '管理者自身の2要素認証を緊急解除することはできません',
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -205,7 +252,9 @@ export class UsersService {
           twoFaEnabled: false,
           twoFaSecret: null,
           twoFaRecoveryCodes: null,
-          ...(user.role === 'system_admin' ? { forceTwoFaEnrollment: true } : {}),
+          ...(user.role === 'system_admin'
+            ? { forceTwoFaEnrollment: true }
+            : {}),
           updatedById: actor.id,
         },
         tx,
@@ -230,10 +279,17 @@ export class UsersService {
     });
   }
 
-  async softDelete(userId: string, actor: AuthenticatedUser, ctx: RequestContext): Promise<void> {
-    if (actor.role !== 'system_admin') throw new AuthInsufficientPermissionError();
+  async softDelete(
+    userId: string,
+    actor: AuthenticatedUser,
+    ctx: RequestContext,
+  ): Promise<void> {
+    if (actor.role !== 'system_admin')
+      throw new AuthInsufficientPermissionError();
     if (userId === actor.id) {
-      throw new AuthInsufficientPermissionError('自分自身を削除することはできません');
+      throw new AuthInsufficientPermissionError(
+        '自分自身を削除することはできません',
+      );
     }
 
     await this.prisma.$transaction(async (tx) => {
@@ -241,7 +297,11 @@ export class UsersService {
       if (!user) throw new NotFoundError('user', userId);
 
       if (user.role === 'system_admin') {
-        const adminCount = await this.users.countByRole('system_admin', true, tx);
+        const adminCount = await this.users.countByRole(
+          'system_admin',
+          true,
+          tx,
+        );
         if (adminCount <= 1) throw new AuthLastAdminError();
       }
 

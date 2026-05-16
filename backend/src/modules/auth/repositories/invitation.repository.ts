@@ -19,7 +19,9 @@ export class InvitationRepository {
 
   create(input: CreateInvitationInput, tx?: Tx): Promise<Invitation> {
     const client = tx ?? this.prisma;
-    return client.invitation.create({ data: { ...input, email: input.email.toLowerCase() } });
+    return client.invitation.create({
+      data: { ...input, email: input.email.toLowerCase() },
+    });
   }
 
   findById(id: string, tx?: Tx): Promise<Invitation | null> {
@@ -47,12 +49,18 @@ export class InvitationRepository {
 
   markUsed(id: string, tx?: Tx): Promise<Invitation> {
     const client = tx ?? this.prisma;
-    return client.invitation.update({ where: { id }, data: { usedAt: new Date() } });
+    return client.invitation.update({
+      where: { id },
+      data: { usedAt: new Date() },
+    });
   }
 
   cancel(id: string, tx?: Tx): Promise<Invitation> {
     const client = tx ?? this.prisma;
-    return client.invitation.update({ where: { id }, data: { cancelledAt: new Date() } });
+    return client.invitation.update({
+      where: { id },
+      data: { cancelledAt: new Date() },
+    });
   }
 
   async cleanupExpired(): Promise<number> {
@@ -60,7 +68,10 @@ export class InvitationRepository {
       where: {
         OR: [
           { expiresAt: { lt: new Date() }, usedAt: null },
-          { usedAt: { not: null }, createdAt: { lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) } },
+          {
+            usedAt: { not: null },
+            createdAt: { lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
+          },
           { cancelledAt: { not: null } },
         ],
       },

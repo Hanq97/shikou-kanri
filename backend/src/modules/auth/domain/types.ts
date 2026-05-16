@@ -1,5 +1,9 @@
 export type UserRoleName = 'system_admin' | 'manager' | 'employee' | 'invited';
-export type UserStatusName = 'pending_invite' | 'active' | 'suspended' | 'disabled';
+export type UserStatusName =
+  | 'pending_invite'
+  | 'active'
+  | 'suspended'
+  | 'disabled';
 
 export interface AuthenticatedUser {
   id: string;

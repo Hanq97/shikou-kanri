@@ -61,7 +61,10 @@ export class UsersController {
   }
 
   @Get(':id')
-  async detail(@Param('id', new ParseUUIDPipe()) id: string, @CurrentUser() user: AuthenticatedUser) {
+  async detail(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return { user: await this.users.findById(id, user) };
   }
 
@@ -103,7 +106,9 @@ export class UsersController {
     @Req() req: Request,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return { user: await this.users.changeRole(id, dto.role, user, buildCtx(req)) };
+    return {
+      user: await this.users.changeRole(id, dto.role, user, buildCtx(req)),
+    };
   }
 
   @Roles('system_admin')
@@ -114,7 +119,9 @@ export class UsersController {
     @Req() req: Request,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return { user: await this.users.changeStatus(id, dto.status, user, buildCtx(req)) };
+    return {
+      user: await this.users.changeStatus(id, dto.status, user, buildCtx(req)),
+    };
   }
 
   @Put(':id/profile')
@@ -124,7 +131,9 @@ export class UsersController {
     @Req() req: Request,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return { user: await this.users.updateProfile(id, dto, user, buildCtx(req)) };
+    return {
+      user: await this.users.updateProfile(id, dto, user, buildCtx(req)),
+    };
   }
 
   @Roles('system_admin')
@@ -145,7 +154,14 @@ export class UsersController {
     @Req() req: Request,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return { user: await this.users.emergencyDisable2Fa(id, dto.reason, user, buildCtx(req)) };
+    return {
+      user: await this.users.emergencyDisable2Fa(
+        id,
+        dto.reason,
+        user,
+        buildCtx(req),
+      ),
+    };
   }
 
   @Roles('system_admin')

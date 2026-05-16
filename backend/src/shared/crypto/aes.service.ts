@@ -17,7 +17,9 @@ export class AesService {
   encrypt(plaintext: string | Buffer): Buffer {
     const iv = randomBytes(IV_LEN);
     const cipher = createCipheriv(ALGO, this.key, iv);
-    const data = Buffer.isBuffer(plaintext) ? plaintext : Buffer.from(plaintext, 'utf8');
+    const data = Buffer.isBuffer(plaintext)
+      ? plaintext
+      : Buffer.from(plaintext, 'utf8');
     const ciphertext = Buffer.concat([cipher.update(data), cipher.final()]);
     const authTag = cipher.getAuthTag();
     return Buffer.concat([iv, authTag, ciphertext]);

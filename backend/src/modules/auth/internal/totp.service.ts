@@ -37,7 +37,10 @@ export class TotpService {
   }
 
   async generateQrCode(otpauthUri: string): Promise<string> {
-    return QRCode.toDataURL(otpauthUri, { errorCorrectionLevel: 'M', width: 240 });
+    return QRCode.toDataURL(otpauthUri, {
+      errorCorrectionLevel: 'M',
+      width: 240,
+    });
   }
 
   verify(code: string, secret: string): boolean {
@@ -48,7 +51,10 @@ export class TotpService {
     }
   }
 
-  generateBackupCodes(count = BACKUP_CODE_COUNT, length = BACKUP_CODE_LENGTH): string[] {
+  generateBackupCodes(
+    count = BACKUP_CODE_COUNT,
+    length = BACKUP_CODE_LENGTH,
+  ): string[] {
     return this.random.generateBackupCodes(count, length);
   }
 
@@ -61,7 +67,10 @@ export class TotpService {
   }
 
   encryptBackupCodes(codes: string[]): Buffer {
-    const records: BackupCodeRecord[] = codes.map((code) => ({ code, used: false }));
+    const records: BackupCodeRecord[] = codes.map((code) => ({
+      code,
+      used: false,
+    }));
     return this.aes.encrypt(JSON.stringify(records));
   }
 
@@ -90,6 +99,10 @@ export class TotpService {
     const remaining = updated.filter((r) => !r.used).length;
 
     if (!matched) return { valid: false, remaining };
-    return { valid: true, updatedEncrypted: this.aes.encrypt(JSON.stringify(updated)), remaining };
+    return {
+      valid: true,
+      updatedEncrypted: this.aes.encrypt(JSON.stringify(updated)),
+      remaining,
+    };
   }
 }

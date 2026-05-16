@@ -43,9 +43,14 @@ export class EmailService implements OnModuleInit {
         subject: opts.subject,
         html,
       });
-      this.logger.log(`Email sent: ${opts.template} → ${opts.to} (id=${result.messageId})`);
+      this.logger.log(
+        `Email sent: ${opts.template} → ${opts.to} (id=${result.messageId})`,
+      );
     } catch (err) {
-      this.logger.error(`Email send failed: ${opts.template} → ${opts.to}`, err as Error);
+      this.logger.error(
+        `Email send failed: ${opts.template} → ${opts.to}`,
+        err as Error,
+      );
       // Phase 1: don't throw — email failure should not block primary operation
       // Phase 2: queue with retry via BullMQ
     }
