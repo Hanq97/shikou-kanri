@@ -320,6 +320,58 @@
       "emailInvalid": "Định dạng email không hợp lệ"
     }
   },
+  "property": {
+    "tabTitle": "Bất động sản",
+    "addButton": "Thêm BĐS",
+    "empty": "Chưa có bất động sản",
+    "type": {
+      "new_construction": "Xây mới",
+      "remodel": "Cải tạo",
+      "single_family": "Nhà riêng",
+      "multi_family": "Chung cư",
+      "commercial": "Thương mại",
+      "other": "Khác"
+    },
+    "structure": {
+      "wood": "Gỗ",
+      "steel": "Thép",
+      "rc": "RC",
+      "other": "Khác"
+    },
+    "fields": {
+      "address": "Địa chỉ",
+      "propertyType": "Loại",
+      "structure": "Kết cấu",
+      "yearBuilt": "Năm xây",
+      "handoverDate": "Ngày bàn giao",
+      "floorAreaSqm": "Diện tích sàn (m²)",
+      "photos": "Ảnh ngoại quan",
+      "notes": "Ghi chú"
+    },
+    "form": {
+      "createTitle": "Thêm bất động sản",
+      "editTitle": "Sửa bất động sản",
+      "submit": "Lưu"
+    },
+    "photo": {
+      "uploadHint": "Click hoặc kéo để thêm ảnh (tối đa 3, tự co lại)",
+      "tooLarge": "Ảnh quá lớn",
+      "tooMany": "Tối đa 3 ảnh"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa bất động sản",
+      "deleteContent": "Xóa BĐS này?",
+      "deleteOk": "Xóa"
+    },
+    "messages": {
+      "created": "Đã thêm bất động sản",
+      "updated": "Đã cập nhật bất động sản",
+      "deleted": "Đã xóa bất động sản"
+    },
+    "errors": {
+      "addressRequired": "Vui lòng nhập địa chỉ"
+    }
+  },
   "users": {
     "title": "Quản lý người dùng",
     "subtitle": "Mời người dùng, quản lý vai trò và trạng thái",

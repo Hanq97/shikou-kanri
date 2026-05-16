@@ -11,6 +11,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { CustomerTypeTag } from '../components/CustomerTypeTag';
 import { ObBadge } from '../components/ObBadge';
+import { PropertyListTab } from '../components/PropertyListTab';
 
 export function CustomerDetailPage(): JSX.Element {
   const { t } = useTranslation();
@@ -166,11 +167,7 @@ export function CustomerDetailPage(): JSX.Element {
             {
               key: 'properties',
               label: t('customer.tabs.properties'),
-              children: (
-                <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-8 text-center text-sm text-zinc-500">
-                  P2 で実装予定 (Property management)
-                </div>
-              ),
+              children: <PropertyListTab customerId={customer.id} />,
             },
             {
               key: 'history',

@@ -320,6 +320,58 @@
       "emailInvalid": "Invalid email format"
     }
   },
+  "property": {
+    "tabTitle": "Properties",
+    "addButton": "Add property",
+    "empty": "No properties registered",
+    "type": {
+      "new_construction": "New construction",
+      "remodel": "Remodel target",
+      "single_family": "Single family",
+      "multi_family": "Multi-family",
+      "commercial": "Commercial",
+      "other": "Other"
+    },
+    "structure": {
+      "wood": "Wood",
+      "steel": "Steel",
+      "rc": "RC",
+      "other": "Other"
+    },
+    "fields": {
+      "address": "Address",
+      "propertyType": "Type",
+      "structure": "Structure",
+      "yearBuilt": "Year built",
+      "handoverDate": "Handover date",
+      "floorAreaSqm": "Floor area (m²)",
+      "photos": "Exterior photos",
+      "notes": "Notes"
+    },
+    "form": {
+      "createTitle": "Add property",
+      "editTitle": "Edit property",
+      "submit": "Save"
+    },
+    "photo": {
+      "uploadHint": "Click or drag to add photos (max 3, auto-resized)",
+      "tooLarge": "Photo too large",
+      "tooMany": "Maximum 3 photos"
+    },
+    "confirms": {
+      "deleteTitle": "Delete property",
+      "deleteContent": "Delete this property?",
+      "deleteOk": "Delete"
+    },
+    "messages": {
+      "created": "Property added",
+      "updated": "Property updated",
+      "deleted": "Property deleted"
+    },
+    "errors": {
+      "addressRequired": "Please enter an address"
+    }
+  },
   "users": {
     "title": "User management",
     "subtitle": "Invite users and manage roles & statuses",

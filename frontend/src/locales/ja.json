@@ -320,6 +320,58 @@
       "emailInvalid": "メールアドレスの形式が不正です"
     }
   },
+  "property": {
+    "tabTitle": "物件",
+    "addButton": "物件を追加",
+    "empty": "物件未登録",
+    "type": {
+      "new_construction": "新築",
+      "remodel": "リフォーム対象",
+      "single_family": "戸建",
+      "multi_family": "集合住宅",
+      "commercial": "商業",
+      "other": "その他"
+    },
+    "structure": {
+      "wood": "木造",
+      "steel": "鉄骨",
+      "rc": "RC造",
+      "other": "その他"
+    },
+    "fields": {
+      "address": "住所",
+      "propertyType": "物件種別",
+      "structure": "構造",
+      "yearBuilt": "築年",
+      "handoverDate": "引渡日",
+      "floorAreaSqm": "延床面積 (m²)",
+      "photos": "外観写真",
+      "notes": "備考"
+    },
+    "form": {
+      "createTitle": "物件を追加",
+      "editTitle": "物件を編集",
+      "submit": "保存"
+    },
+    "photo": {
+      "uploadHint": "クリック または ドラッグして写真を追加（最大3枚、自動で縮小されます）",
+      "tooLarge": "写真サイズが大きすぎます",
+      "tooMany": "写真は3枚までです"
+    },
+    "confirms": {
+      "deleteTitle": "物件を削除",
+      "deleteContent": "この物件を削除しますか？",
+      "deleteOk": "削除する"
+    },
+    "messages": {
+      "created": "物件を登録しました",
+      "updated": "物件情報を更新しました",
+      "deleted": "物件を削除しました"
+    },
+    "errors": {
+      "addressRequired": "住所を入力してください"
+    }
+  },
   "users": {
     "title": "ユーザー管理",
     "subtitle": "アカウントの招待・ロール・ステータスを管理",

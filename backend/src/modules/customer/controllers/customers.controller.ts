@@ -23,6 +23,7 @@ import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { ListCustomersQueryDto } from '../dto/list-customers-query.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { CustomersService } from '../services/customers.service';
+import { PropertiesService } from '../services/properties.service';
 
 function buildCtx(req: Request): RequestContext {
   return {
@@ -35,7 +36,10 @@ function buildCtx(req: Request): RequestContext {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly service: CustomersService) {}
+  constructor(
+    private readonly service: CustomersService,
+    private readonly properties: PropertiesService,
+  ) {}
 
   @Get()
   @Roles('system_admin', 'manager', 'employee')
@@ -68,11 +72,10 @@ export class CustomersController {
   @Get(':id/properties')
   @Roles('system_admin', 'manager', 'employee')
   async getProperties(
-    @Param('id', new ParseUUIDPipe()) _id: string,
-    @CurrentUser() _user: AuthenticatedUser,
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
-    // Stub — full implementation in P2 (properties module)
-    return { data: [] };
+    return { data: await this.properties.listByCustomer(id, user) };
   }
 
   @Get(':id/projects')
