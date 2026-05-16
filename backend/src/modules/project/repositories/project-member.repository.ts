@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, ProjectMember } from '@prisma/client';
+import { Prisma, ProjectMember, ProjectMemberRole } from '@prisma/client';
 import { PrismaService } from '../../../shared/database/prisma.service';
 import { Tx } from '../../auth/internal/audit-stub.service';
 
@@ -41,5 +41,24 @@ export class ProjectMemberRepository {
   ): Promise<ProjectMember> {
     const client = tx ?? this.prisma;
     return client.projectMember.update({ where: { id }, data });
+  }
+
+  countByProjectAndRole(
+    projectId: string,
+    role: ProjectMemberRole,
+    tx?: Tx,
+  ): Promise<number> {
+    const client = tx ?? this.prisma;
+    return client.projectMember.count({
+      where: { projectId, roleOnProject: role, revokedAt: null },
+    });
+  }
+
+  softDelete(id: string, tx?: Tx): Promise<ProjectMember> {
+    const client = tx ?? this.prisma;
+    return client.projectMember.update({
+      where: { id },
+      data: { revokedAt: new Date() },
+    });
   }
 }

@@ -83,3 +83,50 @@ export class ProjectReverseReasonRequiredError extends AppError {
     );
   }
 }
+
+export class ProjectMemberAlreadyExistsError extends AppError {
+  constructor() {
+    super(
+      'PROJECT_MEMBER_ALREADY_EXISTS',
+      409,
+      'このユーザーは既にメンバーです。',
+    );
+  }
+}
+
+export class ProjectMemberNotFoundError extends AppError {
+  constructor() {
+    super('PROJECT_MEMBER_NOT_FOUND', 404, 'メンバーが見つかりません。');
+  }
+}
+
+export class ProjectCannotDemoteLastOwnerError extends AppError {
+  constructor() {
+    super(
+      'PROJECT_CANNOT_DEMOTE_LAST_OWNER',
+      409,
+      'オーナーが1人しかいないため役割を変更できません。',
+    );
+  }
+}
+
+export class ProjectCannotRemoveLastOwnerError extends AppError {
+  constructor() {
+    super(
+      'PROJECT_CANNOT_REMOVE_LAST_OWNER',
+      409,
+      'オーナーが1人しかいないため削除できません。',
+    );
+  }
+}
+
+export class ProjectMemberUserNotActiveError extends AppError {
+  constructor(userId?: string) {
+    super(
+      'PROJECT_MEMBER_USER_NOT_ACTIVE',
+      400,
+      '対象ユーザーが有効ではありません。',
+      { userId },
+    );
+  }
+}
