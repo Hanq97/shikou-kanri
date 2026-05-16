@@ -258,6 +258,7 @@
     },
     "nameNotSet": "(not set)",
     "twoFaEnabled": "Enabled",
+    "lockedBadge": "Locked",
     "neverLoggedIn": "Never logged in",
     "totalCount": "{{total}} total",
     "menu": {

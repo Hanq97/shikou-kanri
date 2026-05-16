@@ -258,6 +258,7 @@
     },
     "nameNotSet": "(chưa đặt)",
     "twoFaEnabled": "Bật",
+    "lockedBadge": "Đang khóa",
     "neverLoggedIn": "Chưa đăng nhập",
     "totalCount": "Tổng {{total}} bản ghi",
     "menu": {

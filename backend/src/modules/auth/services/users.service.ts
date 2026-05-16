@@ -23,6 +23,8 @@ export interface UserDto {
   role: UserRole;
   status: UserStatus;
   twoFaEnabled: boolean;
+  lockedUntil: Date | null;
+  requireAdminUnlock: boolean;
   lastLoginAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -322,6 +324,8 @@ export class UsersService {
       role: user.role,
       status: user.status,
       twoFaEnabled: user.twoFaEnabled,
+      lockedUntil: user.lockedUntil,
+      requireAdminUnlock: user.requireAdminUnlock,
       lastLoginAt: user.lastLoginAt,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

@@ -258,6 +258,7 @@
     },
     "nameNotSet": "(未設定)",
     "twoFaEnabled": "有効",
+    "lockedBadge": "ロック中",
     "neverLoggedIn": "未ログイン",
     "totalCount": "全 {{total}} 件",
     "menu": {

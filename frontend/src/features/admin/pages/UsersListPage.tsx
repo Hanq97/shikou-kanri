@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import {
   KeyRound,
+  Lock,
   LockOpen,
   MoreVertical,
   RefreshCw,
@@ -167,7 +168,10 @@ export function UsersListPage(): JSX.Element {
       });
     }
 
-    if (isSystemAdmin) {
+    const isLocked =
+      row.requireAdminUnlock ||
+      (row.lockedUntil !== null && new Date(row.lockedUntil) > new Date());
+    if (isSystemAdmin && isLocked) {
       items.push({
         key: 'unlock',
         icon: <LockOpen size={14} />,
@@ -253,8 +257,23 @@ export function UsersListPage(): JSX.Element {
       title: t('users.columns.status'),
       dataIndex: 'status',
       key: 'status',
-      width: 110,
-      render: (status: UserStatus) => <StatusTag status={status} />,
+      width: 140,
+      render: (status: UserStatus, row) => {
+        const isLocked =
+          row.requireAdminUnlock ||
+          (row.lockedUntil !== null && new Date(row.lockedUntil) > new Date());
+        return (
+          <div className="flex flex-col items-start gap-1">
+            <StatusTag status={status} />
+            {isLocked && (
+              <span className="inline-flex items-center gap-1 text-xs text-red-700 bg-red-50 ring-1 ring-red-200 rounded-full px-2 py-0.5">
+                <Lock size={10} />
+                {t('users.lockedBadge')}
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       title: t('users.columns.twoFa'),
