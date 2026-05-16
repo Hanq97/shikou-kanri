@@ -1049,43 +1049,52 @@ export const Verify2FaSchema = z.object({
 
 ---
 
-## 07 — UI Component Library Usage (Ant Design 5)
+## 07 — UI Component Library Usage (Hybrid: Antd + Tailwind + Lucide)
 
-### 7.1 Component Mapping
+> **Cập nhật 2026-05-16**: Đã chuyển sang UI hybrid. Xem [03-frontend-architecture.md §2.1](../../architecture/03-frontend-architecture.md) cho design system baseline.
 
-| Use case | AntD Component |
+### 7.1 Component Mapping (refined)
+
+| Use case | Library |
 |---|---|
-| Forms | `Form`, `Form.Item` |
-| Inputs | `Input`, `Input.Password` |
-| Buttons | `Button` |
-| Selects | `Select`, `Select.Option` |
-| Modals | `Modal`, `Modal.confirm` |
-| Notifications | `notification`, `message` |
-| Tables | `Table` |
-| Tags/Badges | `Tag`, `Badge` |
-| Layout | `Layout`, `Card`, `Row`, `Col`, `Space`, `Divider` |
-| Tabs | `Tabs` |
-| Dropdowns | `Dropdown` |
-| Loading | `Spin`, `Skeleton` |
-| Alerts | `Alert` |
+| Forms / Inputs / Password / Select / DatePicker | **Antd** (`Form`, `Input`, `Input.Password`, `Select`, `DatePicker` — JP locale) |
+| Tables / Pagination | **Antd** (`Table`) |
+| Modals / Drawer / Tooltip / Popconfirm | **Antd** |
+| notification / message (toast) | **Antd** |
+| Spin (async loading) | **Antd** |
+| Layout (sidebar / header / grid) | **Tailwind** + `AppLayout` component |
+| Card / KPI stat / empty state | **Tailwind** (`bg-white border border-zinc-200/70 rounded-xl shadow-card`) |
+| Badge / tag (status) | **Tailwind** pill (`bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200`) |
+| Buttons (primary action) | **Antd** `Button` (controlHeight 38, primary brand-500) |
+| Buttons (icon-only / ghost custom) | **Tailwind** native button |
+| Icons trong page content | **Lucide React** (`Mail`, `Lock`, `Home`, ...) |
+| Icons trong Antd internal | **Antd default** (Form validation icons) |
 
-### 7.2 Theme Customization
+### 7.2 Theme Customization (mirrors design-tokens.css)
 
 ```typescript
 // frontend/src/app/providers.tsx
-const antdTheme: ThemeConfig = {
+const theme: ThemeConfig = {
   token: {
-    colorPrimary: '#1890ff',  // Towa brand candidate
-    fontFamily: '"Noto Sans JP", "Hiragino Sans", sans-serif',
-    borderRadius: 4,
+    colorPrimary: '#1689e4',       // brand-500 (modern blue, not Antd default)
+    colorSuccess: '#10b981',
+    colorWarning: '#f59e0b',
+    colorError: '#ef4444',
+    colorBgLayout: '#fafafa',
+    colorText: '#18181b',
+    colorTextSecondary: '#52525b',
+    colorBorder: '#e4e4e7',
+    borderRadius: 8,                // 4 → 8 modern
+    fontFamily: 'Inter, "Noto Sans JP", "Hiragino Sans", sans-serif',
+    boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06)', // soft
+    controlHeight: 38,
   },
   components: {
-    Form: {
-      itemMarginBottom: 16,
-    },
-    Button: {
-      controlHeight: 40,  // larger touch targets cho 招待ユーザー
-    },
+    Form: { itemMarginBottom: 18 },
+    Button: { fontWeight: 500, primaryShadow: 'none' },
+    Card: { boxShadowTertiary: 'none' },
+    Layout: { headerBg: '#ffffff', siderBg: '#ffffff' },
+    Menu: { itemBorderRadius: 6, itemHeight: 36 },
   },
 };
 ```

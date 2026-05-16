@@ -1,6 +1,6 @@
 // Prisma schema for shikou-kanri backend
 // Reference: ADR-004 (Database) — PostgreSQL 16 + extensions
-// Models will be extended as feature workflows progress (F8 Foundation → F1 → F2 → ...)
+// Phase 1: F8-auth + base User entity
 
 generator client {
   provider        = "prisma-client-js"
@@ -14,17 +14,154 @@ datasource db {
 }
 
 // =============================================================================
-// Placeholder baseline — F8 Foundation feature workflow will extend
+// Enums
 // =============================================================================
 
-// Skeleton User model. F8 will add: role, 2fa_secret, 2fa_enabled, auth_provider,
-// external_id, password reset flows, etc. per ADR-015 + ADR-016 + Entity Catalog.
+enum UserRole {
+  system_admin
+  manager
+  employee
+  invited
+}
+
+enum UserStatus {
+  pending_invite
+  active
+  suspended
+  disabled
+}
+
+enum AuthProvider {
+  local
+  google
+  microsoft
+}
+
+enum RefreshTokenRevokedReason {
+  logout
+  rotated
+  reuse_detected
+  admin_revoke
+  family_revoked
+  password_change
+  account_suspended
+  account_disabled
+}
+
+// =============================================================================
+// Core entities
+// =============================================================================
+
 model User {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email     String   @unique
-  name      String
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email         String       @unique
+  emailVerified Boolean      @default(false) @map("email_verified")
+  name          String
+  nameKana      String?      @map("name_kana")
+  passwordHash  String?      @map("password_hash")
+
+  role         UserRole
+  status       UserStatus   @default(active)
+  authProvider AuthProvider @default(local) @map("auth_provider")
+  externalId   String?      @map("external_id")
+
+  twoFaEnabled       Boolean @default(false) @map("two_fa_enabled")
+  twoFaSecret        Bytes?  @map("two_fa_secret")
+  twoFaRecoveryCodes Bytes?  @map("two_fa_recovery_codes")
+  twoFaPendingSecret Bytes?  @map("two_fa_pending_secret")
+  twoFaPendingUntil  DateTime? @map("two_fa_pending_until") @db.Timestamptz(6)
+
+  failedLoginAttempts  Int       @default(0) @map("failed_login_attempts")
+  lockedUntil          DateTime? @map("locked_until") @db.Timestamptz(6)
+  requireAdminUnlock   Boolean   @default(false) @map("require_admin_unlock")
+  lastLoginAt          DateTime? @map("last_login_at") @db.Timestamptz(6)
+  forcePasswordChange  Boolean   @default(false) @map("force_password_change")
+  forceTwoFaEnrollment Boolean   @default(false) @map("force_two_fa_enrollment")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String? @map("created_by") @db.Uuid
+  updatedById String? @map("updated_by") @db.Uuid
+
+  refreshTokens   RefreshToken[]
+  passwordResets  PasswordResetToken[]
+  invitationsSent Invitation[] @relation("InvitedBy")
+  auditLogs       AuditLog[] @relation("Actor")
 
   @@map("users")
+  @@index([status])
+  @@index([role, status])
+}
+
+model RefreshToken {
+  id            String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String                      @map("user_id") @db.Uuid
+  tokenHash     String                      @unique @map("token_hash")
+  familyId      String                      @map("family_id") @db.Uuid
+  lineageSeq    Int                         @default(0) @map("lineage_seq")
+  issuedAt      DateTime                    @default(now()) @map("issued_at") @db.Timestamptz(6)
+  expiresAt     DateTime                    @map("expires_at") @db.Timestamptz(6)
+  revokedAt     DateTime?                   @map("revoked_at") @db.Timestamptz(6)
+  revokedReason RefreshTokenRevokedReason? @map("revoked_reason")
+  userAgent     String?                     @map("user_agent")
+  ipAddress     String?                     @map("ip_address") @db.Inet
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+  @@index([userId, expiresAt])
+  @@index([familyId])
+  @@index([userId, revokedAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+  @@index([userId, createdAt])
+}
+
+model Invitation {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String
+  name        String?
+  tokenHash   String    @unique @map("token_hash")
+  role        UserRole
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt      DateTime? @map("used_at") @db.Timestamptz(6)
+  invitedById String    @map("invited_by") @db.Uuid
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  invitedBy User @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  @@map("invitations")
+  @@index([email, expiresAt])
+}
+
+model AuditLog {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorUserId String?   @map("actor_user_id") @db.Uuid
+  action      String
+  entityType  String?   @map("entity_type")
+  entityId    String?   @map("entity_id") @db.Uuid
+  changes     Json?
+  ipAddress   String?   @map("ip_address") @db.Inet
+  userAgent   String?   @map("user_agent")
+  occurredAt  DateTime  @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  actor User? @relation("Actor", fields: [actorUserId], references: [id])
+
+  @@map("audit_logs")
+  @@index([actorUserId, occurredAt(sort: Desc)])
+  @@index([entityType, entityId, occurredAt(sort: Desc)])
+  @@index([occurredAt(sort: Desc)])
 }

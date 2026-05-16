@@ -15,11 +15,26 @@
     "dev:frontend": "pnpm --filter frontend run dev",
     "build": "pnpm -r run build",
     "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
     "test": "pnpm -r run test",
     "typecheck": "pnpm -r run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "prepare": "husky",
     "docker:up": "docker compose -f docker-compose.dev.yml up -d",
     "docker:down": "docker compose -f docker-compose.dev.yml down",
     "docker:logs": "docker compose -f docker-compose.dev.yml logs -f"
+  },
+  "lint-staged": {
+    "backend/**/*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "frontend/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write"
   },
   "dependencies": {
     "eps-workflow": "file:aifw.tgz"
@@ -33,5 +48,12 @@
       "esbuild",
       "prisma"
     ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.8.3"
   }
 }
