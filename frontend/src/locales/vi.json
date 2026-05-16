@@ -169,7 +169,7 @@
       "labelName": "Họ tên",
       "labelNameKana": "Tên (kana)",
       "namePlaceholder": "Yamada Taro",
-      "nameKanaPlaceholder": "やまだ たろう",
+      "nameKanaPlaceholder": "VD: グエン クオック ハ (katakana, tùy chọn)",
       "nameRequired": "Vui lòng nhập họ tên",
       "updateSuccess": "Đã cập nhật hồ sơ"
     },

@@ -5,6 +5,7 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
+  nameKana: string | null;
   role: UserRole;
   status: UserStatus;
   twoFaEnabled: boolean;
@@ -13,7 +14,6 @@ export interface AuthUser {
 }
 
 export interface User extends AuthUser {
-  nameKana: string | null;
   lastLoginAt: string | null;
   createdAt: string;
   updatedAt: string;

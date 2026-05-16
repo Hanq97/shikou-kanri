@@ -169,7 +169,7 @@
       "labelName": "Name",
       "labelNameKana": "Name (kana)",
       "namePlaceholder": "Yamada Taro",
-      "nameKanaPlaceholder": "やまだ たろう",
+      "nameKanaPlaceholder": "e.g. ヤマダ タロウ (katakana, optional)",
       "nameRequired": "Please enter your name",
       "updateSuccess": "Profile updated"
     },

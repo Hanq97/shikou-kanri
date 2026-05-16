@@ -597,6 +597,7 @@ export class AuthService {
       id: string;
       email: string;
       name: string;
+      nameKana: string | null;
       role: string;
       status: string;
       twoFaEnabled: boolean;
@@ -609,6 +610,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       name: user.name,
+      nameKana: user.nameKana,
       role: user.role as AuthenticatedUser['role'],
       status: user.status as AuthenticatedUser['status'],
       twoFaEnabled: user.twoFaEnabled,
