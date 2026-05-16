@@ -92,7 +92,7 @@ export function PhotoUploadField({ photos, onChange }: Props): JSX.Element {
               accept="image/*"
               multiple
               onChange={onFileSelect}
-              className="hidden"
+              style={{ display: 'none' }}
             />
             <div className="text-center text-zinc-500">
               <Plus size={20} className="mx-auto" />
