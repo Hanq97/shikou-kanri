@@ -600,6 +600,32 @@
       "nameRequired": "案件名を入力してください",
       "customerRequired": "顧客を選択してください（または土地仕入れ前を選択）",
       "scheduleRangeInvalid": "完了予定日は開始予定日より後にしてください"
+    },
+    "members": {
+      "title": "メンバー",
+      "subtitle": "案件に参加するメンバー",
+      "addButton": "メンバーを追加",
+      "empty": "メンバー未登録",
+      "addTitle": "メンバーを追加",
+      "addUserLabel": "ユーザー",
+      "addRoleLabel": "役割",
+      "addUserPlaceholder": "ユーザーを検索",
+      "submit": "追加",
+      "changeRoleTitle": "役割を変更",
+      "removeTitle": "メンバーを外す",
+      "removeContent": "{{name}} を案件から外しますか？",
+      "removeOk": "外す",
+      "messages": {
+        "added": "メンバーを追加しました",
+        "roleChanged": "役割を変更しました",
+        "removed": "メンバーを外しました"
+      },
+      "columns": {
+        "user": "ユーザー",
+        "role": "役割",
+        "joined": "参加日"
+      },
+      "self": "（あなた）"
     }
   }
 }

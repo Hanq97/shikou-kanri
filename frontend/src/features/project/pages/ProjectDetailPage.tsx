@@ -13,6 +13,7 @@ import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { formatJpy } from '@/shared/utils/format';
 import { ChangeStatusModal } from '../components/ChangeStatusModal';
 import { FolderListTab } from '../components/FolderListTab';
+import { ProjectMembersTab } from '../components/ProjectMembersTab';
 import { ProjectStatusTag } from '../components/ProjectStatusTag';
 import { ProjectTypeTag } from '../components/ProjectTypeTag';
 import { ReverseStatusModal } from '../components/ReverseStatusModal';
@@ -246,9 +247,11 @@ export function ProjectDetailPage(): JSX.Element {
               key: 'members',
               label: t('project.tabs.members'),
               children: (
-                <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-8 text-center text-sm text-zinc-500">
-                  P4 FE で実装予定
-                </div>
+                <ProjectMembersTab
+                  projectId={project.id}
+                  projectOwnerId={project.ownerUserId}
+                  canManage={canEdit}
+                />
               ),
             },
             {

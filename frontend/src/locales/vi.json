@@ -600,6 +600,32 @@
       "nameRequired": "Cần nhập tên dự án",
       "customerRequired": "Chọn khách hàng (hoặc đánh dấu chưa có khách)",
       "scheduleRangeInvalid": "Ngày hoàn thành phải sau ngày bắt đầu"
+    },
+    "members": {
+      "title": "Thành viên",
+      "subtitle": "Thành viên tham gia dự án",
+      "addButton": "Thêm thành viên",
+      "empty": "Chưa có thành viên",
+      "addTitle": "Thêm thành viên",
+      "addUserLabel": "Người dùng",
+      "addRoleLabel": "Vai trò",
+      "addUserPlaceholder": "Tìm người dùng",
+      "submit": "Thêm",
+      "changeRoleTitle": "Đổi vai trò",
+      "removeTitle": "Bỏ thành viên",
+      "removeContent": "Bỏ {{name}} khỏi dự án?",
+      "removeOk": "Bỏ",
+      "messages": {
+        "added": "Đã thêm thành viên",
+        "roleChanged": "Đã đổi vai trò",
+        "removed": "Đã bỏ thành viên"
+      },
+      "columns": {
+        "user": "Người dùng",
+        "role": "Vai trò",
+        "joined": "Ngày tham gia"
+      },
+      "self": "(bạn)"
     }
   }
 }

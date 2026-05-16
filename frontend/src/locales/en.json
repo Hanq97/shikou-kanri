@@ -600,6 +600,32 @@
       "nameRequired": "Project name is required",
       "customerRequired": "Select a customer (or check pre-acquisition)",
       "scheduleRangeInvalid": "End date must be after start date"
+    },
+    "members": {
+      "title": "Members",
+      "subtitle": "Members on this project",
+      "addButton": "Add member",
+      "empty": "No members yet",
+      "addTitle": "Add member",
+      "addUserLabel": "User",
+      "addRoleLabel": "Role",
+      "addUserPlaceholder": "Search users",
+      "submit": "Add",
+      "changeRoleTitle": "Change role",
+      "removeTitle": "Remove member",
+      "removeContent": "Remove {{name}} from the project?",
+      "removeOk": "Remove",
+      "messages": {
+        "added": "Member added",
+        "roleChanged": "Role changed",
+        "removed": "Member removed"
+      },
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "joined": "Joined"
+      },
+      "self": "(you)"
     }
   }
 }
