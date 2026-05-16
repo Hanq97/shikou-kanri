@@ -242,6 +242,84 @@
     "twoFaDisabled": "無効",
     "footer": "F8-AUTH MVP — Phase 1 ダッシュボードは順次実装予定です"
   },
+  "customer": {
+    "title": "顧客管理",
+    "subtitle": "顧客情報の登録・編集・検索",
+    "createButton": "顧客を新規登録",
+    "searchPlaceholder": "氏名・電話・住所で検索",
+    "filterOb": "OB顧客のみ",
+    "obBadge": "OB",
+    "nameNotSet": "(未設定)",
+    "phoneNotSet": "—",
+    "totalCount": "全 {{total}} 件",
+    "tabs": {
+      "overview": "概要",
+      "properties": "物件",
+      "history": "履歴"
+    },
+    "columns": {
+      "name": "氏名",
+      "type": "種別",
+      "phone": "電話番号",
+      "address": "住所",
+      "ob": "OB",
+      "updatedAt": "最終更新"
+    },
+    "type": {
+      "individual": "個人",
+      "corporate": "法人"
+    },
+    "form": {
+      "createTitle": "顧客新規登録",
+      "editTitle": "顧客情報編集",
+      "labelType": "顧客種別",
+      "labelName": "氏名",
+      "labelNameCorporate": "会社名",
+      "labelNameKana": "フリガナ",
+      "labelPhone": "電話番号",
+      "labelEmail": "メールアドレス",
+      "labelAddress": "住所",
+      "labelIsOb": "OB顧客",
+      "labelAcquiredAt": "初回取引日",
+      "labelNotes": "備考",
+      "namePlaceholder": "山田 太郎",
+      "namePlaceholderCorporate": "株式会社○○",
+      "nameKanaPlaceholder": "ヤマダ タロウ",
+      "phonePlaceholder": "03-1234-5678",
+      "emailPlaceholder": "example@example.com",
+      "addressPlaceholder": "東京都...",
+      "submit": "保存"
+    },
+    "detail": {
+      "overviewTitle": "基本情報",
+      "labelEmail": "メールアドレス",
+      "labelAddress": "住所",
+      "labelAcquiredAt": "初回取引日",
+      "labelNotes": "備考",
+      "noNotes": "（備考なし）"
+    },
+    "duplicate": {
+      "title": "重複の可能性",
+      "description": "同じ電話番号の顧客が既に存在します：",
+      "continueButton": "このまま登録",
+      "continueButtonUpdate": "このまま更新"
+    },
+    "confirms": {
+      "deleteTitle": "顧客を削除",
+      "deleteContent": "{{name}} を削除しますか？（ソフトデリート、後で復元可能）",
+      "deleteOk": "削除する"
+    },
+    "messages": {
+      "created": "顧客を登録しました",
+      "updated": "顧客情報を更新しました",
+      "deleted": "顧客を削除しました"
+    },
+    "errors": {
+      "nameRequired": "氏名を入力してください",
+      "phoneInvalid": "電話番号の形式が不正です",
+      "emailInvalid": "メールアドレスの形式が不正です"
+    }
+  },
   "users": {
     "title": "ユーザー管理",
     "subtitle": "アカウントの招待・ロール・ステータスを管理",

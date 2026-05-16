@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
 import { AuthModule } from './modules/auth';
+import { CustomerModule } from './modules/customer/customer.module';
 import { NotificationModule } from './modules/notification';
 import { CryptoModule } from './shared/crypto/crypto.module';
 import { PrismaModule } from './shared/database/prisma.module';
@@ -21,6 +22,7 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
     HttpHelpersModule,
     NotificationModule,
     AuthModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [

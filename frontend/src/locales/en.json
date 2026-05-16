@@ -242,6 +242,84 @@
     "twoFaDisabled": "Disabled",
     "footer": "F8-AUTH MVP — Phase 1 dashboard will be implemented incrementally"
   },
+  "customer": {
+    "title": "Customers",
+    "subtitle": "Register, edit, and search customers",
+    "createButton": "New customer",
+    "searchPlaceholder": "Search by name, phone, or address",
+    "filterOb": "OB customers only",
+    "obBadge": "OB",
+    "nameNotSet": "(unset)",
+    "phoneNotSet": "—",
+    "totalCount": "{{total}} total",
+    "tabs": {
+      "overview": "Overview",
+      "properties": "Properties",
+      "history": "History"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "phone": "Phone",
+      "address": "Address",
+      "ob": "OB",
+      "updatedAt": "Last updated"
+    },
+    "type": {
+      "individual": "Individual",
+      "corporate": "Corporate"
+    },
+    "form": {
+      "createTitle": "New customer",
+      "editTitle": "Edit customer",
+      "labelType": "Customer type",
+      "labelName": "Name",
+      "labelNameCorporate": "Company name",
+      "labelNameKana": "Name (kana)",
+      "labelPhone": "Phone",
+      "labelEmail": "Email",
+      "labelAddress": "Address",
+      "labelIsOb": "OB customer",
+      "labelAcquiredAt": "First transaction date",
+      "labelNotes": "Notes",
+      "namePlaceholder": "Yamada Taro",
+      "namePlaceholderCorporate": "Towa Corporation",
+      "nameKanaPlaceholder": "e.g. ヤマダ タロウ (katakana, optional)",
+      "phonePlaceholder": "03-1234-5678",
+      "emailPlaceholder": "example@example.com",
+      "addressPlaceholder": "Address",
+      "submit": "Save"
+    },
+    "detail": {
+      "overviewTitle": "Basic information",
+      "labelEmail": "Email",
+      "labelAddress": "Address",
+      "labelAcquiredAt": "First transaction",
+      "labelNotes": "Notes",
+      "noNotes": "(no notes)"
+    },
+    "duplicate": {
+      "title": "Possible duplicate",
+      "description": "A customer with the same phone number already exists:",
+      "continueButton": "Register anyway",
+      "continueButtonUpdate": "Update anyway"
+    },
+    "confirms": {
+      "deleteTitle": "Delete customer",
+      "deleteContent": "Delete {{name}}? (Soft delete — restorable later)",
+      "deleteOk": "Delete"
+    },
+    "messages": {
+      "created": "Customer registered",
+      "updated": "Customer updated",
+      "deleted": "Customer deleted"
+    },
+    "errors": {
+      "nameRequired": "Please enter a name",
+      "phoneInvalid": "Invalid phone format",
+      "emailInvalid": "Invalid email format"
+    }
+  },
   "users": {
     "title": "User management",
     "subtitle": "Invite users and manage roles & statuses",

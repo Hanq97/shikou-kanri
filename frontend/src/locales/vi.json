@@ -242,6 +242,84 @@
     "twoFaDisabled": "Tắt",
     "footer": "F8-AUTH MVP — Phase 1 dashboard sẽ được triển khai dần"
   },
+  "customer": {
+    "title": "Quản lý khách hàng",
+    "subtitle": "Đăng ký, chỉnh sửa, tìm kiếm khách hàng",
+    "createButton": "Thêm khách hàng",
+    "searchPlaceholder": "Tìm theo tên, điện thoại, địa chỉ",
+    "filterOb": "Chỉ khách OB",
+    "obBadge": "OB",
+    "nameNotSet": "(chưa đặt)",
+    "phoneNotSet": "—",
+    "totalCount": "Tổng {{total}} khách",
+    "tabs": {
+      "overview": "Tổng quan",
+      "properties": "Bất động sản",
+      "history": "Lịch sử"
+    },
+    "columns": {
+      "name": "Họ tên",
+      "type": "Loại",
+      "phone": "Điện thoại",
+      "address": "Địa chỉ",
+      "ob": "OB",
+      "updatedAt": "Cập nhật"
+    },
+    "type": {
+      "individual": "Cá nhân",
+      "corporate": "Doanh nghiệp"
+    },
+    "form": {
+      "createTitle": "Thêm khách hàng",
+      "editTitle": "Chỉnh sửa khách hàng",
+      "labelType": "Loại khách hàng",
+      "labelName": "Họ tên",
+      "labelNameCorporate": "Tên công ty",
+      "labelNameKana": "Tên (kana)",
+      "labelPhone": "Điện thoại",
+      "labelEmail": "Email",
+      "labelAddress": "Địa chỉ",
+      "labelIsOb": "Khách OB",
+      "labelAcquiredAt": "Ngày giao dịch đầu",
+      "labelNotes": "Ghi chú",
+      "namePlaceholder": "Nguyễn Văn A",
+      "namePlaceholderCorporate": "Công ty TNHH ABC",
+      "nameKanaPlaceholder": "VD: グエン クオック ハ (katakana, tùy chọn)",
+      "phonePlaceholder": "03-1234-5678",
+      "emailPlaceholder": "example@example.com",
+      "addressPlaceholder": "Địa chỉ",
+      "submit": "Lưu"
+    },
+    "detail": {
+      "overviewTitle": "Thông tin cơ bản",
+      "labelEmail": "Email",
+      "labelAddress": "Địa chỉ",
+      "labelAcquiredAt": "Giao dịch đầu",
+      "labelNotes": "Ghi chú",
+      "noNotes": "(không có ghi chú)"
+    },
+    "duplicate": {
+      "title": "Có thể trùng lặp",
+      "description": "Khách hàng với cùng số điện thoại đã tồn tại:",
+      "continueButton": "Vẫn đăng ký",
+      "continueButtonUpdate": "Vẫn cập nhật"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa khách hàng",
+      "deleteContent": "Xóa {{name}}? (Soft delete — có thể khôi phục sau)",
+      "deleteOk": "Xóa"
+    },
+    "messages": {
+      "created": "Đã tạo khách hàng",
+      "updated": "Đã cập nhật khách hàng",
+      "deleted": "Đã xóa khách hàng"
+    },
+    "errors": {
+      "nameRequired": "Vui lòng nhập họ tên",
+      "phoneInvalid": "Định dạng điện thoại không hợp lệ",
+      "emailInvalid": "Định dạng email không hợp lệ"
+    }
+  },
   "users": {
     "title": "Quản lý người dùng",
     "subtitle": "Mời người dùng, quản lý vai trò và trạng thái",
