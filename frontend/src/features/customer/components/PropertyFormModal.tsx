@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { App, Button, DatePicker, Form, Input, InputNumber, Modal, Select } from 'antd';
+import { App, Button, DatePicker, Form, Grid, Input, InputNumber, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -41,6 +41,8 @@ export function PropertyFormModal({
 }: Props): JSX.Element {
   const { t } = useTranslation();
   const { message } = App.useApp();
+  const screens = Grid.useBreakpoint();
+  const isMobile = !screens.sm;
   const [submitting, setSubmitting] = useState(false);
   const isEdit = Boolean(property);
 
@@ -132,7 +134,8 @@ export function PropertyFormModal({
       onCancel={onClose}
       footer={null}
       destroyOnClose
-      width={640}
+      width={isMobile ? '100%' : 640}
+      style={isMobile ? { top: 16, maxWidth: 'calc(100vw - 16px)', margin: '0 8px' } : undefined}
     >
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
@@ -150,7 +153,7 @@ export function PropertyFormModal({
           />
         </Form.Item>
 
-        <div className="grid grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
           <Form.Item label={t('property.fields.propertyType')} required>
             <Controller
               name="propertyType"
@@ -183,7 +186,7 @@ export function PropertyFormModal({
           </Form.Item>
         </div>
 
-        <div className="grid grid-cols-3 gap-x-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4">
           <Form.Item label={t('property.fields.yearBuilt')}>
             <Controller
               name="yearBuilt"
@@ -245,11 +248,17 @@ export function PropertyFormModal({
           />
         </Form.Item>
 
-        <div className="flex justify-end gap-2">
-          <Button onClick={onClose} disabled={submitting}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <Button onClick={onClose} disabled={submitting} block className="sm:!w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="primary" htmlType="submit" loading={submitting}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={submitting}
+            block
+            className="sm:!w-auto"
+          >
             {t('property.form.submit')}
           </Button>
         </div>

@@ -22,6 +22,7 @@ export const CustomerSchema = z
         path: ['name'],
       });
     }
+    // eslint-disable-next-line no-irregular-whitespace
     if (data.phone && data.phone.length > 0 && !/^[\d\-\s()()　]+$/u.test(data.phone)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

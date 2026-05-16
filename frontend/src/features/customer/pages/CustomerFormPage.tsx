@@ -152,12 +152,12 @@ export function CustomerFormPage(): JSX.Element {
         </Link>
 
         <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card overflow-hidden">
-          <div className="px-6 py-4 border-b border-zinc-200/70">
-            <h1 className="m-0 text-xl font-semibold text-zinc-900">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-200/70">
+            <h1 className="m-0 text-lg sm:text-xl font-semibold text-zinc-900">
               {isEdit ? t('customer.form.editTitle') : t('customer.form.createTitle')}
             </h1>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <Form layout="vertical" onFinish={handleSubmit((v) => submit(v))}>
               <Form.Item label={t('customer.form.labelType')} required>
                 <Controller
@@ -318,11 +318,21 @@ export function CustomerFormPage(): JSX.Element {
                 />
               </Form.Item>
 
-              <div className="flex justify-end gap-2">
-                <Button onClick={() => navigate(isEdit ? `/customers/${id}` : '/customers')}>
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <Button
+                  onClick={() => navigate(isEdit ? `/customers/${id}` : '/customers')}
+                  block
+                  className="sm:!w-auto"
+                >
                   {t('common.cancel')}
                 </Button>
-                <Button type="primary" htmlType="submit" loading={submitting}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={submitting}
+                  block
+                  className="sm:!w-auto"
+                >
                   {t('customer.form.submit')}
                 </Button>
               </div>

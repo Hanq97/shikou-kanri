@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { App, Button, Dropdown, Input, Select, Table, type MenuProps } from 'antd';
+import { App, Button, Dropdown, Input, Select, type MenuProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { Edit, MoreVertical, Plus, Search, Trash2 } from 'lucide-react';
+import { Edit, Mail, MapPin, MoreVertical, Phone, Plus, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import {
   type ListCustomersParams,
 } from '@/shared/api/customers.api';
 import { AppLayout } from '@/shared/components/layout/AppLayout';
+import { ResponsiveTable } from '@/shared/components/responsive/ResponsiveTable';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { CustomerTypeTag } from '../components/CustomerTypeTag';
@@ -162,13 +163,66 @@ export function CustomersListPage(): JSX.Element {
     },
   ];
 
+  function renderMobileCard(row: CustomerSummary): JSX.Element {
+    return (
+      <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4">
+        <div className="flex items-start justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(`/customers/${row.id}`)}
+            className="bg-transparent border-0 p-0 cursor-pointer text-left flex-1 min-w-0"
+          >
+            <div className="font-medium text-zinc-900 truncate">{row.name}</div>
+            {row.nameKana && <div className="text-xs text-zinc-500 truncate">{row.nameKana}</div>}
+          </button>
+          <Dropdown menu={{ items: buildRowMenu(row) }} trigger={['click']} placement="bottomRight">
+            <button
+              type="button"
+              className="w-9 h-9 rounded-lg grid place-items-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors bg-transparent border-0 cursor-pointer shrink-0"
+              aria-label={t('common.actions')}
+            >
+              <MoreVertical size={16} />
+            </button>
+          </Dropdown>
+        </div>
+        <div className="flex items-center gap-1.5 mt-2">
+          <CustomerTypeTag type={row.customerType} />
+          {row.isOb && <ObBadge />}
+        </div>
+        <div className="mt-3 space-y-1 text-sm text-zinc-600">
+          {row.phone && (
+            <div className="flex items-center gap-1.5">
+              <Phone size={14} className="text-zinc-400 shrink-0" />
+              <span className="font-mono">{row.phone}</span>
+            </div>
+          )}
+          {row.email && (
+            <div className="flex items-center gap-1.5">
+              <Mail size={14} className="text-zinc-400 shrink-0" />
+              <span className="truncate">{row.email}</span>
+            </div>
+          )}
+          {row.address && (
+            <div className="flex items-center gap-1.5">
+              <MapPin size={14} className="text-zinc-400 shrink-0" />
+              <span className="truncate">{row.address}</span>
+            </div>
+          )}
+        </div>
+        <div className="mt-2 text-[11px] text-zinc-400">
+          {dayjs(row.updatedAt).format('YYYY/MM/DD HH:mm')}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto space-y-5">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-5">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
+            <h1 className="m-0 text-xl sm:text-2xl font-semibold text-zinc-900 tracking-tight">
               {t('customer.title')}
             </h1>
             <p className="m-0 mt-1 text-sm text-zinc-500">{t('customer.subtitle')}</p>
@@ -177,13 +231,15 @@ export function CustomersListPage(): JSX.Element {
             type="primary"
             icon={<Plus size={14} />}
             onClick={() => navigate('/customers/new')}
+            block={false}
+            className="sm:w-auto"
           >
             {t('customer.createButton')}
           </Button>
         </div>
 
         {/* Filter bar */}
-        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 flex flex-wrap gap-3 items-center">
+        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-3 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 sm:items-center">
           <Input
             placeholder={t('customer.searchPlaceholder')}
             prefix={<Search size={14} className="text-zinc-400" />}
@@ -197,14 +253,14 @@ export function CustomersListPage(): JSX.Element {
               setSearchInput('');
               setFilters((f) => ({ ...f, search: undefined, page: 1 }));
             }}
-            style={{ maxWidth: 320 }}
+            className="sm:!max-w-[320px]"
           />
           <Select
             placeholder={t('customer.filterOb')}
             allowClear
             value={filters.isOb}
             onChange={(isOb) => setFilters((f) => ({ ...f, isOb, page: 1 }))}
-            style={{ minWidth: 160 }}
+            className="sm:!min-w-[160px]"
             options={[
               { value: true, label: 'OB' },
               { value: false, label: '新規' },
@@ -212,13 +268,15 @@ export function CustomersListPage(): JSX.Element {
           />
         </div>
 
-        {/* Table */}
-        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card overflow-hidden">
-          <Table<CustomerSummary>
+        {/* Responsive table */}
+        <div className="sm:bg-white sm:border sm:border-zinc-200/70 sm:rounded-xl sm:shadow-card sm:overflow-hidden">
+          <ResponsiveTable<CustomerSummary>
             columns={columns}
             dataSource={data?.data ?? []}
             rowKey="id"
             loading={isFetching}
+            mobileCard={renderMobileCard}
+            mobileEmptyText={t('customer.empty')}
             pagination={{
               current: filters.page,
               pageSize: filters.pageSize,

@@ -63,7 +63,7 @@ export function CustomerDetailPage(): JSX.Element {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-5">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-5">
         <Link
           to="/customers"
           className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-brand-600"
@@ -73,13 +73,13 @@ export function CustomerDetailPage(): JSX.Element {
         </Link>
 
         {/* Header card */}
-        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-6 flex justify-between gap-4 flex-wrap">
+        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <CustomerTypeTag type={customer.customerType} />
               {customer.isOb && <ObBadge />}
             </div>
-            <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
+            <h1 className="m-0 text-xl sm:text-2xl font-semibold text-zinc-900 tracking-tight">
               {customer.name}
             </h1>
             {customer.nameKana && (
@@ -106,7 +106,7 @@ export function CustomerDetailPage(): JSX.Element {
               )}
             </div>
           </div>
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2 flex-wrap">
             <Button
               icon={<Edit size={14} />}
               onClick={() => navigate(`/customers/${customer.id}/edit`)}
@@ -130,29 +130,29 @@ export function CustomerDetailPage(): JSX.Element {
               label: t('customer.tabs.overview'),
               children: (
                 <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card overflow-hidden">
-                  <div className="px-6 py-4 border-b border-zinc-200/70">
+                  <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-200/70">
                     <h2 className="m-0 text-base font-semibold text-zinc-900">
                       {t('customer.detail.overviewTitle')}
                     </h2>
                   </div>
                   <dl className="divide-y divide-zinc-100">
-                    <div className="px-6 py-3.5 grid grid-cols-3 gap-4 text-sm">
+                    <div className="px-4 sm:px-6 py-3 sm:py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-sm">
                       <dt className="text-zinc-500">{t('customer.detail.labelEmail')}</dt>
-                      <dd className="col-span-2 m-0 text-zinc-900">{customer.email ?? '—'}</dd>
+                      <dd className="sm:col-span-2 m-0 text-zinc-900">{customer.email ?? '—'}</dd>
                     </div>
-                    <div className="px-6 py-3.5 grid grid-cols-3 gap-4 text-sm">
+                    <div className="px-4 sm:px-6 py-3 sm:py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-sm">
                       <dt className="text-zinc-500">{t('customer.detail.labelAddress')}</dt>
-                      <dd className="col-span-2 m-0 text-zinc-900">{customer.address ?? '—'}</dd>
+                      <dd className="sm:col-span-2 m-0 text-zinc-900">{customer.address ?? '—'}</dd>
                     </div>
-                    <div className="px-6 py-3.5 grid grid-cols-3 gap-4 text-sm">
+                    <div className="px-4 sm:px-6 py-3 sm:py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-sm">
                       <dt className="text-zinc-500">{t('customer.detail.labelAcquiredAt')}</dt>
-                      <dd className="col-span-2 m-0 text-zinc-900">
+                      <dd className="sm:col-span-2 m-0 text-zinc-900">
                         {customer.acquiredAt
                           ? dayjs(customer.acquiredAt).format('YYYY/MM/DD')
                           : '—'}
                       </dd>
                     </div>
-                    <div className="px-6 py-3.5 grid grid-cols-3 gap-4 text-sm">
+                    <div className="px-4 sm:px-6 py-3 sm:py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-sm">
                       <dt className="text-zinc-500">{t('customer.detail.labelNotes')}</dt>
                       <dd className="col-span-2 m-0 text-zinc-900 whitespace-pre-wrap">
                         {customer.notes || (

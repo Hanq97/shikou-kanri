@@ -43,6 +43,7 @@
     "users": "Users",
     "sidebarExpand": "Expand sidebar",
     "sidebarCollapse": "Collapse sidebar",
+    "sidebarOpen": "Open menu",
     "notifications": "Notifications",
     "language": "Language"
   },
@@ -252,6 +253,7 @@
     "nameNotSet": "(unset)",
     "phoneNotSet": "—",
     "totalCount": "{{total}} total",
+    "empty": "No customers yet",
     "tabs": {
       "overview": "Overview",
       "properties": "Properties",

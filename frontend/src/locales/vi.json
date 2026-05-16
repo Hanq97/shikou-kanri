@@ -43,6 +43,7 @@
     "users": "Quản lý người dùng",
     "sidebarExpand": "Mở rộng sidebar",
     "sidebarCollapse": "Thu gọn sidebar",
+    "sidebarOpen": "Mở menu",
     "notifications": "Thông báo",
     "language": "Ngôn ngữ"
   },
@@ -252,6 +253,7 @@
     "nameNotSet": "(chưa đặt)",
     "phoneNotSet": "—",
     "totalCount": "Tổng {{total}} khách",
+    "empty": "Chưa có khách hàng",
     "tabs": {
       "overview": "Tổng quan",
       "properties": "Bất động sản",

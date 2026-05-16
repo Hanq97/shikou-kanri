@@ -43,6 +43,7 @@
     "users": "ユーザー管理",
     "sidebarExpand": "サイドバーを展開",
     "sidebarCollapse": "サイドバーを折りたたむ",
+    "sidebarOpen": "メニューを開く",
     "notifications": "通知",
     "language": "言語"
   },
@@ -252,6 +253,7 @@
     "nameNotSet": "(未設定)",
     "phoneNotSet": "—",
     "totalCount": "全 {{total}} 件",
+    "empty": "顧客未登録",
     "tabs": {
       "overview": "概要",
       "properties": "物件",

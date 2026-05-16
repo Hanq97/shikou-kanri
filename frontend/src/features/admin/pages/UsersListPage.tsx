@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { App, Button, Dropdown, Input, Select, Table, type MenuProps } from 'antd';
+import { App, Button, Dropdown, Input, Select, type MenuProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import {
@@ -19,6 +19,7 @@ import { extractApiError } from '@/shared/api/client';
 import type { UserRole, UserStatus } from '@/shared/api/types';
 import { usersApi, type ListUsersParams, type UserSummary } from '@/shared/api/users.api';
 import { AppLayout } from '@/shared/components/layout/AppLayout';
+import { ResponsiveTable } from '@/shared/components/responsive/ResponsiveTable';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { EmergencyDisable2FaModal } from '../components/EmergencyDisable2FaModal';
@@ -321,13 +322,61 @@ export function UsersListPage(): JSX.Element {
     },
   ];
 
+  function renderMobileCard(row: UserSummary): JSX.Element {
+    const isLocked =
+      row.requireAdminUnlock ||
+      (row.lockedUntil !== null && new Date(row.lockedUntil) > new Date());
+    return (
+      <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-zinc-900 truncate">
+              {row.name || t('users.nameNotSet')}
+            </div>
+            <div className="text-xs text-zinc-500 truncate">{row.email}</div>
+          </div>
+          <Dropdown menu={{ items: buildRowMenu(row) }} trigger={['click']} placement="bottomRight">
+            <button
+              type="button"
+              className="w-9 h-9 rounded-lg grid place-items-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors bg-transparent border-0 cursor-pointer shrink-0"
+              aria-label={t('common.actions')}
+            >
+              <MoreVertical size={16} />
+            </button>
+          </Dropdown>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+          <RoleTag role={row.role} />
+          <StatusTag status={row.status} />
+          {isLocked && (
+            <span className="inline-flex items-center gap-1 text-xs text-red-700 bg-red-50 ring-1 ring-red-200 rounded-full px-2 py-0.5">
+              <Lock size={10} />
+              {t('users.lockedBadge')}
+            </span>
+          )}
+          {row.twoFaEnabled && (
+            <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200 rounded-full px-2 py-0.5">
+              <KeyRound size={10} />
+              {t('users.twoFaEnabled')}
+            </span>
+          )}
+        </div>
+        <div className="mt-2 text-[11px] text-zinc-400">
+          {row.lastLoginAt
+            ? dayjs(row.lastLoginAt).format('YYYY/MM/DD HH:mm')
+            : t('users.neverLoggedIn')}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto space-y-5">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-5">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
+            <h1 className="m-0 text-xl sm:text-2xl font-semibold text-zinc-900 tracking-tight">
               {t('users.title')}
             </h1>
             <p className="m-0 mt-1 text-sm text-zinc-500">{t('users.subtitle')}</p>
@@ -338,7 +387,7 @@ export function UsersListPage(): JSX.Element {
         </div>
 
         {/* Filter bar */}
-        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 flex flex-wrap gap-3 items-center">
+        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-3 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 sm:items-center">
           <Input
             placeholder={t('users.searchPlaceholder')}
             prefix={<Search size={14} className="text-zinc-400" />}
@@ -352,47 +401,50 @@ export function UsersListPage(): JSX.Element {
               setSearchInput('');
               setFilters((f) => ({ ...f, search: undefined, page: 1 }));
             }}
-            style={{ maxWidth: 280 }}
+            className="sm:!max-w-[280px]"
           />
-          <Select
-            placeholder={t('users.roleFilter')}
-            allowClear
-            value={filters.role}
-            onChange={(role) => setFilters((f) => ({ ...f, role, page: 1 }))}
-            style={{ minWidth: 140 }}
-            options={[
-              { value: 'system_admin', label: t('users.roles.system_admin') },
-              { value: 'manager', label: t('users.roles.manager') },
-              { value: 'employee', label: t('users.roles.employee') },
-              { value: 'invited', label: t('users.roles.invited') },
-            ]}
-          />
-          <Select
-            placeholder={t('users.statusFilter')}
-            allowClear
-            value={filters.status}
-            onChange={(status) => setFilters((f) => ({ ...f, status, page: 1 }))}
-            style={{ minWidth: 140 }}
-            options={[
-              { value: 'active', label: t('users.statuses.active') },
-              { value: 'pending_invite', label: t('users.statuses.pending_invite') },
-              { value: 'suspended', label: t('users.statuses.suspended') },
-              { value: 'disabled', label: t('users.statuses.disabled') },
-            ]}
-          />
-          <div className="flex-1" />
+          <div className="flex gap-2 sm:contents">
+            <Select
+              placeholder={t('users.roleFilter')}
+              allowClear
+              value={filters.role}
+              onChange={(role) => setFilters((f) => ({ ...f, role, page: 1 }))}
+              className="flex-1 sm:!min-w-[140px] sm:flex-none"
+              options={[
+                { value: 'system_admin', label: t('users.roles.system_admin') },
+                { value: 'manager', label: t('users.roles.manager') },
+                { value: 'employee', label: t('users.roles.employee') },
+                { value: 'invited', label: t('users.roles.invited') },
+              ]}
+            />
+            <Select
+              placeholder={t('users.statusFilter')}
+              allowClear
+              value={filters.status}
+              onChange={(status) => setFilters((f) => ({ ...f, status, page: 1 }))}
+              className="flex-1 sm:!min-w-[140px] sm:flex-none"
+              options={[
+                { value: 'active', label: t('users.statuses.active') },
+                { value: 'pending_invite', label: t('users.statuses.pending_invite') },
+                { value: 'suspended', label: t('users.statuses.suspended') },
+                { value: 'disabled', label: t('users.statuses.disabled') },
+              ]}
+            />
+          </div>
+          <div className="hidden sm:block flex-1" />
           <Button icon={<RefreshCw size={14} />} onClick={() => refetch()} loading={isFetching}>
             {t('common.refresh')}
           </Button>
         </div>
 
-        {/* Table */}
-        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card overflow-hidden">
-          <Table<UserSummary>
+        {/* Responsive table */}
+        <div className="sm:bg-white sm:border sm:border-zinc-200/70 sm:rounded-xl sm:shadow-card sm:overflow-hidden">
+          <ResponsiveTable<UserSummary>
             columns={columns}
             dataSource={data?.data ?? []}
             rowKey="id"
             loading={isFetching}
+            mobileCard={renderMobileCard}
             pagination={{
               current: filters.page,
               pageSize: filters.pageSize,

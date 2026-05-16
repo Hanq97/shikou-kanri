@@ -1,12 +1,14 @@
 ---
 paths:
-  - "frontend/**/*.tsx"
-  - "frontend/**/*.ts"
-  - "frontend/**/*.css"
+  - 'frontend/**/*.tsx'
+  - 'frontend/**/*.ts'
+  - 'frontend/**/*.css'
 ---
+
 # Frontend Coding Conventions — 施工管理システム
 
 ## Stack
+
 - **Build**: Vite 5 + React 18 + TypeScript strict (`verbatimModuleSyntax: true`)
 - **Routing**: React Router 6 (`createBrowserRouter`)
 - **UI hybrid**: Ant Design 5 (widgets + JP locale) + Tailwind CSS 3 (utility/layout) + Lucide React (icons)
@@ -18,6 +20,7 @@ paths:
 - **Test**: Vitest + Testing Library (planned), Playwright E2E (planned)
 
 ## Folder structure
+
 ```
 frontend/src/
 ├── app/                          # Root composition
@@ -45,6 +48,7 @@ frontend/src/
 ```
 
 ## Naming
+
 - Files: `PascalCase.tsx` for components/pages, `kebab-case.ts` for utilities/services/schemas
 - Components: `PascalCase` matching filename (`LoginPage`, `AuthLayout`, `RoleTag`)
 - Hooks: `useXxx` lower camelCase
@@ -56,6 +60,7 @@ frontend/src/
 ## Design System (BẮT BUỘC tuân theo)
 
 ### Single source of truth — `src/styles/design-tokens.css`
+
 - color (brand-50…brand-950, neutral zinc, status emerald/amber/red)
 - radius (base 8, lg 12), shadow (card/elevated/floating, all soft)
 - typography (Inter + Noto Sans JP, sizes xs→4xl, weights 400/500/600)
@@ -64,34 +69,88 @@ frontend/src/
 **KHÔNG hard-code màu/spacing trong component.** Mọi token thay đổi → sửa `design-tokens.css` + mirror vào Antd theme tokens trong `app/providers.tsx`.
 
 ### Khi nào Antd vs Tailwind
-| Use case | Library |
-|---|---|
-| Form / Input / Select / DatePicker / Cascader / Upload | **Antd** (JP locale + validation states) |
-| Table / Pagination | **Antd** |
+
+| Use case                                                       | Library                                     |
+| -------------------------------------------------------------- | ------------------------------------------- |
+| Form / Input / Select / DatePicker / Cascader / Upload         | **Antd** (JP locale + validation states)    |
+| Table / Pagination                                             | **Antd**                                    |
 | Modal / Drawer / Tooltip / Popconfirm / message / notification | **Antd** (`App.useApp()` for context-aware) |
-| Spin (async loading) | **Antd** |
-| Layout (sidebar / header / grid / container) | **Tailwind** |
-| Card / badge / KPI stat / empty state | **Tailwind** |
-| Spacing / padding / margin / color utility | **Tailwind** |
-| Icon trong page content | **Lucide React** |
-| Icon trong Antd internal (Form validation, Alert) | **Antd default** |
+| Spin (async loading)                                           | **Antd**                                    |
+| Layout (sidebar / header / grid / container)                   | **Tailwind**                                |
+| Card / badge / KPI stat / empty state                          | **Tailwind**                                |
+| Spacing / padding / margin / color utility                     | **Tailwind**                                |
+| Icon trong page content                                        | **Lucide React**                            |
+| Icon trong Antd internal (Form validation, Alert)              | **Antd default**                            |
 
 ### Layout wrappers
-- Authenticated page → `<AppLayout>` (sidebar + header + LanguageSwitcher + user dropdown)
+
+- Authenticated page → `<AppLayout>` (sidebar drawer trên mobile, fixed trên desktop)
 - Public auth page → `<AuthLayout title subtitle>` (centered card)
-- Settings sub-page → `<SettingsLayout title description>` (tabs sidebar)
+- Settings sub-page → `<SettingsLayout title description>` (tabs vertical mobile / sidebar desktop)
+
+### Mobile-first responsive (BẮT BUỘC từ 2026-05-16)
+
+**Audience**: 職人/招待ユーザー/field worker chủ yếu dùng phone; staff dùng desktop nhưng cần mobile khi outdoor.
+
+**Breakpoints** (Tailwind defaults):
+| Prefix | Min | Use |
+|---|---|---|
+| (none) | 0 | Phone portrait |
+| `sm:` | 640px | Phone landscape / small tablet |
+| `md:` | 768px | Tablet / small laptop |
+| `lg:` | 1024px | Laptop / desktop |
+| `xl:` | 1280px | Wide desktop |
+
+**Mobile-first rule**: Default classes target mobile. Add `sm:`/`md:`/`lg:` để enhance lên desktop.
+
+- ✅ `flex flex-col sm:flex-row` (stack mobile, row desktop)
+- ✅ `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`
+- ✅ `text-sm sm:text-base`, `p-3 sm:p-4 lg:p-6`
+- ❌ KHÔNG: `flex flex-row sm:flex-col` (desktop-first inverted)
+
+**Layout patterns reference**:
+| Component | Mobile (<sm) | Desktop (≥sm) |
+|---|---|---|
+| AppLayout sidebar | Drawer + hamburger toggle | Fixed 240px (collapsible 64px) |
+| Antd `<Table>` | → Card list via `<ResponsiveTable>` | Standard table |
+| Forms multi-col | Stack 1 cột | grid-cols-2 / grid-cols-3 |
+| Modals | `width="100%"` + small margin | Fixed 640/720px |
+| Page header | `flex-col gap-3` | `flex-row justify-between` |
+| Stat cards | grid-cols-1 | grid-cols-2 lg:grid-cols-4 |
+| Kanban (F1-03 future) | Horizontal scroll snap | All 6 columns visible |
+| SettingsLayout tabs | Top horizontal scroll tabs | Left sidebar `grid-cols-[200px_1fr]` |
+
+**Touch targets**: button height ≥38px (Antd default OK). Min tap area ≥32×32. Gap giữa các tap target ≥8px.
+
+**`<ResponsiveTable>` component** (BẮT BUỘC dùng cho mọi list page):
+
+```tsx
+<ResponsiveTable
+  columns={columns}        // Antd ColumnsType - desktop view
+  dataSource={data}
+  rowKey="id"
+  mobileCard={(row) => <CustomCardForMobile row={row} />}
+  pagination={...}
+/>
+```
+
+Internally `Grid.useBreakpoint()`: `<sm` → Card list, `≥sm` → Antd Table.
 
 ### Card pattern
+
 ```tsx
 <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card">…</div>
 ```
+
 KHÔNG dùng Antd `<Card>` default trừ khi có lý do cụ thể.
 
 ### Color usage
+
 - Primary action: `bg-brand-500 text-white` / Antd `<Button type="primary">`
 - Status pills (Tailwind): `bg-{tone}-50 text-{tone}-700 ring-1 ring-{tone}-200` — emerald (success), amber (warning), red (danger), brand-500 (info)
 
 ## Path alias
+
 - `@/` → `src/` (config trong `vite.config.ts` + `tsconfig.app.json`)
 - Import order:
   1. External (`react`, `antd`, `lucide-react`, `react-router-dom`, …)
@@ -99,17 +158,22 @@ KHÔNG dùng Antd `<Card>` default trừ khi có lý do cụ thể.
   3. Relative (`./types`, `../components/X`)
 
 ## Type-only imports
+
 TypeScript `verbatimModuleSyntax: true`. Type-only imports PHẢI dùng `import type`:
+
 ```ts
 import type { ApiError } from '@/shared/api/types';
 import { useAuth } from '@/shared/hooks/useAuth';
 ```
+
 Mixed:
+
 ```ts
 import { authApi, type InvitationInfo } from '@/shared/api/auth.api';
 ```
 
 ## i18n
+
 - **No hardcoded user-facing strings.** Mọi text PHẢI dùng `t('namespace.key')`
 - Add new strings to ALL 3 locale files (`ja.json`, `en.json`, `vi.json`) cùng lúc
 - Backend error codes → map via `error-mapper.ts` → `t('errorCodes.<CODE>')`. Add new code to all 3 locales when backend introduces new error
@@ -119,12 +183,14 @@ import { authApi, type InvitationInfo } from '@/shared/api/auth.api';
 - Language persisted to localStorage key `shikou-kanri.lang`
 
 ## API client
+
 - `@/shared/api/client.ts` — Axios instance, `withCredentials: true`, baseURL from `VITE_API_BASE_URL` or `/api` (Vite proxy)
 - 401 → singleton refresh promise; retry skip paths: `/auth/login`, `/auth/refresh`, `/auth/invitations`, `/auth/2fa/verify`
 - Per-domain modules export typed object: `authApi`, `usersApi`. Methods return parsed data (not full AxiosResponse)
 - Use `extractApiError(err)` to normalize errors → `{ code, message, status }`
 
 ## State management
+
 - **Server state** (TanStack Query): all data from API. Query keys: `['<entity>', '<scope>', ...filters]`. Invalidate on mutation success
 - **Auth state** (Zustand `authStore`): `user`, `isLoading`, `isInitialized`, `pendingTwoFa`. Actions: `login`, `logout`, `verifyTwoFa`, `loadCurrentUser`
 - **Form state** (React Hook Form): per-form `useForm` + Zod schema via `zodResolver`
@@ -132,6 +198,7 @@ import { authApi, type InvitationInfo } from '@/shared/api/auth.api';
 - **DO NOT** use React Context for data — too easy to cause re-renders
 
 ## Forms
+
 - React Hook Form + `zodResolver(<Schema>)` + Antd `<Form layout="vertical">` (no Antd Form rules — Zod is source of truth)
 - Wire Antd inputs via `<Controller>`:
   ```tsx
@@ -142,17 +209,20 @@ import { authApi, type InvitationInfo } from '@/shared/api/auth.api';
 - Submit: `handleSubmit(onSubmit)`. Use `App.useApp()` `message`/`modal` for feedback
 
 ## Routing
+
 - All routes in `src/app/routes.tsx` via `createBrowserRouter`
 - Authenticated routes wrap in `<AuthGuard>`; admin routes additionally in `<RoleGuard roles={[...]}>`
 - Public-only (login etc.) wrap in `<PublicOnly>` to auto-redirect authenticated users
 - Lazy-load big routes via `React.lazy()` + `<Suspense>` (planned for Phase 2)
 
 ## Error handling
+
 - API errors → `extractApiError(err)` → `mapErrorMessage(...)` for user display
 - Show via Antd `<Alert type="error">` (inline form errors) or `message.error()` (toast)
 - Never display raw error messages from network — always map through `error-mapper`
 
 ## DO NOT
+
 - ❌ Hard-code màu (`#1890ff`, `#fff`) → dùng design-tokens hoặc Tailwind class
 - ❌ Inline `style={{ ... }}` cho layout → dùng Tailwind className
 - ❌ Antd icons (`@ant-design/icons`) trong page content → dùng Lucide
