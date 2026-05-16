@@ -465,5 +465,141 @@
   "notFound": {
     "title": "Page not found",
     "subtitle": "The page you are looking for does not exist or has been moved."
+  },
+  "project": {
+    "title": "Projects",
+    "subtitle": "Project lifecycle: quote → received → construction → handover",
+    "createButton": "New project",
+    "empty": "No projects yet",
+    "totalCount": "{{total}} total",
+    "searchPlaceholder": "Search by code, name, or customer",
+    "viewToggle": {
+      "table": "Table",
+      "kanban": "Kanban"
+    },
+    "filters": {
+      "title": "Filters",
+      "status": "Status",
+      "type": "Type",
+      "owner": "Owner",
+      "customer": "Customer",
+      "from": "Start date (from)",
+      "to": "Start date (to)",
+      "reset": "Reset",
+      "apply": "Apply"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "customer": "Customer",
+      "status": "Status",
+      "type": "Type",
+      "owner": "Owner",
+      "scheduleStart": "Start",
+      "scheduleEnd": "End",
+      "amountTotal": "Amount",
+      "updatedAt": "Updated"
+    },
+    "status": {
+      "quoting": "Quoting",
+      "received": "Received",
+      "construction": "Construction",
+      "completed": "Completed",
+      "handed_over": "Handed over",
+      "cancelled": "Cancelled"
+    },
+    "type": {
+      "new_construction": "New construction",
+      "remodel": "Remodel",
+      "repair": "Repair",
+      "aftercare": "Aftercare"
+    },
+    "memberRole": {
+      "owner": "Owner",
+      "contributor": "Contributor",
+      "inspector": "Inspector",
+      "invited_worker": "Invited worker"
+    },
+    "folderType": {
+      "document": "Document",
+      "drawing": "Drawing",
+      "schedule": "Schedule",
+      "photo": "Photo",
+      "chalkboard": "Chalkboard",
+      "inspection": "Inspection",
+      "custom": "Custom"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "members": "Members",
+      "folders": "Folders"
+    },
+    "form": {
+      "createTitle": "New project",
+      "editTitle": "Edit project",
+      "submit": "Save",
+      "labelCustomer": "Customer",
+      "labelProperty": "Property",
+      "labelType": "Project type",
+      "labelName": "Project name",
+      "labelDescription": "Description",
+      "labelOwner": "Owner",
+      "labelScheduleStart": "Start date",
+      "labelScheduleEnd": "End date",
+      "labelPreAcquisition": "Pre-acquisition (customer TBD)",
+      "preAcquisitionHint": "Start a project before customer is confirmed. Can be replaced with a real customer later.",
+      "namePlaceholder": "e.g. Yamada bathroom remodel",
+      "customerPlaceholder": "Select customer",
+      "propertyPlaceholder": "Select property (optional)",
+      "ownerPlaceholder": "Select owner"
+    },
+    "detail": {
+      "overviewTitle": "Project information",
+      "labelCode": "Code",
+      "labelStatus": "Status",
+      "labelType": "Type",
+      "labelCustomer": "Customer",
+      "labelProperty": "Property",
+      "labelOwner": "Owner",
+      "labelScheduleStart": "Scheduled start",
+      "labelScheduleEnd": "Scheduled end",
+      "labelActualStart": "Actual start",
+      "labelActualEnd": "Actual end",
+      "labelAmountTotal": "Contract amount",
+      "labelDescription": "Description",
+      "noDescription": "(empty)",
+      "noProperty": "(not set)",
+      "foldersTitle": "Default folders"
+    },
+    "actions": {
+      "changeStatus": "Change status",
+      "reverseStatus": "Reverse status (admin)",
+      "reverseTitle": "Reverse status",
+      "reverseTarget": "Reverse to",
+      "reverseReason": "Reason (5+ chars)",
+      "reverseSubmit": "Reverse",
+      "amountTotal": "Contract amount (JPY)",
+      "amountTotalRequired": "Amount required to move to Received",
+      "cancelReason": "Cancel reason (5+ chars)",
+      "confirmTransitionTitle": "Change status?",
+      "confirmTransitionContent": "Change from {{from}} to {{to}}."
+    },
+    "messages": {
+      "created": "Project created",
+      "updated": "Project updated",
+      "deleted": "Project deleted",
+      "statusChanged": "Status changed",
+      "statusReversed": "Status reversed"
+    },
+    "confirms": {
+      "deleteTitle": "Delete project?",
+      "deleteContent": "{{name}} ({{code}}) will be deleted. This cannot be undone.",
+      "deleteOk": "Delete"
+    },
+    "errors": {
+      "nameRequired": "Project name is required",
+      "customerRequired": "Select a customer (or check pre-acquisition)",
+      "scheduleRangeInvalid": "End date must be after start date"
+    }
   }
 }

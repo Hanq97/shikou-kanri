@@ -465,5 +465,141 @@
   "notFound": {
     "title": "Không tìm thấy trang",
     "subtitle": "Trang bạn tìm không tồn tại hoặc đã bị di chuyển."
+  },
+  "project": {
+    "title": "Quản lý dự án",
+    "subtitle": "Vòng đời: báo giá → nhận đơn → thi công → bàn giao",
+    "createButton": "Tạo dự án mới",
+    "empty": "Chưa có dự án",
+    "totalCount": "Tổng {{total}} dự án",
+    "searchPlaceholder": "Tìm theo mã, tên dự án, khách hàng",
+    "viewToggle": {
+      "table": "Bảng",
+      "kanban": "Kanban"
+    },
+    "filters": {
+      "title": "Bộ lọc",
+      "status": "Trạng thái",
+      "type": "Loại",
+      "owner": "Phụ trách",
+      "customer": "Khách hàng",
+      "from": "Bắt đầu (từ)",
+      "to": "Bắt đầu (đến)",
+      "reset": "Xóa lọc",
+      "apply": "Áp dụng"
+    },
+    "columns": {
+      "code": "Mã dự án",
+      "name": "Tên dự án",
+      "customer": "Khách hàng",
+      "status": "Trạng thái",
+      "type": "Loại",
+      "owner": "Phụ trách",
+      "scheduleStart": "Dự kiến bắt đầu",
+      "scheduleEnd": "Dự kiến hoàn thành",
+      "amountTotal": "Số tiền",
+      "updatedAt": "Cập nhật"
+    },
+    "status": {
+      "quoting": "Báo giá",
+      "received": "Nhận đơn",
+      "construction": "Thi công",
+      "completed": "Hoàn thành",
+      "handed_over": "Đã bàn giao",
+      "cancelled": "Hủy"
+    },
+    "type": {
+      "new_construction": "Xây mới",
+      "remodel": "Cải tạo",
+      "repair": "Sửa chữa",
+      "aftercare": "Bảo trì"
+    },
+    "memberRole": {
+      "owner": "Chủ dự án",
+      "contributor": "Thành viên",
+      "inspector": "Kiểm tra",
+      "invited_worker": "Khách mời"
+    },
+    "folderType": {
+      "document": "Tài liệu",
+      "drawing": "Bản vẽ",
+      "schedule": "Tiến độ",
+      "photo": "Ảnh",
+      "chalkboard": "Bảng đen",
+      "inspection": "Kiểm tra",
+      "custom": "Tùy chỉnh"
+    },
+    "tabs": {
+      "overview": "Tổng quan",
+      "members": "Thành viên",
+      "folders": "Thư mục"
+    },
+    "form": {
+      "createTitle": "Tạo dự án mới",
+      "editTitle": "Sửa dự án",
+      "submit": "Lưu",
+      "labelCustomer": "Khách hàng",
+      "labelProperty": "Bất động sản",
+      "labelType": "Loại dự án",
+      "labelName": "Tên dự án",
+      "labelDescription": "Mô tả",
+      "labelOwner": "Phụ trách",
+      "labelScheduleStart": "Dự kiến bắt đầu",
+      "labelScheduleEnd": "Dự kiến hoàn thành",
+      "labelPreAcquisition": "Chưa có khách (đang gom đất)",
+      "preAcquisitionHint": "Tạo dự án khi chưa xác định khách. Có thể thay thế bằng khách hàng thực sau.",
+      "namePlaceholder": "VD: Yamada bathroom remodel",
+      "customerPlaceholder": "Chọn khách hàng",
+      "propertyPlaceholder": "Chọn bất động sản (tùy chọn)",
+      "ownerPlaceholder": "Chọn phụ trách"
+    },
+    "detail": {
+      "overviewTitle": "Thông tin dự án",
+      "labelCode": "Mã",
+      "labelStatus": "Trạng thái",
+      "labelType": "Loại",
+      "labelCustomer": "Khách hàng",
+      "labelProperty": "Bất động sản",
+      "labelOwner": "Phụ trách",
+      "labelScheduleStart": "Dự kiến bắt đầu",
+      "labelScheduleEnd": "Dự kiến hoàn thành",
+      "labelActualStart": "Thực bắt đầu",
+      "labelActualEnd": "Thực hoàn thành",
+      "labelAmountTotal": "Số tiền hợp đồng",
+      "labelDescription": "Mô tả",
+      "noDescription": "(trống)",
+      "noProperty": "(chưa thiết lập)",
+      "foldersTitle": "Thư mục mặc định"
+    },
+    "actions": {
+      "changeStatus": "Đổi trạng thái",
+      "reverseStatus": "Hoàn trạng thái (admin)",
+      "reverseTitle": "Hoàn trạng thái",
+      "reverseTarget": "Hoàn về",
+      "reverseReason": "Lý do (≥5 ký tự)",
+      "reverseSubmit": "Thực hiện hoàn",
+      "amountTotal": "Số tiền hợp đồng (JPY)",
+      "amountTotalRequired": "Cần số tiền để chuyển sang Nhận đơn",
+      "cancelReason": "Lý do hủy (≥5 ký tự)",
+      "confirmTransitionTitle": "Đổi trạng thái?",
+      "confirmTransitionContent": "Đổi từ {{from}} sang {{to}}."
+    },
+    "messages": {
+      "created": "Đã tạo dự án",
+      "updated": "Đã cập nhật dự án",
+      "deleted": "Đã xóa dự án",
+      "statusChanged": "Đã đổi trạng thái",
+      "statusReversed": "Đã hoàn trạng thái"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa dự án?",
+      "deleteContent": "{{name}} ({{code}}) sẽ bị xóa. Không thể hoàn tác.",
+      "deleteOk": "Xóa"
+    },
+    "errors": {
+      "nameRequired": "Cần nhập tên dự án",
+      "customerRequired": "Chọn khách hàng (hoặc đánh dấu chưa có khách)",
+      "scheduleRangeInvalid": "Ngày hoàn thành phải sau ngày bắt đầu"
+    }
   }
 }

@@ -465,5 +465,141 @@
   "notFound": {
     "title": "ページが見つかりません",
     "subtitle": "お探しのページは存在しないか、移動された可能性があります。"
+  },
+  "project": {
+    "title": "案件管理",
+    "subtitle": "見積→受注→施工→引渡しの案件管理",
+    "createButton": "案件を新規作成",
+    "empty": "案件未登録",
+    "totalCount": "全 {{total}} 件",
+    "searchPlaceholder": "案件番号・案件名・顧客名で検索",
+    "viewToggle": {
+      "table": "テーブル",
+      "kanban": "カンバン"
+    },
+    "filters": {
+      "title": "フィルター",
+      "status": "ステータス",
+      "type": "種別",
+      "owner": "担当者",
+      "customer": "顧客",
+      "from": "開始日（から）",
+      "to": "開始日（まで）",
+      "reset": "リセット",
+      "apply": "適用"
+    },
+    "columns": {
+      "code": "案件番号",
+      "name": "案件名",
+      "customer": "顧客",
+      "status": "ステータス",
+      "type": "種別",
+      "owner": "担当者",
+      "scheduleStart": "予定開始",
+      "scheduleEnd": "予定完了",
+      "amountTotal": "金額",
+      "updatedAt": "最終更新"
+    },
+    "status": {
+      "quoting": "見積中",
+      "received": "受注",
+      "construction": "施工中",
+      "completed": "完了",
+      "handed_over": "引渡し済",
+      "cancelled": "キャンセル"
+    },
+    "type": {
+      "new_construction": "新築",
+      "remodel": "リフォーム",
+      "repair": "修繕",
+      "aftercare": "アフターケア"
+    },
+    "memberRole": {
+      "owner": "オーナー",
+      "contributor": "メンバー",
+      "inspector": "検査担当",
+      "invited_worker": "招待ユーザー"
+    },
+    "folderType": {
+      "document": "文書",
+      "drawing": "図面",
+      "schedule": "工程",
+      "photo": "写真",
+      "chalkboard": "黒板",
+      "inspection": "検査",
+      "custom": "カスタム"
+    },
+    "tabs": {
+      "overview": "概要",
+      "members": "メンバー",
+      "folders": "フォルダ"
+    },
+    "form": {
+      "createTitle": "案件を新規作成",
+      "editTitle": "案件を編集",
+      "submit": "保存",
+      "labelCustomer": "顧客",
+      "labelProperty": "物件",
+      "labelType": "案件種別",
+      "labelName": "案件名",
+      "labelDescription": "説明",
+      "labelOwner": "担当者",
+      "labelScheduleStart": "予定開始日",
+      "labelScheduleEnd": "予定完了日",
+      "labelPreAcquisition": "土地仕入れ前（顧客未確定）",
+      "preAcquisitionHint": "顧客が未確定の段階で案件を起票。後で実顧客に置換できます。",
+      "namePlaceholder": "例: 山田様邸 浴室リフォーム",
+      "customerPlaceholder": "顧客を選択",
+      "propertyPlaceholder": "物件を選択（任意）",
+      "ownerPlaceholder": "担当者を選択"
+    },
+    "detail": {
+      "overviewTitle": "案件情報",
+      "labelCode": "案件番号",
+      "labelStatus": "ステータス",
+      "labelType": "種別",
+      "labelCustomer": "顧客",
+      "labelProperty": "物件",
+      "labelOwner": "担当者",
+      "labelScheduleStart": "予定開始",
+      "labelScheduleEnd": "予定完了",
+      "labelActualStart": "実開始",
+      "labelActualEnd": "実完了",
+      "labelAmountTotal": "受注金額",
+      "labelDescription": "説明",
+      "noDescription": "（未入力）",
+      "noProperty": "（未設定）",
+      "foldersTitle": "デフォルトフォルダ"
+    },
+    "actions": {
+      "changeStatus": "ステータス変更",
+      "reverseStatus": "ステータス差戻し（管理者）",
+      "reverseTitle": "ステータス差戻し",
+      "reverseTarget": "差戻し先",
+      "reverseReason": "理由（5文字以上）",
+      "reverseSubmit": "差戻し実行",
+      "amountTotal": "受注金額（円）",
+      "amountTotalRequired": "受注ステータスへ進めるには金額が必要です",
+      "cancelReason": "キャンセル理由（5文字以上）",
+      "confirmTransitionTitle": "ステータスを変更しますか？",
+      "confirmTransitionContent": "{{from}} から {{to}} へ変更します。"
+    },
+    "messages": {
+      "created": "案件を作成しました",
+      "updated": "案件を更新しました",
+      "deleted": "案件を削除しました",
+      "statusChanged": "ステータスを変更しました",
+      "statusReversed": "ステータスを差戻しました"
+    },
+    "confirms": {
+      "deleteTitle": "案件を削除しますか？",
+      "deleteContent": "{{name}} （{{code}}）を削除します。元に戻せません。",
+      "deleteOk": "削除する"
+    },
+    "errors": {
+      "nameRequired": "案件名を入力してください",
+      "customerRequired": "顧客を選択してください（または土地仕入れ前を選択）",
+      "scheduleRangeInvalid": "完了予定日は開始予定日より後にしてください"
+    }
   }
 }
