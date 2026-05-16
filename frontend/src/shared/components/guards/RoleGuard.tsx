@@ -4,14 +4,23 @@ import type { UserRole } from '@/shared/api/types';
 import { useAuthStore } from '@/shared/stores/authStore';
 
 interface RoleGuardProps {
-  roles: UserRole[];
+  /** Allow only these roles (whitelist). Mutually exclusive with `deny`. */
+  roles?: UserRole[];
+  /** Deny these roles (blacklist). Mutually exclusive with `roles`. */
+  deny?: UserRole[];
   children: ReactNode;
   fallback?: ReactNode;
 }
 
-export function RoleGuard({ roles, children, fallback }: RoleGuardProps): JSX.Element {
+export function RoleGuard({ roles, deny, children, fallback }: RoleGuardProps): JSX.Element {
   const user = useAuthStore((s) => s.user);
-  if (!user || !roles.includes(user.role)) {
+  const allowed = (() => {
+    if (!user) return false;
+    if (roles) return roles.includes(user.role);
+    if (deny) return !deny.includes(user.role);
+    return true;
+  })();
+  if (!allowed) {
     return (
       <>
         {fallback ?? (
