@@ -128,14 +128,14 @@ export class QuoteRepository {
   async update(
     id: string,
     expectedVersion: number,
-    data: Prisma.QuoteUpdateInput,
+    data: Prisma.QuoteUncheckedUpdateInput,
     tx?: Tx,
   ): Promise<Quote> {
     const client = tx ?? this.prisma;
     const result = await client.quote.updateMany({
       where: { id, version: expectedVersion, deletedAt: null },
       data: {
-        ...(data as Prisma.QuoteUncheckedUpdateInput),
+        ...data,
         version: { increment: 1 },
       },
     });

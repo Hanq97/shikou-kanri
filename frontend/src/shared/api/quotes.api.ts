@@ -68,10 +68,11 @@ export interface QuoteVersionRecord {
   quoteId: string;
   versionNo: number;
   changeType: QuoteChangeType;
-  reason: string | null;
-  snapshotJson: unknown;
-  createdAt: string;
-  createdById: string | null;
+  changeReason: string;
+  snapshot: unknown;
+  changedAt: string;
+  changedById: string;
+  changedBy: { id: string; name: string };
 }
 
 export interface ListQuotesParams {
@@ -132,11 +133,7 @@ export interface CloneQuoteInput {
 }
 
 export interface CreateVersionInput {
-  reason: string;
-  lines: QuoteLineInput[];
-  issuedAt?: string;
-  validUntil?: string;
-  notes?: string;
+  changeReason: string;
 }
 
 function buildSearch(params: ListQuotesParams): URLSearchParams {

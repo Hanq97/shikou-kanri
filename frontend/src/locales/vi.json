@@ -811,11 +811,25 @@
       "clone": "Nhân bản",
       "cloneOk": "Đã nhân bản.",
       "pdf": "PDF",
-      "reasonPlaceholder": "Lý do (≥ 5 ký tự)"
+      "reasonPlaceholder": "Lý do (≥ 5 ký tự)",
+      "resubmit": "Gửi lại duyệt",
+      "tier2RequiresAdminBadge": "Chờ admin duyệt",
+      "tier2RequiresAdminInfo": "Báo giá > ¥10M cần admin duyệt. Manager chỉ có thể từ chối."
     },
     "projectTab": {
       "heading": "Báo giá ({{count}})",
       "empty": "Chưa có báo giá nào."
+    },
+    "history": {
+      "changeReason": "Lý do thay đổi",
+      "changedBy": "Người thay đổi",
+      "changedAt": "Thời điểm",
+      "snapshotStatus": "Trạng thái",
+      "snapshotAmount": "Tổng (đã VAT)",
+      "snapshotLines": "Hạng mục",
+      "lineCount": "{{count}} dòng",
+      "showRaw": "Xem JSON gốc",
+      "hideRaw": "Ẩn JSON gốc"
     }
   },
   "unitPrice": {
@@ -852,7 +866,10 @@
       "defaultUnitPrice": "Đơn giá chuẩn",
       "supplierName": "Nhà cung cấp",
       "description": "Mô tả",
-      "isActive": "Active"
+      "isActive": "Active",
+      "codePlaceholder": "VD: KISO-001",
+      "categoryPlaceholder": "Móng / Mộc / Mái nhà...",
+      "unitPlaceholder": "Chọn đơn vị"
     },
     "confirms": {
       "deleteTitle": "Xóa đơn giá?",
@@ -862,6 +879,22 @@
       "created": "Đã thêm đơn giá.",
       "updated": "Đã cập nhật.",
       "deleted": "Đã xóa."
+    },
+    "unitLabels": {
+      "式": "Trọn bộ",
+      "m": "Mét",
+      "m²": "Mét vuông",
+      "m³": "Mét khối",
+      "個": "Cái",
+      "本": "Thanh (vật dài)",
+      "枚": "Tấm (vật phẳng)",
+      "台": "Chiếc (máy/thiết bị)",
+      "箇所": "Vị trí",
+      "kg": "Kilogram",
+      "L": "Lít",
+      "日": "Ngày",
+      "時間": "Giờ",
+      "人工": "Công (1 ngày LĐ)"
     }
   }
 }

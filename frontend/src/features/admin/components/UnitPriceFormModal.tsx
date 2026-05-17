@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { App, Form, Input, InputNumber, Modal, Switch } from 'antd';
-import { useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { App, AutoComplete, Form, Input, InputNumber, Modal, Select, Switch } from 'antd';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { extractApiError } from '@/shared/api/client';
@@ -11,6 +11,23 @@ import {
   type UpdateUnitPriceInput,
 } from '@/shared/api/unit-prices.api';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
+
+const UNIT_OPTIONS = [
+  '式',
+  'm',
+  'm²',
+  'm³',
+  '個',
+  '本',
+  '枚',
+  '台',
+  '箇所',
+  'kg',
+  'L',
+  '日',
+  '時間',
+  '人工',
+] as const;
 
 interface FormValues {
   code: string;
@@ -27,7 +44,7 @@ const EMPTY: FormValues = {
   code: '',
   itemName: '',
   category: '',
-  unit: '式',
+  unit: '',
   defaultUnitPrice: 0,
   supplierName: '',
   description: '',
@@ -41,12 +58,30 @@ interface Props {
 }
 
 export function UnitPriceFormModal({ open, initial, onClose }: Props): JSX.Element {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isJa = i18n.language?.startsWith('ja');
   const { message } = App.useApp();
   const qc = useQueryClient();
   const isEdit = Boolean(initial);
 
   const form = useForm<FormValues>({ defaultValues: EMPTY });
+
+  const { data: allForCategories } = useQuery({
+    queryKey: ['unitPrices', 'distinctCategories'],
+    queryFn: () => unitPricesApi.list({ pageSize: 100, sortBy: 'itemName', sortOrder: 'asc' }),
+    enabled: open,
+    staleTime: 60_000,
+  });
+
+  const categoryOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const up of allForCategories?.data ?? []) {
+      if (up.category) set.add(up.category);
+    }
+    return Array.from(set)
+      .sort()
+      .map((c) => ({ value: c }));
+  }, [allForCategories]);
 
   useEffect(() => {
     if (open) {
@@ -133,14 +168,27 @@ export function UnitPriceFormModal({ open, initial, onClose }: Props): JSX.Eleme
             control={form.control}
             name="code"
             rules={{ required: true, maxLength: 30 }}
-            render={({ field }) => <Input {...field} placeholder="DEMO-001" />}
+            render={({ field }) => (
+              <Input {...field} placeholder={t('unitPrice.form.codePlaceholder')} />
+            )}
           />
         </Form.Item>
         <Form.Item label={t('unitPrice.form.category')}>
           <Controller
             control={form.control}
             name="category"
-            render={({ field }) => <Input {...field} placeholder="基礎工事" />}
+            render={({ field }) => (
+              <AutoComplete
+                value={field.value}
+                onChange={(v) => field.onChange(v ?? '')}
+                options={categoryOptions}
+                placeholder={t('unitPrice.form.categoryPlaceholder')}
+                allowClear
+                filterOption={(input, option) =>
+                  (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            )}
           />
         </Form.Item>
         <Form.Item label={t('unitPrice.form.itemName')} required className="sm:col-span-2">
@@ -156,7 +204,35 @@ export function UnitPriceFormModal({ open, initial, onClose }: Props): JSX.Eleme
             control={form.control}
             name="unit"
             rules={{ required: true, maxLength: 20 }}
-            render={({ field }) => <Input {...field} placeholder="式" />}
+            render={({ field }) => (
+              <Select
+                showSearch
+                value={field.value || undefined}
+                onChange={field.onChange}
+                placeholder={t('unitPrice.form.unitPlaceholder')}
+                optionFilterProp="searchKey"
+                optionLabelProp="value"
+                options={UNIT_OPTIONS.map((u) => {
+                  const desc = isJa ? '' : t(`unitPrice.unitLabels.${u}`, { defaultValue: '' });
+                  return {
+                    value: u,
+                    searchKey: `${u} ${desc}`,
+                    desc,
+                  };
+                })}
+                optionRender={(opt) => {
+                  const desc = (opt.data as { desc?: string }).desc ?? '';
+                  return (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-zinc-900 font-medium min-w-[2.5rem]">
+                        {String(opt.value)}
+                      </span>
+                      {desc && <span className="text-xs text-zinc-400">{desc}</span>}
+                    </div>
+                  );
+                }}
+              />
+            )}
           />
         </Form.Item>
         <Form.Item label={t('unitPrice.form.defaultUnitPrice')} required>

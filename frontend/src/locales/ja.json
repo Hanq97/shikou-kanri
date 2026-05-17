@@ -811,11 +811,25 @@
       "clone": "複製",
       "cloneOk": "複製しました。",
       "pdf": "PDF",
-      "reasonPlaceholder": "理由を5文字以上で記入"
+      "reasonPlaceholder": "理由を5文字以上で記入",
+      "resubmit": "再申請",
+      "tier2RequiresAdminBadge": "管理者承認待ち",
+      "tier2RequiresAdminInfo": "この見積は¥10,000,000超のため、管理者の承認が必要です。マネージャーは却下のみ可能。"
     },
     "projectTab": {
       "heading": "見積 ({{count}})",
       "empty": "まだ見積がありません。"
+    },
+    "history": {
+      "changeReason": "変更理由",
+      "changedBy": "変更者",
+      "changedAt": "変更日時",
+      "snapshotStatus": "ステータス",
+      "snapshotAmount": "合計（税込）",
+      "snapshotLines": "明細",
+      "lineCount": "{{count}} 件",
+      "showRaw": "詳細 (JSON) を表示",
+      "hideRaw": "詳細 (JSON) を非表示"
     }
   },
   "unitPrice": {
@@ -852,7 +866,10 @@
       "defaultUnitPrice": "標準単価",
       "supplierName": "取引業者名",
       "description": "説明",
-      "isActive": "有効"
+      "isActive": "有効",
+      "codePlaceholder": "例: KISO-001",
+      "categoryPlaceholder": "基礎工事 / 木工 / 屋根 など",
+      "unitPlaceholder": "単位を選択"
     },
     "confirms": {
       "deleteTitle": "単価を削除しますか？",
@@ -862,6 +879,22 @@
       "created": "単価を追加しました。",
       "updated": "単価を更新しました。",
       "deleted": "単価を削除しました。"
+    },
+    "unitLabels": {
+      "式": "一式",
+      "m": "メートル",
+      "m²": "平方メートル",
+      "m³": "立方メートル",
+      "個": "個",
+      "本": "本",
+      "枚": "枚",
+      "台": "台",
+      "箇所": "箇所",
+      "kg": "キログラム",
+      "L": "リットル",
+      "日": "日",
+      "時間": "時間",
+      "人工": "人工"
     }
   }
 }

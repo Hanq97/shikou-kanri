@@ -10,6 +10,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { formatJpy } from '@/shared/utils/format';
 import { QuoteStatusTag } from '../components/QuoteStatusTag';
 import { QuoteWorkflowBar } from '../components/QuoteWorkflowBar';
+import { VersionHistoryItem } from '../components/VersionHistoryItem';
 
 export function QuoteDetailPage(): JSX.Element {
   const { t } = useTranslation();
@@ -177,24 +178,20 @@ export function QuoteDetailPage(): JSX.Element {
                 label: (
                   <div className="flex items-center justify-between gap-3 w-full">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="font-mono text-sm text-zinc-700">v{v.versionNo}</span>
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600">
+                      <span className="font-mono text-sm text-zinc-700 shrink-0">
+                        v{v.versionNo}
+                      </span>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 shrink-0">
                         {t(`quote.changeType.${v.changeType}`)}
                       </span>
-                      {v.reason && (
-                        <span className="text-xs text-zinc-500 truncate">— {v.reason}</span>
-                      )}
+                      <span className="text-sm text-zinc-800 truncate">{v.changeReason}</span>
                     </div>
-                    <span className="text-xs text-zinc-400 shrink-0">
-                      {dayjs(v.createdAt).format('YYYY/MM/DD HH:mm')}
+                    <span className="text-xs text-zinc-400 shrink-0 hidden sm:inline">
+                      {v.changedBy?.name ?? '—'} · {dayjs(v.changedAt).format('MM/DD HH:mm')}
                     </span>
                   </div>
                 ),
-                children: (
-                  <pre className="text-xs bg-zinc-50 rounded p-3 overflow-x-auto max-h-80 overflow-y-auto">
-                    {JSON.stringify(v.snapshotJson, null, 2)}
-                  </pre>
-                ),
+                children: <VersionHistoryItem v={v} />,
               }))}
             />
           </div>

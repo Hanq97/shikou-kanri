@@ -41,53 +41,58 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
   const isManagerOrAdmin = isAdmin || role === 'manager';
   const isStaff = isManagerOrAdmin || role === 'employee';
 
-  function invalidate(): void {
-    qc.invalidateQueries({ queryKey: ['quotes'] });
+  function applyQuoteUpdate(updated: Partial<QuoteDetail>): void {
+    qc.setQueryData<QuoteDetail | undefined>(['quotes', 'detail', quote.id], (old) =>
+      old ? { ...old, ...updated } : old,
+    );
+    void qc.refetchQueries({ queryKey: ['quotes', 'detail', quote.id] });
+    void qc.refetchQueries({ queryKey: ['quotes', 'versions', quote.id] });
+    qc.invalidateQueries({ queryKey: ['quotes', 'list'] });
   }
 
   const submitMutation = useMutation({
     mutationFn: () => quotesApi.submit(quote.id),
-    onSuccess: () => {
+    onSuccess: (q) => {
       message.success(t('quote.actions.submitOk'));
-      invalidate();
+      applyQuoteUpdate(q);
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
   });
 
   const approveMutation = useMutation({
     mutationFn: () => quotesApi.approve(quote.id),
-    onSuccess: () => {
+    onSuccess: (q) => {
       message.success(t('quote.actions.approveOk'));
-      invalidate();
+      applyQuoteUpdate(q);
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
   });
 
   const rejectMutation = useMutation({
     mutationFn: (r: string) => quotesApi.reject(quote.id, r),
-    onSuccess: () => {
+    onSuccess: (q) => {
       message.success(t('quote.actions.rejectOk'));
       setPrompt(null);
       setReason('');
-      invalidate();
+      applyQuoteUpdate(q);
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
   });
 
   const sendMutation = useMutation({
     mutationFn: () => quotesApi.send(quote.id),
-    onSuccess: () => {
+    onSuccess: (q) => {
       message.success(t('quote.actions.sendOk'));
-      invalidate();
+      applyQuoteUpdate(q);
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
   });
 
   const wonMutation = useMutation({
     mutationFn: () => quotesApi.won(quote.id),
-    onSuccess: () => {
+    onSuccess: (q) => {
       message.success(t('quote.actions.wonOk'));
-      invalidate();
+      applyQuoteUpdate(q);
       modal.confirm({
         title: t('quote.actions.wonGoToProjectTitle'),
         content: t('quote.actions.wonGoToProjectContent'),
@@ -101,9 +106,9 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
 
   const lostMutation = useMutation({
     mutationFn: () => quotesApi.lost(quote.id),
-    onSuccess: () => {
+    onSuccess: (q) => {
       message.success(t('quote.actions.lostOk'));
-      invalidate();
+      applyQuoteUpdate(q);
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
   });
@@ -112,7 +117,7 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
     mutationFn: () => quotesApi.clone(quote.id),
     onSuccess: (q) => {
       message.success(t('quote.actions.cloneOk'));
-      invalidate();
+      qc.invalidateQueries({ queryKey: ['quotes', 'list'] });
       navigate(`/estimates/${q.id}/edit`);
     },
     onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
@@ -122,7 +127,7 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
     mutationFn: (r: string) => quotesApi.softDelete(quote.id, r),
     onSuccess: () => {
       message.success(t('quote.messages.deleted'));
-      invalidate();
+      qc.invalidateQueries({ queryKey: ['quotes', 'list'] });
       setPrompt(null);
       setReason('');
       navigate('/estimates');
@@ -131,25 +136,10 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
   });
 
   const versionMutation = useMutation({
-    mutationFn: (r: string) =>
-      quotesApi.createVersion(quote.id, {
-        reason: r,
-        lines: quote.lines.map((l) => ({
-          sortOrder: l.sortOrder,
-          category: l.category ?? undefined,
-          itemName: l.itemName,
-          description: l.description ?? undefined,
-          unit: l.unit,
-          quantity: Number(l.quantity),
-          unitPrice: Number(l.unitPrice),
-          taxRate: Number(l.taxRate),
-          isOptional: l.isOptional,
-          unitPriceMasterId: l.unitPriceMasterId ?? undefined,
-        })),
-      }),
+    mutationFn: (r: string) => quotesApi.createVersion(quote.id, { changeReason: r }),
     onSuccess: (q) => {
       message.success(t('quote.actions.versionOk'));
-      invalidate();
+      qc.invalidateQueries({ queryKey: ['quotes', 'list'] });
       setPrompt(null);
       setReason('');
       navigate(`/estimates/${q.id}/edit`);
@@ -164,7 +154,7 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
   function actionsByStatus(): JSX.Element[] {
     const out: JSX.Element[] = [];
 
-    if (quote.status === 'draft' && isStaff) {
+    if ((quote.status === 'draft' || quote.status === 'rejected') && isStaff) {
       out.push(
         <Button
           key="submit"
@@ -173,31 +163,49 @@ export function QuoteWorkflowBar({ quote }: Props): JSX.Element {
           loading={submitMutation.isPending}
           onClick={() => submitMutation.mutate()}
         >
-          {t('quote.actions.submit')}
+          {quote.status === 'rejected' ? t('quote.actions.resubmit') : t('quote.actions.submit')}
         </Button>,
       );
     }
 
-    if ((quote.status === 'submitted' || quote.status === 'pending_admin') && isStaff) {
-      const canApprove = quote.status === 'pending_admin' ? isAdmin : isManagerOrAdmin || isAdmin;
-      if (canApprove) {
-        out.push(
-          <Button
-            key="approve"
-            type="primary"
-            icon={<Check size={14} />}
-            loading={approveMutation.isPending}
-            onClick={() => approveMutation.mutate()}
-          >
-            {t('quote.actions.approve')}
-          </Button>,
-        );
-        out.push(
-          <Button key="reject" danger icon={<X size={14} />} onClick={() => setPrompt('reject')}>
-            {t('quote.actions.reject')}
-          </Button>,
-        );
-      }
+    // Approve: tier 1 (submitted) → manager+admin; tier 2 (pending_admin) → admin only
+    const canApprove =
+      (quote.status === 'submitted' && isManagerOrAdmin) ||
+      (quote.status === 'pending_admin' && isAdmin);
+    if (canApprove) {
+      out.push(
+        <Button
+          key="approve"
+          type="primary"
+          icon={<Check size={14} />}
+          loading={approveMutation.isPending}
+          onClick={() => approveMutation.mutate()}
+        >
+          {t('quote.actions.approve')}
+        </Button>,
+      );
+    }
+
+    // Reject: any APPROVER (manager+admin) can reject submitted/pending_admin/approved
+    const canReject =
+      isManagerOrAdmin && ['submitted', 'pending_admin', 'approved'].includes(quote.status);
+    if (canReject) {
+      out.push(
+        <Button key="reject" danger icon={<X size={14} />} onClick={() => setPrompt('reject')}>
+          {t('quote.actions.reject')}
+        </Button>,
+      );
+    }
+
+    // Info badge: manager on pending_admin → explain why no approve button
+    if (quote.status === 'pending_admin' && role === 'manager') {
+      out.push(
+        <Tooltip key="tier2-info" title={t('quote.actions.tier2RequiresAdminInfo')}>
+          <span className="inline-flex items-center text-xs px-2 py-1 rounded-md bg-amber-50 text-amber-700 ring-1 ring-amber-200 cursor-help">
+            {t('quote.actions.tier2RequiresAdminBadge')}
+          </span>
+        </Tooltip>,
+      );
     }
 
     if (quote.status === 'approved' && isStaff) {

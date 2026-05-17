@@ -63,7 +63,7 @@ export class UnitPricesService {
       unit: input.unit,
       defaultUnitPrice: input.defaultUnitPrice,
       supplierName: input.supplierName ?? null,
-      isActive: true,
+      isActive: input.isActive ?? true,
       createdById: requester.id,
       updatedById: requester.id,
     });

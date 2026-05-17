@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsInt,
   IsOptional,
   IsString,
@@ -40,4 +41,8 @@ export class CreateUnitPriceDto {
   @IsString()
   @MaxLength(200)
   supplierName?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

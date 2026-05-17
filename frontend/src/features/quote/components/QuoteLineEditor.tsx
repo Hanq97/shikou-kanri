@@ -27,6 +27,18 @@ const DEFAULT_LINE: QuoteFormValues['lines'][number] = {
   isOptional: false,
 };
 
+const INTEGER_UNITS = new Set(['式', '個', '本', '枚', '台', '箇所', '日', '畳', '部屋']);
+
+function qtyStepFor(unit: string | undefined | null): number {
+  if (!unit) return 1;
+  return INTEGER_UNITS.has(unit) ? 1 : 0.1;
+}
+
+function qtyPrecisionFor(unit: string | undefined | null): number {
+  if (!unit) return 0;
+  return INTEGER_UNITS.has(unit) ? 0 : 2;
+}
+
 export function QuoteLineEditor({ control, setValue }: Props): JSX.Element {
   const { t } = useTranslation();
   const screens = Grid.useBreakpoint();
@@ -215,7 +227,9 @@ function LineDesktopRow({
         />
         <UnitPriceAutocomplete
           className="w-full"
+          value={line?.unitPriceMasterId ?? null}
           onPick={(up) => applyMasterPick(setValue, idx, up)}
+          onClear={() => setValue(`lines.${idx}.unitPriceMasterId`, '', { shouldDirty: true })}
         />
       </td>
       <td className="py-2 pr-2 text-right">
@@ -227,7 +241,8 @@ function LineDesktopRow({
               className="w-full"
               size="small"
               min={0}
-              step={0.01}
+              step={qtyStepFor(line?.unit)}
+              precision={qtyPrecisionFor(line?.unit)}
               value={field.value}
               onChange={(v) => field.onChange(Number(v ?? 0))}
             />
@@ -427,7 +442,8 @@ function LineMobileCard({
               className="w-full"
               addonBefore={t('quote.line.qtyShort')}
               min={0}
-              step={0.01}
+              step={qtyStepFor(line?.unit)}
+              precision={qtyPrecisionFor(line?.unit)}
               value={field.value}
               onChange={(v) => field.onChange(Number(v ?? 0))}
             />
@@ -471,7 +487,9 @@ function LineMobileCard({
       />
       <UnitPriceAutocomplete
         className="w-full"
+        value={line?.unitPriceMasterId ?? null}
         onPick={(up) => applyMasterPick(setValue, idx, up)}
+        onClear={() => setValue(`lines.${idx}.unitPriceMasterId`, '', { shouldDirty: true })}
       />
       <div className="flex items-center justify-between pt-1">
         <Controller

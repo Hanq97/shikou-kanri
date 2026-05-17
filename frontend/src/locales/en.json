@@ -811,11 +811,25 @@
       "clone": "Clone",
       "cloneOk": "Cloned.",
       "pdf": "PDF",
-      "reasonPlaceholder": "Reason (min 5 chars)"
+      "reasonPlaceholder": "Reason (min 5 chars)",
+      "resubmit": "Resubmit",
+      "tier2RequiresAdminBadge": "Awaiting admin",
+      "tier2RequiresAdminInfo": "Quote > ¥10M requires admin approval. Manager can only reject."
     },
     "projectTab": {
       "heading": "Quotes ({{count}})",
       "empty": "No quotes yet."
+    },
+    "history": {
+      "changeReason": "Change reason",
+      "changedBy": "Changed by",
+      "changedAt": "Changed at",
+      "snapshotStatus": "Status",
+      "snapshotAmount": "Total (incl. tax)",
+      "snapshotLines": "Lines",
+      "lineCount": "{{count}} line(s)",
+      "showRaw": "Show raw JSON",
+      "hideRaw": "Hide raw JSON"
     }
   },
   "unitPrice": {
@@ -852,7 +866,10 @@
       "defaultUnitPrice": "Default unit price",
       "supplierName": "Supplier",
       "description": "Description",
-      "isActive": "Active"
+      "isActive": "Active",
+      "codePlaceholder": "e.g. KISO-001",
+      "categoryPlaceholder": "Foundation / Carpentry / Roof...",
+      "unitPlaceholder": "Select unit"
     },
     "confirms": {
       "deleteTitle": "Delete unit price?",
@@ -862,6 +879,22 @@
       "created": "Unit price added.",
       "updated": "Unit price updated.",
       "deleted": "Unit price deleted."
+    },
+    "unitLabels": {
+      "式": "Set / Lump sum",
+      "m": "Meter",
+      "m²": "Square meter",
+      "m³": "Cubic meter",
+      "個": "Piece",
+      "本": "Stick (long item)",
+      "枚": "Sheet (flat)",
+      "台": "Unit (machine)",
+      "箇所": "Location",
+      "kg": "Kilogram",
+      "L": "Liter",
+      "日": "Day",
+      "時間": "Hour",
+      "人工": "Man-day"
     }
   }
 }

@@ -414,7 +414,7 @@ enum QuoteChangeType {
 
 model Quote {
   id                     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  quoteNumber            String      @unique @map("quote_number") @db.VarChar(30)
+  quoteNumber            String      @map("quote_number") @db.VarChar(30)
   projectId              String      @map("project_id") @db.Uuid
   versionNo              Int         @default(1) @map("version_no")
   version                Int         @default(0)
@@ -445,6 +445,7 @@ model Quote {
   versions   QuoteVersion[]
 
   @@map("quotes")
+  @@unique([quoteNumber, versionNo])
   @@index([projectId])
   @@index([issuedAt(sort: Desc)])
   @@index([amountTotal])

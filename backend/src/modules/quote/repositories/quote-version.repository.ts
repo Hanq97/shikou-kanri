@@ -21,6 +21,23 @@ export class QuoteVersionRepository {
   }
 
   /**
+   * Returns version history across the entire quoteNumber lineage (v1, v2, ...).
+   * Used by the detail page to show full audit trail regardless of which version
+   * the user is currently viewing.
+   */
+  findByQuoteNumber(
+    quoteNumber: string,
+    tx?: Tx,
+  ): Promise<QuoteVersionWithUser[]> {
+    const client = tx ?? this.prisma;
+    return client.quoteVersion.findMany({
+      where: { quote: { quoteNumber } },
+      orderBy: [{ versionNo: 'desc' }, { changedAt: 'desc' }],
+      include: { changedBy: { select: { id: true, name: true } } },
+    });
+  }
+
+  /**
    * Append-only insert. No update/delete exposed.
    */
   create(

@@ -62,6 +62,6 @@ export class QuoteVersioningService {
       throw new AuthInsufficientPermissionError();
     const quote = await this.quoteRepo.findById(quoteId);
     if (!quote) throw new QuoteNotFoundError(quoteId);
-    return this.repo.findByQuote(quoteId);
+    return this.repo.findByQuoteNumber(quote.quoteNumber);
   }
 }

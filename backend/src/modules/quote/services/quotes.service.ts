@@ -241,7 +241,7 @@ export class QuotesService {
         );
       }
 
-      const updateData: Prisma.QuoteUpdateInput = {
+      const updateData: Prisma.QuoteUncheckedUpdateInput = {
         ...(input.issuedAt !== undefined
           ? { issuedAt: new Date(input.issuedAt) }
           : {}),
@@ -263,7 +263,7 @@ export class QuotesService {
               amountTotal: totals.total,
             }
           : {}),
-        updatedBy: { connect: { id: requester.id } },
+        updatedById: requester.id,
       };
 
       // Use optimistic lock update
@@ -388,12 +388,11 @@ export class QuotesService {
         tx,
       );
 
-      const year = new Date().getFullYear();
-      const quoteNumber = await this.codeGen.next(year, tx);
-
+      // Keep the same quoteNumber as source — only bump versionNo.
+      // Lineage: v1, v2, ... all share the same quote_number.
       const newQuote = await this.repo.create(
         {
-          quoteNumber,
+          quoteNumber: source.quoteNumber,
           project: { connect: { id: source.projectId } },
           versionNo: source.versionNo + 1,
           version: 0,
