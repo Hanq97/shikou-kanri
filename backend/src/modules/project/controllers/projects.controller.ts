@@ -11,9 +11,10 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { AuthenticatedUser, RequestContext } from '../../auth/domain/types';
@@ -24,6 +25,7 @@ import { CreateProjectDto } from '../dto/create-project.dto';
 import { ListProjectsQueryDto } from '../dto/list-projects-query.dto';
 import { ReverseStatusDto } from '../dto/reverse-status.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
+import { ProjectExportService } from '../services/project-export.service';
 import { ProjectFoldersService } from '../services/project-folders.service';
 import { ProjectStatusMachineService } from '../services/project-status-machine.service';
 import { ProjectsService } from '../services/projects.service';
@@ -43,6 +45,7 @@ export class ProjectsController {
     private readonly service: ProjectsService,
     private readonly statusMachine: ProjectStatusMachineService,
     private readonly folders: ProjectFoldersService,
+    private readonly exporter: ProjectExportService,
   ) {}
 
   @Get()
@@ -66,6 +69,32 @@ export class ProjectsController {
         pageSize: query.pageSize ?? 50,
       },
       user,
+    );
+  }
+
+  @Get('export.csv')
+  @Roles('system_admin', 'manager')
+  async exportCsv(
+    @Query() query: ListProjectsQueryDto,
+    @Req() req: Request,
+    @Res() res: Response,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<void> {
+    await this.exporter.exportCsv(
+      {
+        search: query.search,
+        status: query.status,
+        customerId: query.customerId,
+        ownerUserId: query.ownerUserId,
+        projectType: query.projectType,
+        from: query.from,
+        to: query.to,
+        sortBy: query.sortBy ?? 'createdAt',
+        sortOrder: query.sortOrder ?? 'desc',
+      },
+      user,
+      buildCtx(req),
+      res,
     );
   }
 

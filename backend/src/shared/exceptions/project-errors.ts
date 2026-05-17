@@ -130,3 +130,11 @@ export class ProjectMemberUserNotActiveError extends AppError {
     );
   }
 }
+
+export class SavedSearchNotFoundError extends AppError {
+  constructor(id?: string) {
+    super('SAVED_SEARCH_NOT_FOUND', 404, '保存された検索が見つかりません。', {
+      id,
+    });
+  }
+}
