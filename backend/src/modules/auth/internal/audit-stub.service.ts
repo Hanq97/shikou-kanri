@@ -658,4 +658,236 @@ export class AuditStubService {
       tx,
     );
   }
+
+  // === F2: Quote events ===
+
+  logQuoteCreated(
+    quoteId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.created',
+        entityType: 'quote',
+        entityId: quoteId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteUpdated(
+    quoteId: string,
+    changedFields: string[],
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.updated',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { fields: changedFields },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteSubmitted(
+    quoteId: string,
+    tier: 1 | 2,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.submitted',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { tier },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteApproved(
+    quoteId: string,
+    tier: 1 | 2,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.approved',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { tier },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteRejected(
+    quoteId: string,
+    reason: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.rejected',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { reason },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteSent(
+    quoteId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.sent',
+        entityType: 'quote',
+        entityId: quoteId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteWon(
+    quoteId: string,
+    projectId: string,
+    amountTotal: number,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.won',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { projectId, amountTotal },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteLost(
+    quoteId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.lost',
+        entityType: 'quote',
+        entityId: quoteId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteDeleted(
+    quoteId: string,
+    reason: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.deleted',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { reason },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuoteVersionCreated(
+    quoteId: string,
+    versionNo: number,
+    changeType: 'correction' | 'deletion' | 'status_change',
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.version_created',
+        entityType: 'quote',
+        entityId: quoteId,
+        changes: { versionNo, changeType },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logQuotePdfDownloaded(
+    quoteId: string,
+    actorId: string,
+    ctx: RequestContext,
+  ): Promise<void> {
+    return this.log({
+      actorUserId: actorId,
+      action: 'quote.pdf_downloaded',
+      entityType: 'quote',
+      entityId: quoteId,
+      ctx,
+    });
+  }
+
+  logQuoteCloned(
+    newQuoteId: string,
+    sourceQuoteId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'quote.cloned',
+        entityType: 'quote',
+        entityId: newQuoteId,
+        changes: { sourceQuoteId },
+        ctx,
+      },
+      tx,
+    );
+  }
 }
