@@ -576,7 +576,8 @@
     "tabs": {
       "overview": "Tổng quan",
       "members": "Thành viên",
-      "folders": "Thư mục"
+      "folders": "Thư mục",
+      "quotes": "Báo giá"
     },
     "form": {
       "createTitle": "Tạo dự án mới",
@@ -776,12 +777,44 @@
     "errors": {
       "atLeastOneRequiredLine": "Cần ít nhất 1 hạng mục bắt buộc.",
       "validUntilBeforeIssued": "Hiệu lực phải sau ngày phát hành.",
-      "deleteReasonRequired": "Lý do phải dài ít nhất 5 ký tự."
+      "deleteReasonRequired": "Lý do phải dài ít nhất 5 ký tự.",
+      "reasonMin5": "Lý do phải ≥ 5 ký tự."
     },
     "changeType": {
       "correction": "Sửa",
       "deletion": "Xóa",
       "status_change": "Đổi trạng thái"
+    },
+    "actions": {
+      "submit": "Gửi duyệt",
+      "submitOk": "Đã gửi duyệt.",
+      "approve": "Duyệt",
+      "approveOk": "Đã duyệt.",
+      "reject": "Từ chối",
+      "rejectOk": "Đã từ chối.",
+      "rejectTitle": "Nhập lý do từ chối",
+      "rejectHelp": "Lý do từ chối phải ≥ 5 ký tự.",
+      "send": "Gửi",
+      "sendOk": "Đã gửi.",
+      "won": "Đánh dấu trúng",
+      "wonOk": "Đã đánh dấu trúng thầu.",
+      "wonGoToProjectTitle": "Sang trang dự án?",
+      "wonGoToProjectContent": "Báo giá đã trúng thầu — có thể tiếp tục quản lý tiến độ + thi công.",
+      "wonGoToProjectOk": "Mở dự án",
+      "lost": "Đánh dấu mất",
+      "lostOk": "Đã đánh dấu mất thầu.",
+      "version": "Tạo bản mới",
+      "versionOk": "Đã tạo bản mới.",
+      "versionTitle": "Nhập lý do thay đổi",
+      "versionHelp": "Lý do thay đổi phải ≥ 5 ký tự.",
+      "clone": "Nhân bản",
+      "cloneOk": "Đã nhân bản.",
+      "pdf": "PDF",
+      "reasonPlaceholder": "Lý do (≥ 5 ký tự)"
+    },
+    "projectTab": {
+      "heading": "Báo giá ({{count}})",
+      "empty": "Chưa có báo giá nào."
     }
   }
 }

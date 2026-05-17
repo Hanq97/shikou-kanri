@@ -11,6 +11,7 @@ import { AppLayout } from '@/shared/components/layout/AppLayout';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { formatJpy } from '@/shared/utils/format';
+import { ProjectQuotesTab } from '@/features/quote/components/ProjectQuotesTab';
 import { ChangeStatusModal } from '../components/ChangeStatusModal';
 import { FolderListTab } from '../components/FolderListTab';
 import { ProjectMembersTab } from '../components/ProjectMembersTab';
@@ -284,6 +285,11 @@ export function ProjectDetailPage(): JSX.Element {
               key: 'folders',
               label: t('project.tabs.folders'),
               children: <FolderListTab projectId={project.id} />,
+            },
+            {
+              key: 'quotes',
+              label: t('project.tabs.quotes'),
+              children: <ProjectQuotesTab projectId={project.id} />,
             },
           ]}
         />

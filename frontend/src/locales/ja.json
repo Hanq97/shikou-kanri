@@ -576,7 +576,8 @@
     "tabs": {
       "overview": "概要",
       "members": "メンバー",
-      "folders": "フォルダ"
+      "folders": "フォルダ",
+      "quotes": "見積"
     },
     "form": {
       "createTitle": "案件を新規作成",
@@ -776,12 +777,44 @@
     "errors": {
       "atLeastOneRequiredLine": "少なくとも1つの必須項目が必要です。",
       "validUntilBeforeIssued": "有効期限は発行日以降に設定してください。",
-      "deleteReasonRequired": "削除理由は5文字以上必要です。"
+      "deleteReasonRequired": "削除理由は5文字以上必要です。",
+      "reasonMin5": "理由は5文字以上必要です。"
     },
     "changeType": {
       "correction": "訂正",
       "deletion": "削除",
       "status_change": "状態変更"
+    },
+    "actions": {
+      "submit": "承認依頼",
+      "submitOk": "承認依頼を送信しました。",
+      "approve": "承認",
+      "approveOk": "承認しました。",
+      "reject": "却下",
+      "rejectOk": "却下しました。",
+      "rejectTitle": "却下理由を入力",
+      "rejectHelp": "却下理由を5文字以上で記入してください。",
+      "send": "送付",
+      "sendOk": "送付しました。",
+      "won": "受注",
+      "wonOk": "受注に変更しました。",
+      "wonGoToProjectTitle": "案件ページへ移動しますか？",
+      "wonGoToProjectContent": "受注された見積に紐づく案件で工程・施工管理を開始できます。",
+      "wonGoToProjectOk": "案件を開く",
+      "lost": "失注",
+      "lostOk": "失注に変更しました。",
+      "version": "新規版を作成",
+      "versionOk": "新規版を作成しました。",
+      "versionTitle": "変更理由を入力",
+      "versionHelp": "訂正理由を5文字以上で記入してください。",
+      "clone": "複製",
+      "cloneOk": "複製しました。",
+      "pdf": "PDF",
+      "reasonPlaceholder": "理由を5文字以上で記入"
+    },
+    "projectTab": {
+      "heading": "見積 ({{count}})",
+      "empty": "まだ見積がありません。"
     }
   }
 }

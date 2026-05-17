@@ -9,6 +9,7 @@ import { AppLayout } from '@/shared/components/layout/AppLayout';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { formatJpy } from '@/shared/utils/format';
 import { QuoteStatusTag } from '../components/QuoteStatusTag';
+import { QuoteWorkflowBar } from '../components/QuoteWorkflowBar';
 
 export function QuoteDetailPage(): JSX.Element {
   const { t } = useTranslation();
@@ -78,6 +79,10 @@ export function QuoteDetailPage(): JSX.Element {
               {t('common.edit')}
             </Button>
           )}
+        </div>
+
+        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-3 sm:p-4">
+          <QuoteWorkflowBar quote={quote} />
         </div>
 
         <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">

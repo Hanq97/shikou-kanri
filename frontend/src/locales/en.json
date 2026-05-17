@@ -576,7 +576,8 @@
     "tabs": {
       "overview": "Overview",
       "members": "Members",
-      "folders": "Folders"
+      "folders": "Folders",
+      "quotes": "Quotes"
     },
     "form": {
       "createTitle": "New project",
@@ -776,12 +777,44 @@
     "errors": {
       "atLeastOneRequiredLine": "At least one required line is needed.",
       "validUntilBeforeIssued": "Valid-until must be after issued date.",
-      "deleteReasonRequired": "Reason must be at least 5 characters."
+      "deleteReasonRequired": "Reason must be at least 5 characters.",
+      "reasonMin5": "Reason must be at least 5 characters."
     },
     "changeType": {
       "correction": "Correction",
       "deletion": "Deletion",
       "status_change": "Status change"
+    },
+    "actions": {
+      "submit": "Submit",
+      "submitOk": "Submitted for approval.",
+      "approve": "Approve",
+      "approveOk": "Approved.",
+      "reject": "Reject",
+      "rejectOk": "Rejected.",
+      "rejectTitle": "Enter reject reason",
+      "rejectHelp": "Reject reason must be at least 5 characters.",
+      "send": "Send",
+      "sendOk": "Sent.",
+      "won": "Mark won",
+      "wonOk": "Marked as won.",
+      "wonGoToProjectTitle": "Go to project page?",
+      "wonGoToProjectContent": "With the quote won, you can continue scheduling and construction on the linked project.",
+      "wonGoToProjectOk": "Open project",
+      "lost": "Mark lost",
+      "lostOk": "Marked as lost.",
+      "version": "New version",
+      "versionOk": "New version created.",
+      "versionTitle": "Enter change reason",
+      "versionHelp": "Change reason must be at least 5 characters.",
+      "clone": "Clone",
+      "cloneOk": "Cloned.",
+      "pdf": "PDF",
+      "reasonPlaceholder": "Reason (min 5 chars)"
+    },
+    "projectTab": {
+      "heading": "Quotes ({{count}})",
+      "empty": "No quotes yet."
     }
   }
 }
