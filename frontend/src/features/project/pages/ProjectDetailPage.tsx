@@ -89,18 +89,13 @@ export function ProjectDetailPage(): JSX.Element {
   if (error || !project) {
     const apiError = error ? extractApiError(error) : null;
     const isForbidden = apiError?.code === 'AUTH_INSUFFICIENT_PERMISSION';
-    const isNotFound = apiError?.code === 'PROJECT_NOT_FOUND' || !apiError;
     return (
       <AppLayout>
         <Result
           status={isForbidden ? '403' : '404'}
           title={isForbidden ? t('common.errors.forbiddenTitle') : t('common.errors.notFoundTitle')}
           subTitle={
-            isForbidden
-              ? t('common.errors.forbiddenSubtitle')
-              : isNotFound
-                ? t('common.errors.notFoundSubtitle')
-                : (apiError?.message ?? '')
+            isForbidden ? t('common.errors.forbiddenSubtitle') : t('common.errors.notFoundSubtitle')
           }
           extra={
             <Button type="primary" onClick={() => navigate('/projects')}>
