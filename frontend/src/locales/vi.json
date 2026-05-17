@@ -32,7 +32,9 @@
       "forbiddenSubtitle": "Bạn không có quyền xem trang này.",
       "notFoundTitle": "Không tìm thấy",
       "notFoundSubtitle": "Tài nguyên không tồn tại hoặc đã bị xóa."
-    }
+    },
+    "moveUp": "Lên trên",
+    "moveDown": "Xuống dưới"
   },
   "brand": {
     "appName": "Hệ thống quản lý thi công",
@@ -728,7 +730,10 @@
       "notesPlaceholder": "Ghi chú về báo giá",
       "linesTitle": "Hạng mục",
       "linesPlaceholder": "Editor hạng mục sẽ được thêm ở P5.",
-      "linesEditorComingSoon": "Editor sẽ được bổ sung ở phase kế tiếp."
+      "linesEditorComingSoon": "Editor sẽ được bổ sung ở phase kế tiếp.",
+      "addLine": "Thêm hạng mục",
+      "noLines": "Chưa có hạng mục.",
+      "optionalSubtotal": "Tạm tính tùy chọn"
     },
     "line": {
       "itemName": "Hạng mục",
@@ -736,7 +741,12 @@
       "unit": "Đơn vị",
       "unitPrice": "Đơn giá",
       "amount": "Thành tiền",
-      "optional": "Tùy chọn"
+      "optional": "Tùy chọn",
+      "itemNameAndDescription": "Tên + mô tả",
+      "descriptionPlaceholder": "Mô tả (tùy chọn)",
+      "taxRatePercent": "Thuế %",
+      "qtyShort": "SL",
+      "unitPricePickerPlaceholder": "Chọn từ master"
     },
     "detail": {
       "labelCounterParty": "Đối tác",
@@ -749,7 +759,8 @@
       "labelApprovedBy": "Người duyệt",
       "labelNotes": "Ghi chú",
       "linesTitle": "Hạng mục",
-      "linesEditorComingSoon": "Detail view sẽ được nâng cấp ở phase kế tiếp."
+      "linesEditorComingSoon": "Detail view sẽ được nâng cấp ở phase kế tiếp.",
+      "versionsTitle": "Lịch sử phiên bản ({{count}})"
     },
     "confirms": {
       "deleteTitle": "Xóa báo giá?",
@@ -766,6 +777,11 @@
       "atLeastOneRequiredLine": "Cần ít nhất 1 hạng mục bắt buộc.",
       "validUntilBeforeIssued": "Hiệu lực phải sau ngày phát hành.",
       "deleteReasonRequired": "Lý do phải dài ít nhất 5 ký tự."
+    },
+    "changeType": {
+      "correction": "Sửa",
+      "deletion": "Xóa",
+      "status_change": "Đổi trạng thái"
     }
   }
 }

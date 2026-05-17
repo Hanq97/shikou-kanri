@@ -32,7 +32,9 @@
       "forbiddenSubtitle": "この画面を表示する権限がありません。",
       "notFoundTitle": "見つかりません",
       "notFoundSubtitle": "指定されたリソースが存在しないか、削除された可能性があります。"
-    }
+    },
+    "moveUp": "上へ",
+    "moveDown": "下へ"
   },
   "brand": {
     "appName": "施工管理システム",
@@ -728,7 +730,10 @@
       "notesPlaceholder": "備考・お見積に関する注意事項など",
       "linesTitle": "明細",
       "linesPlaceholder": "明細エディタは P5 で実装します。",
-      "linesEditorComingSoon": "明細編集 UI は次のフェーズで追加されます。"
+      "linesEditorComingSoon": "明細編集 UI は次のフェーズで追加されます。",
+      "addLine": "明細を追加",
+      "noLines": "明細がまだありません。",
+      "optionalSubtotal": "オプション小計"
     },
     "line": {
       "itemName": "項目名",
@@ -736,7 +741,12 @@
       "unit": "単位",
       "unitPrice": "単価",
       "amount": "金額",
-      "optional": "オプション"
+      "optional": "オプション",
+      "itemNameAndDescription": "項目名 + 説明",
+      "descriptionPlaceholder": "説明（任意）",
+      "taxRatePercent": "税率",
+      "qtyShort": "数",
+      "unitPricePickerPlaceholder": "単価マスタから選択"
     },
     "detail": {
       "labelCounterParty": "取引先",
@@ -749,7 +759,8 @@
       "labelApprovedBy": "承認者",
       "labelNotes": "備考",
       "linesTitle": "明細",
-      "linesEditorComingSoon": "詳細ビューは次のフェーズで強化されます。"
+      "linesEditorComingSoon": "詳細ビューは次のフェーズで強化されます。",
+      "versionsTitle": "バージョン履歴 ({{count}})"
     },
     "confirms": {
       "deleteTitle": "見積を削除しますか？",
@@ -766,6 +777,11 @@
       "atLeastOneRequiredLine": "少なくとも1つの必須項目が必要です。",
       "validUntilBeforeIssued": "有効期限は発行日以降に設定してください。",
       "deleteReasonRequired": "削除理由は5文字以上必要です。"
+    },
+    "changeType": {
+      "correction": "訂正",
+      "deletion": "削除",
+      "status_change": "状態変更"
     }
   }
 }

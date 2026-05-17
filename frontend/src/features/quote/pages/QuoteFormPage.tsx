@@ -12,6 +12,7 @@ import { projectsApi, type ProjectSummary } from '@/shared/api/projects.api';
 import { quotesApi, type CreateQuoteInput, type UpdateQuoteInput } from '@/shared/api/quotes.api';
 import { AppLayout } from '@/shared/components/layout/AppLayout';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
+import { QuoteLineEditor } from '../components/QuoteLineEditor';
 import { QuoteFormSchema, type QuoteFormValues } from '../schemas/quote.schema';
 
 const DEFAULT_LINE = {
@@ -287,18 +288,12 @@ export function QuoteFormPage(): JSX.Element {
           </div>
 
           <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 sm:p-6">
-            <h2 className="m-0 text-base font-semibold text-zinc-800 mb-1">
-              {t('quote.form.linesTitle')}
-            </h2>
-            <p className="m-0 mb-3 text-xs text-zinc-500">
-              {t('quote.form.linesEditorComingSoon')}
-            </p>
+            <QuoteLineEditor control={form.control} setValue={form.setValue} />
             {errors.lines && (
-              <p className="m-0 text-xs text-red-600">
+              <p className="mt-2 text-xs text-red-600">
                 {(errors.lines as { message?: string }).message}
               </p>
             )}
-            <div className="text-xs text-zinc-400 italic">{t('quote.form.linesPlaceholder')}</div>
           </div>
 
           <div className="flex justify-end gap-2">

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { Button, Spin } from 'antd';
+import { Button, Collapse, Spin } from 'antd';
 import dayjs from 'dayjs';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, History } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { quotesApi } from '@/shared/api/quotes.api';
@@ -19,6 +19,12 @@ export function QuoteDetailPage(): JSX.Element {
   const { data: quote, isLoading } = useQuery({
     queryKey: ['quotes', 'detail', id],
     queryFn: () => quotesApi.get(id as string),
+    enabled: Boolean(id),
+  });
+
+  const { data: versions } = useQuery({
+    queryKey: ['quotes', 'versions', id],
+    queryFn: () => quotesApi.listVersions(id as string),
     enabled: Boolean(id),
   });
 
@@ -118,9 +124,6 @@ export function QuoteDetailPage(): JSX.Element {
           <h2 className="m-0 text-base font-semibold text-zinc-800 mb-3">
             {t('quote.detail.linesTitle')}
           </h2>
-          <div className="text-xs text-zinc-400 italic">
-            {t('quote.detail.linesEditorComingSoon')}
-          </div>
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -153,6 +156,44 @@ export function QuoteDetailPage(): JSX.Element {
             </table>
           </div>
         </div>
+
+        {versions && versions.length > 0 && (
+          <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <History size={16} className="text-zinc-500" />
+              <h2 className="m-0 text-base font-semibold text-zinc-800">
+                {t('quote.detail.versionsTitle', { count: versions.length })}
+              </h2>
+            </div>
+            <Collapse
+              ghost
+              items={versions.map((v) => ({
+                key: v.id,
+                label: (
+                  <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="font-mono text-sm text-zinc-700">v{v.versionNo}</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600">
+                        {t(`quote.changeType.${v.changeType}`)}
+                      </span>
+                      {v.reason && (
+                        <span className="text-xs text-zinc-500 truncate">— {v.reason}</span>
+                      )}
+                    </div>
+                    <span className="text-xs text-zinc-400 shrink-0">
+                      {dayjs(v.createdAt).format('YYYY/MM/DD HH:mm')}
+                    </span>
+                  </div>
+                ),
+                children: (
+                  <pre className="text-xs bg-zinc-50 rounded p-3 overflow-x-auto max-h-80 overflow-y-auto">
+                    {JSON.stringify(v.snapshotJson, null, 2)}
+                  </pre>
+                ),
+              }))}
+            />
+          </div>
+        )}
       </div>
     </AppLayout>
   );

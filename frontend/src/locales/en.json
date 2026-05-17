@@ -32,7 +32,9 @@
       "forbiddenSubtitle": "You don't have permission to view this page.",
       "notFoundTitle": "Not found",
       "notFoundSubtitle": "The requested resource does not exist or has been removed."
-    }
+    },
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   },
   "brand": {
     "appName": "Construction Management",
@@ -728,7 +730,10 @@
       "notesPlaceholder": "Notes about this quote",
       "linesTitle": "Lines",
       "linesPlaceholder": "Line editor lands in P5.",
-      "linesEditorComingSoon": "Line editor will be added in the next phase."
+      "linesEditorComingSoon": "Line editor will be added in the next phase.",
+      "addLine": "Add line",
+      "noLines": "No lines yet.",
+      "optionalSubtotal": "Optional subtotal"
     },
     "line": {
       "itemName": "Item",
@@ -736,7 +741,12 @@
       "unit": "Unit",
       "unitPrice": "Unit price",
       "amount": "Amount",
-      "optional": "Optional"
+      "optional": "Optional",
+      "itemNameAndDescription": "Item + description",
+      "descriptionPlaceholder": "Description (optional)",
+      "taxRatePercent": "Tax %",
+      "qtyShort": "Qty",
+      "unitPricePickerPlaceholder": "Pick from master"
     },
     "detail": {
       "labelCounterParty": "Counter-party",
@@ -749,7 +759,8 @@
       "labelApprovedBy": "Approved by",
       "labelNotes": "Notes",
       "linesTitle": "Lines",
-      "linesEditorComingSoon": "Detail view will be enhanced in the next phase."
+      "linesEditorComingSoon": "Detail view will be enhanced in the next phase.",
+      "versionsTitle": "Version history ({{count}})"
     },
     "confirms": {
       "deleteTitle": "Delete quote?",
@@ -766,6 +777,11 @@
       "atLeastOneRequiredLine": "At least one required line is needed.",
       "validUntilBeforeIssued": "Valid-until must be after issued date.",
       "deleteReasonRequired": "Reason must be at least 5 characters."
+    },
+    "changeType": {
+      "correction": "Correction",
+      "deletion": "Deletion",
+      "status_change": "Status change"
     }
   }
 }
