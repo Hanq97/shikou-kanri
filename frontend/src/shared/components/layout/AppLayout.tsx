@@ -34,8 +34,18 @@ interface NavDef {
 const NAV_DEFS: NavDef[] = [
   { key: 'home', to: '/home', icon: <Home size={18} /> },
   { key: 'projects', to: '/projects', icon: <Briefcase size={18} /> },
-  { key: 'estimates', to: '/estimates', icon: <FileText size={18} /> },
-  { key: 'customers', to: '/customers', icon: <Users size={18} /> },
+  {
+    key: 'estimates',
+    to: '/estimates',
+    icon: <FileText size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
+  {
+    key: 'customers',
+    to: '/customers',
+    icon: <Users size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
   {
     key: 'users',
     to: '/admin/users',
