@@ -48,7 +48,45 @@ const TEST_USERS = [
     nameKana: 'エイギョウイチロウ',
     role: 'employee' as const,
   },
+  {
+    // Invited worker (職人) — restricted access to assigned projects only.
+    // Used to test FR-MEM-005 invited filter. Assigned to active projects via ensureInvitedMemberships().
+    email: 'worker@dev.shikou-kanri.local',
+    name: '職人 健一',
+    nameKana: 'ショクニン ケンイチ',
+    role: 'invited' as const,
+  },
 ];
+
+async function ensureInvitedMemberships(prisma: PrismaClient): Promise<void> {
+  const worker = await prisma.user.findUnique({
+    where: { email: 'worker@dev.shikou-kanri.local' },
+  });
+  if (!worker) return;
+
+  // Assign worker as invited_worker on 2 active projects so they have something to see.
+  const targets = await prisma.project.findMany({
+    where: {
+      name: { in: ['田中様邸 キッチンリフォーム', '藤和商事本社 外壁修繕'] },
+      deletedAt: null,
+    },
+    select: { id: true, name: true },
+  });
+
+  for (const p of targets) {
+    await prisma.projectMember.upsert({
+      where: { projectId_userId: { projectId: p.id, userId: worker.id } },
+      create: {
+        projectId: p.id,
+        userId: worker.id,
+        roleOnProject: 'invited_worker',
+      },
+      update: { revokedAt: null, roleOnProject: 'invited_worker' },
+    });
+    // eslint-disable-next-line no-console
+    console.log(`  ✓  Worker assigned to: ${p.name}`);
+  }
+}
 
 async function seedF1(prisma: PrismaClient): Promise<void> {
   // eslint-disable-next-line no-console
@@ -387,6 +425,7 @@ async function main(): Promise<void> {
   }
 
   await seedF1(prisma);
+  await ensureInvitedMemberships(prisma);
 
   // eslint-disable-next-line no-console
   console.log('');
