@@ -26,7 +26,13 @@
     "minutes": "min",
     "seconds": "s",
     "items": "items",
-    "people": "people"
+    "people": "people",
+    "errors": {
+      "forbiddenTitle": "Access denied",
+      "forbiddenSubtitle": "You don't have permission to view this page.",
+      "notFoundTitle": "Not found",
+      "notFoundSubtitle": "The requested resource does not exist or has been removed."
+    }
   },
   "brand": {
     "appName": "Construction Management",

@@ -26,7 +26,13 @@
     "minutes": "分",
     "seconds": "秒",
     "items": "件",
-    "people": "名"
+    "people": "名",
+    "errors": {
+      "forbiddenTitle": "アクセス権限がありません",
+      "forbiddenSubtitle": "この画面を表示する権限がありません。",
+      "notFoundTitle": "見つかりません",
+      "notFoundSubtitle": "指定されたリソースが存在しないか、削除された可能性があります。"
+    }
   },
   "brand": {
     "appName": "施工管理システム",

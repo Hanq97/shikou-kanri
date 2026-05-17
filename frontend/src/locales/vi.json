@@ -26,7 +26,13 @@
     "minutes": "phút",
     "seconds": "giây",
     "items": "bản ghi",
-    "people": "người"
+    "people": "người",
+    "errors": {
+      "forbiddenTitle": "Không có quyền truy cập",
+      "forbiddenSubtitle": "Bạn không có quyền xem trang này.",
+      "notFoundTitle": "Không tìm thấy",
+      "notFoundSubtitle": "Tài nguyên không tồn tại hoặc đã bị xóa."
+    }
   },
   "brand": {
     "appName": "Hệ thống quản lý thi công",

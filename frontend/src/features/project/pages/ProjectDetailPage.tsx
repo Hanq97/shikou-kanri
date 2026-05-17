@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { App, Button, Dropdown, Spin, Tabs, type MenuProps } from 'antd';
+import { App, Button, Dropdown, Result, Spin, Tabs, type MenuProps } from 'antd';
 import dayjs from 'dayjs';
 import { ArrowLeft, ArrowRightCircle, Edit, RotateCcw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -40,10 +40,15 @@ export function ProjectDetailPage(): JSX.Element {
   );
   const [reverseOpen, setReverseOpen] = useState(false);
 
-  const { data: project, isLoading } = useQuery({
+  const {
+    data: project,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['projects', 'detail', id],
     queryFn: () => projectsApi.get(id!),
     enabled: Boolean(id),
+    retry: false,
   });
 
   const deleteMutation = useMutation({
@@ -71,12 +76,38 @@ export function ProjectDetailPage(): JSX.Element {
     });
   }
 
-  if (isLoading || !project) {
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="flex justify-center py-12">
           <Spin size="large" />
         </div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !project) {
+    const apiError = error ? extractApiError(error) : null;
+    const isForbidden = apiError?.code === 'AUTH_INSUFFICIENT_PERMISSION';
+    const isNotFound = apiError?.code === 'PROJECT_NOT_FOUND' || !apiError;
+    return (
+      <AppLayout>
+        <Result
+          status={isForbidden ? '403' : '404'}
+          title={isForbidden ? t('common.errors.forbiddenTitle') : t('common.errors.notFoundTitle')}
+          subTitle={
+            isForbidden
+              ? t('common.errors.forbiddenSubtitle')
+              : isNotFound
+                ? t('common.errors.notFoundSubtitle')
+                : (apiError?.message ?? '')
+          }
+          extra={
+            <Button type="primary" onClick={() => navigate('/projects')}>
+              {t('common.back')}
+            </Button>
+          }
+        />
       </AppLayout>
     );
   }

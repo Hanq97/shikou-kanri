@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { App, Button, Spin, Tabs } from 'antd';
+import { App, Button, Result, Spin, Tabs } from 'antd';
 import dayjs from 'dayjs';
 import { ArrowLeft, Edit, Mail, MapPin, Phone, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -21,10 +21,15 @@ export function CustomerDetailPage(): JSX.Element {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const { data: customer, isLoading } = useQuery({
+  const {
+    data: customer,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['customers', 'detail', id],
     queryFn: () => customersApi.get(id!),
     enabled: Boolean(id),
+    retry: false,
   });
 
   const deleteMutation = useMutation({
@@ -49,12 +54,33 @@ export function CustomerDetailPage(): JSX.Element {
     });
   }
 
-  if (isLoading || !customer) {
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="flex justify-center py-12">
           <Spin size="large" />
         </div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !customer) {
+    const apiError = error ? extractApiError(error) : null;
+    const isForbidden = apiError?.code === 'AUTH_INSUFFICIENT_PERMISSION';
+    return (
+      <AppLayout>
+        <Result
+          status={isForbidden ? '403' : '404'}
+          title={isForbidden ? t('common.errors.forbiddenTitle') : t('common.errors.notFoundTitle')}
+          subTitle={
+            isForbidden ? t('common.errors.forbiddenSubtitle') : t('common.errors.notFoundSubtitle')
+          }
+          extra={
+            <Button type="primary" onClick={() => navigate('/customers')}>
+              {t('common.back')}
+            </Button>
+          }
+        />
       </AppLayout>
     );
   }
