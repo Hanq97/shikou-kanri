@@ -260,6 +260,24 @@
     "phoneNotSet": "—",
     "totalCount": "全 {{total}} 件",
     "empty": "顧客未登録",
+    "import": {
+      "title": "顧客 CSV インポート",
+      "subtitle": "CSV ファイルから顧客を一括登録（管理者のみ）",
+      "selectFile": "CSVファイルを選択",
+      "selectedFile": "選択済み: {{name}}",
+      "noFile": "ファイル未選択",
+      "submit": "インポート開始",
+      "cancel": "キャンセル",
+      "instructions": "CSVカラム: customer_type, name, name_kana, phone, email, address, is_ob, acquired_at, notes",
+      "instructionsDetail": "customer_type は individual または corporate。is_ob は true/false。acquired_at は YYYY-MM-DD。",
+      "result": "インポート結果",
+      "created": "{{count}} 件作成",
+      "skipped": "{{count}} 件スキップ（電話番号重複）",
+      "errors": "{{count}} 件エラー",
+      "errorRow": "{{row}} 行目: {{message}}",
+      "noErrors": "エラーはありません",
+      "downloadTemplate": "テンプレートCSVをダウンロード"
+    },
     "tabs": {
       "overview": "概要",
       "properties": "物件",
@@ -610,6 +628,19 @@
       "nameRequired": "案件名を入力してください",
       "customerRequired": "顧客を選択してください（または土地仕入れ前を選択）",
       "scheduleRangeInvalid": "完了予定日は開始予定日より後にしてください"
+    },
+    "savedSearches": {
+      "title": "保存した検索",
+      "saveButton": "現在のフィルターを保存",
+      "saveTitle": "検索条件を保存",
+      "nameLabel": "名前",
+      "namePlaceholder": "例: 進行中の案件のみ",
+      "nameRequired": "名前を入力してください",
+      "saved": "保存しました",
+      "deleted": "削除しました",
+      "empty": "保存された検索はありません",
+      "exportCsv": "CSVエクスポート",
+      "deleteTitle": "削除しますか？"
     },
     "members": {
       "title": "メンバー",

@@ -1,5 +1,17 @@
 import { apiClient } from './client';
 
+export interface ImportError {
+  rowIndex: number;
+  message: string;
+  raw: Record<string, string>;
+}
+
+export interface ImportResult {
+  created: number;
+  skipped: number;
+  errors: ImportError[];
+}
+
 export type CustomerType = 'individual' | 'corporate';
 
 export interface CustomerSummary {
@@ -88,5 +100,14 @@ export const customersApi = {
 
   async softDelete(id: string): Promise<void> {
     await apiClient.delete(`/customers/${id}`);
+  },
+
+  async import(file: File): Promise<ImportResult> {
+    const form = new FormData();
+    form.append('file', file);
+    const { data } = await apiClient.post<{ result: ImportResult }>('/customers/import', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data.result;
   },
 };

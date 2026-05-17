@@ -260,6 +260,24 @@
     "phoneNotSet": "—",
     "totalCount": "Tổng {{total}} khách",
     "empty": "Chưa có khách hàng",
+    "import": {
+      "title": "Nhập CSV khách hàng",
+      "subtitle": "Đăng ký hàng loạt khách hàng từ file CSV (chỉ admin)",
+      "selectFile": "Chọn file CSV",
+      "selectedFile": "Đã chọn: {{name}}",
+      "noFile": "Chưa chọn file",
+      "submit": "Bắt đầu nhập",
+      "cancel": "Hủy",
+      "instructions": "CSV cột: customer_type, name, name_kana, phone, email, address, is_ob, acquired_at, notes",
+      "instructionsDetail": "customer_type phải là individual hoặc corporate. is_ob true/false. acquired_at YYYY-MM-DD.",
+      "result": "Kết quả nhập",
+      "created": "{{count}} bản ghi tạo mới",
+      "skipped": "{{count}} bỏ qua (trùng SĐT)",
+      "errors": "{{count}} lỗi",
+      "errorRow": "Hàng {{row}}: {{message}}",
+      "noErrors": "Không có lỗi",
+      "downloadTemplate": "Tải template CSV"
+    },
     "tabs": {
       "overview": "Tổng quan",
       "properties": "Bất động sản",
@@ -610,6 +628,19 @@
       "nameRequired": "Cần nhập tên dự án",
       "customerRequired": "Chọn khách hàng (hoặc đánh dấu chưa có khách)",
       "scheduleRangeInvalid": "Ngày hoàn thành phải sau ngày bắt đầu"
+    },
+    "savedSearches": {
+      "title": "Tìm kiếm đã lưu",
+      "saveButton": "Lưu bộ lọc hiện tại",
+      "saveTitle": "Lưu tìm kiếm",
+      "nameLabel": "Tên",
+      "namePlaceholder": "VD: Dự án đang thi công",
+      "nameRequired": "Cần nhập tên",
+      "saved": "Đã lưu",
+      "deleted": "Đã xóa",
+      "empty": "Chưa có tìm kiếm đã lưu",
+      "exportCsv": "Xuất CSV",
+      "deleteTitle": "Xóa?"
     },
     "members": {
       "title": "Thành viên",

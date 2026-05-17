@@ -185,6 +185,48 @@ export const projectsApi = {
   },
 };
 
+export type SavedSearchScope = 'projects' | 'customers';
+
+export interface SavedSearch {
+  id: string;
+  userId: string;
+  scope: SavedSearchScope;
+  name: string;
+  filterJson: Record<string, unknown>;
+  createdAt: string;
+}
+
+export const savedSearchesApi = {
+  async list(scope?: SavedSearchScope): Promise<SavedSearch[]> {
+    const { data } = await apiClient.get<{ data: SavedSearch[] }>('/saved-searches', {
+      params: scope ? { scope } : undefined,
+    });
+    return data.data;
+  },
+
+  async create(input: {
+    name: string;
+    scope: SavedSearchScope;
+    filterJson: Record<string, unknown>;
+  }): Promise<SavedSearch> {
+    const { data } = await apiClient.post<{ savedSearch: SavedSearch }>('/saved-searches', input);
+    return data.savedSearch;
+  },
+
+  async delete(id: string): Promise<void> {
+    await apiClient.delete(`/saved-searches/${id}`);
+  },
+};
+
+export const projectExportApi = {
+  url(params: ListProjectsParams = {}): string {
+    const sp = buildSearch(params);
+    const qs = sp.toString();
+    const base = `${apiClient.defaults.baseURL ?? '/api/v1'}/projects/export.csv`;
+    return qs ? `${base}?${qs}` : base;
+  },
+};
+
 export const projectMembersApi = {
   async list(projectId: string): Promise<ProjectMember[]> {
     const { data } = await apiClient.get<{ data: ProjectMember[] }>(

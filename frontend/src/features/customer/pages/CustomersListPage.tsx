@@ -2,7 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { App, Button, Dropdown, Input, Select, type MenuProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { Edit, Mail, MapPin, MoreVertical, Phone, Plus, Search, Trash2 } from 'lucide-react';
+import {
+  Edit,
+  Mail,
+  MapPin,
+  MoreVertical,
+  Phone,
+  Plus,
+  Search,
+  Trash2,
+  Upload as UploadIcon,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -227,15 +237,23 @@ export function CustomersListPage(): JSX.Element {
             </h1>
             <p className="m-0 mt-1 text-sm text-zinc-500">{t('customer.subtitle')}</p>
           </div>
-          <Button
-            type="primary"
-            icon={<Plus size={14} />}
-            onClick={() => navigate('/customers/new')}
-            block={false}
-            className="sm:w-auto"
-          >
-            {t('customer.createButton')}
-          </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isAdmin && (
+              <Button
+                icon={<UploadIcon size={14} />}
+                onClick={() => navigate('/admin/customer-import')}
+              >
+                <span className="hidden sm:inline">{t('customer.import.title')}</span>
+              </Button>
+            )}
+            <Button
+              type="primary"
+              icon={<Plus size={14} />}
+              onClick={() => navigate('/customers/new')}
+            >
+              {t('customer.createButton')}
+            </Button>
+          </div>
         </div>
 
         {/* Filter bar */}

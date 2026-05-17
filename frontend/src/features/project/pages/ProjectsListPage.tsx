@@ -2,13 +2,25 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { App, Button, Dropdown, Segmented, type MenuProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { Edit, LayoutGrid, List as ListIcon, MoreVertical, Plus, Trash2 } from 'lucide-react';
+import {
+  Bookmark,
+  Download,
+  Edit,
+  LayoutGrid,
+  List as ListIcon,
+  MoreVertical,
+  Plus,
+  Save,
+  Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { extractApiError } from '@/shared/api/client';
 import {
+  projectExportApi,
   projectsApi,
+  savedSearchesApi,
   type ListProjectsParams,
   type ProjectStatus,
   type ProjectSummary,
@@ -24,6 +36,7 @@ import { KanbanBoard } from '../components/KanbanBoard';
 import { ProjectFiltersPanel } from '../components/ProjectFiltersPanel';
 import { ProjectStatusTag } from '../components/ProjectStatusTag';
 import { ProjectTypeTag } from '../components/ProjectTypeTag';
+import { SaveSearchModal } from '../components/SaveSearchModal';
 
 type ViewMode = 'table' | 'kanban';
 
@@ -47,6 +60,21 @@ export function ProjectsListPage(): JSX.Element {
     sortOrder: 'desc',
   });
   const [pendingTransition, setPendingTransition] = useState<PendingTransition | null>(null);
+  const [saveOpen, setSaveOpen] = useState(false);
+
+  const { data: savedSearches } = useQuery({
+    queryKey: ['savedSearches', 'projects'],
+    queryFn: () => savedSearchesApi.list('projects'),
+  });
+
+  const deleteSavedSearchMutation = useMutation({
+    mutationFn: (id: string) => savedSearchesApi.delete(id),
+    onSuccess: () => {
+      message.success(t('project.savedSearches.deleted'));
+      qc.invalidateQueries({ queryKey: ['savedSearches', 'projects'] });
+    },
+    onError: (err) => message.error(mapErrorMessage(extractApiError(err))),
+  });
 
   const effectiveFilters: ListProjectsParams =
     view === 'kanban' ? { ...filters, page: 1, pageSize: 100 } : filters;
@@ -67,6 +95,71 @@ export function ProjectsListPage(): JSX.Element {
 
   const isAdmin = currentUser?.role === 'system_admin';
   const canCreate = currentUser?.role !== 'invited';
+  const canExport = currentUser?.role === 'system_admin' || currentUser?.role === 'manager';
+
+  const savedSearchMenuItems: MenuProps['items'] = [
+    ...(savedSearches?.length
+      ? savedSearches.map((s) => ({
+          key: s.id,
+          label: (
+            <div className="flex items-center justify-between gap-3 w-full">
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters({
+                    ...(s.filterJson as Partial<ListProjectsParams>),
+                    page: 1,
+                    pageSize: filters.pageSize,
+                    sortBy: filters.sortBy,
+                    sortOrder: filters.sortOrder,
+                  })
+                }
+                className="bg-transparent border-0 p-0 cursor-pointer text-left text-sm"
+              >
+                {s.name}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  modal.confirm({
+                    title: t('project.savedSearches.deleteTitle'),
+                    content: s.name,
+                    okType: 'danger',
+                    okText: t('common.delete'),
+                    cancelText: t('common.cancel'),
+                    onOk: () => deleteSavedSearchMutation.mutate(s.id),
+                  });
+                }}
+                className="bg-transparent border-0 p-0 cursor-pointer text-zinc-400 hover:text-red-600"
+                aria-label={t('common.delete')}
+              >
+                <Trash2 size={12} />
+              </button>
+            </div>
+          ),
+        }))
+      : [
+          {
+            key: 'empty',
+            disabled: true,
+            label: (
+              <span className="text-xs text-zinc-400">{t('project.savedSearches.empty')}</span>
+            ),
+          },
+        ]),
+    { type: 'divider' as const },
+    {
+      key: 'save-current',
+      icon: <Save size={14} />,
+      label: t('project.savedSearches.saveButton'),
+      onClick: () => setSaveOpen(true),
+    },
+  ];
+
+  function exportCsv(): void {
+    window.location.href = projectExportApi.url(filters);
+  }
 
   function confirmDelete(row: ProjectSummary): void {
     modal.confirm({
@@ -277,6 +370,20 @@ export function ProjectsListPage(): JSX.Element {
                 },
               ]}
             />
+            <Dropdown
+              menu={{ items: savedSearchMenuItems }}
+              trigger={['click']}
+              placement="bottomRight"
+            >
+              <Button icon={<Bookmark size={14} />}>
+                <span className="hidden sm:inline">{t('project.savedSearches.title')}</span>
+              </Button>
+            </Dropdown>
+            {canExport && (
+              <Button icon={<Download size={14} />} onClick={exportCsv}>
+                <span className="hidden sm:inline">{t('project.savedSearches.exportCsv')}</span>
+              </Button>
+            )}
             {canCreate && (
               <Button
                 type="primary"
@@ -337,6 +444,16 @@ export function ProjectsListPage(): JSX.Element {
           }}
         />
       )}
+
+      <SaveSearchModal
+        open={saveOpen}
+        filters={filters}
+        onClose={() => setSaveOpen(false)}
+        onSuccess={() => {
+          setSaveOpen(false);
+          qc.invalidateQueries({ queryKey: ['savedSearches', 'projects'] });
+        }}
+      />
     </AppLayout>
   );
 }

@@ -260,6 +260,24 @@
     "phoneNotSet": "—",
     "totalCount": "{{total}} total",
     "empty": "No customers yet",
+    "import": {
+      "title": "Customer CSV import",
+      "subtitle": "Bulk-register customers from a CSV file (admin only)",
+      "selectFile": "Select CSV file",
+      "selectedFile": "Selected: {{name}}",
+      "noFile": "No file selected",
+      "submit": "Start import",
+      "cancel": "Cancel",
+      "instructions": "CSV columns: customer_type, name, name_kana, phone, email, address, is_ob, acquired_at, notes",
+      "instructionsDetail": "customer_type must be individual or corporate. is_ob true/false. acquired_at YYYY-MM-DD.",
+      "result": "Import result",
+      "created": "{{count}} created",
+      "skipped": "{{count}} skipped (duplicate phone)",
+      "errors": "{{count}} errors",
+      "errorRow": "Row {{row}}: {{message}}",
+      "noErrors": "No errors",
+      "downloadTemplate": "Download template CSV"
+    },
     "tabs": {
       "overview": "Overview",
       "properties": "Properties",
@@ -610,6 +628,19 @@
       "nameRequired": "Project name is required",
       "customerRequired": "Select a customer (or check pre-acquisition)",
       "scheduleRangeInvalid": "End date must be after start date"
+    },
+    "savedSearches": {
+      "title": "Saved searches",
+      "saveButton": "Save current filters",
+      "saveTitle": "Save search",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Active projects only",
+      "nameRequired": "Name is required",
+      "saved": "Saved",
+      "deleted": "Deleted",
+      "empty": "No saved searches",
+      "exportCsv": "Export CSV",
+      "deleteTitle": "Delete?"
     },
     "members": {
       "title": "Members",
