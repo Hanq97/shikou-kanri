@@ -53,7 +53,8 @@
     "sidebarCollapse": "サイドバーを折りたたむ",
     "sidebarOpen": "メニューを開く",
     "notifications": "通知",
-    "language": "言語"
+    "language": "言語",
+    "unitPrices": "単価マスタ"
   },
   "userMenu": {
     "profile": "プロフィール設定",
@@ -815,6 +816,52 @@
     "projectTab": {
       "heading": "見積 ({{count}})",
       "empty": "まだ見積がありません。"
+    }
+  },
+  "unitPrice": {
+    "title": "単価マスタ",
+    "subtitle": "見積で使用する単価項目を管理（管理者のみ）",
+    "createButton": "単価を追加",
+    "empty": "単価未登録",
+    "totalCount": "全 {{total}} 件",
+    "filters": {
+      "searchPlaceholder": "コード・項目名で検索",
+      "all": "すべて",
+      "activeOnly": "有効のみ",
+      "inactiveOnly": "無効のみ"
+    },
+    "columns": {
+      "code": "コード",
+      "category": "カテゴリ",
+      "itemName": "項目名",
+      "unit": "単位",
+      "defaultUnitPrice": "標準単価",
+      "isActive": "状態"
+    },
+    "isActive": {
+      "true": "有効",
+      "false": "無効"
+    },
+    "form": {
+      "createTitle": "単価を追加",
+      "editTitle": "単価を編集",
+      "code": "コード",
+      "category": "カテゴリ",
+      "itemName": "項目名",
+      "unit": "単位",
+      "defaultUnitPrice": "標準単価",
+      "supplierName": "取引業者名",
+      "description": "説明",
+      "isActive": "有効"
+    },
+    "confirms": {
+      "deleteTitle": "単価を削除しますか？",
+      "deleteContent": "{{code}} — {{name}}"
+    },
+    "messages": {
+      "created": "単価を追加しました。",
+      "updated": "単価を更新しました。",
+      "deleted": "単価を削除しました。"
     }
   }
 }

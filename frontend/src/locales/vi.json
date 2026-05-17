@@ -53,7 +53,8 @@
     "sidebarCollapse": "Thu gọn sidebar",
     "sidebarOpen": "Mở menu",
     "notifications": "Thông báo",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "unitPrices": "Đơn giá"
   },
   "userMenu": {
     "profile": "Hồ sơ cá nhân",
@@ -815,6 +816,52 @@
     "projectTab": {
       "heading": "Báo giá ({{count}})",
       "empty": "Chưa có báo giá nào."
+    }
+  },
+  "unitPrice": {
+    "title": "Master đơn giá",
+    "subtitle": "Quản lý đơn giá dùng trong báo giá (chỉ admin)",
+    "createButton": "Thêm đơn giá",
+    "empty": "Chưa có đơn giá",
+    "totalCount": "Tổng {{total}}",
+    "filters": {
+      "searchPlaceholder": "Tìm theo mã hoặc tên",
+      "all": "Tất cả",
+      "activeOnly": "Chỉ active",
+      "inactiveOnly": "Chỉ inactive"
+    },
+    "columns": {
+      "code": "Mã",
+      "category": "Danh mục",
+      "itemName": "Tên",
+      "unit": "Đơn vị",
+      "defaultUnitPrice": "Đơn giá chuẩn",
+      "isActive": "Trạng thái"
+    },
+    "isActive": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "form": {
+      "createTitle": "Thêm đơn giá",
+      "editTitle": "Sửa đơn giá",
+      "code": "Mã",
+      "category": "Danh mục",
+      "itemName": "Tên",
+      "unit": "Đơn vị",
+      "defaultUnitPrice": "Đơn giá chuẩn",
+      "supplierName": "Nhà cung cấp",
+      "description": "Mô tả",
+      "isActive": "Active"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa đơn giá?",
+      "deleteContent": "{{code}} — {{name}}"
+    },
+    "messages": {
+      "created": "Đã thêm đơn giá.",
+      "updated": "Đã cập nhật.",
+      "deleted": "Đã xóa."
     }
   }
 }

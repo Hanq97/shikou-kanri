@@ -53,7 +53,8 @@
     "sidebarCollapse": "Collapse sidebar",
     "sidebarOpen": "Open menu",
     "notifications": "Notifications",
-    "language": "Language"
+    "language": "Language",
+    "unitPrices": "Unit prices"
   },
   "userMenu": {
     "profile": "Profile settings",
@@ -815,6 +816,52 @@
     "projectTab": {
       "heading": "Quotes ({{count}})",
       "empty": "No quotes yet."
+    }
+  },
+  "unitPrice": {
+    "title": "Unit prices",
+    "subtitle": "Manage unit prices used in quotes (admin only)",
+    "createButton": "Add unit price",
+    "empty": "No unit prices",
+    "totalCount": "{{total}} total",
+    "filters": {
+      "searchPlaceholder": "Search by code or item name",
+      "all": "All",
+      "activeOnly": "Active only",
+      "inactiveOnly": "Inactive only"
+    },
+    "columns": {
+      "code": "Code",
+      "category": "Category",
+      "itemName": "Item",
+      "unit": "Unit",
+      "defaultUnitPrice": "Default price",
+      "isActive": "Status"
+    },
+    "isActive": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "form": {
+      "createTitle": "Add unit price",
+      "editTitle": "Edit unit price",
+      "code": "Code",
+      "category": "Category",
+      "itemName": "Item name",
+      "unit": "Unit",
+      "defaultUnitPrice": "Default unit price",
+      "supplierName": "Supplier",
+      "description": "Description",
+      "isActive": "Active"
+    },
+    "confirms": {
+      "deleteTitle": "Delete unit price?",
+      "deleteContent": "{{code}} — {{name}}"
+    },
+    "messages": {
+      "created": "Unit price added.",
+      "updated": "Unit price updated.",
+      "deleted": "Unit price deleted."
     }
   }
 }

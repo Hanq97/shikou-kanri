@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { UnitPricesListPage } from '@/features/admin/pages/UnitPricesListPage';
 import { UsersListPage } from '@/features/admin/pages/UsersListPage';
 import { AcceptInvitePage } from '@/features/auth/pages/AcceptInvitePage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
@@ -230,6 +231,16 @@ export const router = createBrowserRouter([
       <AuthGuard>
         <RoleGuard roles={['system_admin', 'manager']}>
           <UsersListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/admin/unit-prices',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin']}>
+          <UnitPricesListPage />
         </RoleGuard>
       </AuthGuard>
     ),
