@@ -1,16 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { App, Button, Dropdown, Input, Segmented, Select, type MenuProps } from 'antd';
+import { App, Button, Dropdown, Segmented, type MenuProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import {
-  Edit,
-  LayoutGrid,
-  List as ListIcon,
-  MoreVertical,
-  Plus,
-  Search,
-  Trash2,
-} from 'lucide-react';
+import { Edit, LayoutGrid, List as ListIcon, MoreVertical, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +21,7 @@ import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { formatJpy } from '@/shared/utils/format';
 import { ChangeStatusModal } from '../components/ChangeStatusModal';
 import { KanbanBoard } from '../components/KanbanBoard';
+import { ProjectFiltersPanel } from '../components/ProjectFiltersPanel';
 import { ProjectStatusTag } from '../components/ProjectStatusTag';
 import { ProjectTypeTag } from '../components/ProjectTypeTag';
 
@@ -38,17 +31,6 @@ interface PendingTransition {
   project: ProjectSummary;
   target: Exclude<ProjectStatus, 'quoting'>;
 }
-
-const STATUS_VALUES: ProjectStatus[] = [
-  'quoting',
-  'received',
-  'construction',
-  'completed',
-  'handed_over',
-  'cancelled',
-];
-
-const TYPE_VALUES: ProjectType[] = ['new_construction', 'remodel', 'repair', 'aftercare'];
 
 export function ProjectsListPage(): JSX.Element {
   const { t } = useTranslation();
@@ -64,7 +46,6 @@ export function ProjectsListPage(): JSX.Element {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
-  const [searchInput, setSearchInput] = useState('');
   const [pendingTransition, setPendingTransition] = useState<PendingTransition | null>(null);
 
   const effectiveFilters: ListProjectsParams =
@@ -308,67 +289,7 @@ export function ProjectsListPage(): JSX.Element {
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-3 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 sm:items-center">
-          <Input
-            placeholder={t('project.searchPlaceholder')}
-            prefix={<Search size={14} className="text-zinc-400" />}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onPressEnter={() =>
-              setFilters((f) => ({
-                ...f,
-                search: searchInput.trim() || undefined,
-                page: 1,
-              }))
-            }
-            allowClear
-            onClear={() => {
-              setSearchInput('');
-              setFilters((f) => ({ ...f, search: undefined, page: 1 }));
-            }}
-            className="sm:!max-w-[300px]"
-          />
-          <div className="flex gap-2 sm:contents">
-            <Select
-              placeholder={t('project.filters.status')}
-              mode="multiple"
-              allowClear
-              maxTagCount="responsive"
-              value={filters.status}
-              onChange={(status) =>
-                setFilters((f) => ({
-                  ...f,
-                  status: status?.length ? status : undefined,
-                  page: 1,
-                }))
-              }
-              className="flex-1 sm:!min-w-[180px] sm:flex-none"
-              options={STATUS_VALUES.map((s) => ({
-                value: s,
-                label: t(`project.status.${s}`),
-              }))}
-            />
-            <Select
-              placeholder={t('project.filters.type')}
-              mode="multiple"
-              allowClear
-              maxTagCount="responsive"
-              value={filters.projectType}
-              onChange={(types) =>
-                setFilters((f) => ({
-                  ...f,
-                  projectType: types?.length ? types : undefined,
-                  page: 1,
-                }))
-              }
-              className="flex-1 sm:!min-w-[180px] sm:flex-none"
-              options={TYPE_VALUES.map((s) => ({
-                value: s,
-                label: t(`project.type.${s}`),
-              }))}
-            />
-          </div>
-        </div>
+        <ProjectFiltersPanel value={filters} onChange={setFilters} />
 
         {view === 'table' ? (
           <div className="sm:bg-white sm:border sm:border-zinc-200/70 sm:rounded-xl sm:shadow-card sm:overflow-hidden">

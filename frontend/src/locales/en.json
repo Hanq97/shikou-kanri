@@ -492,7 +492,11 @@
       "from": "Start date (from)",
       "to": "Start date (to)",
       "reset": "Reset",
-      "apply": "Apply"
+      "apply": "Apply",
+      "advanced": "Advanced filters",
+      "ownerPlaceholder": "Select owner",
+      "customerPlaceholder": "Search customer",
+      "activeCount": "{{count}} active"
     },
     "columns": {
       "code": "Code",

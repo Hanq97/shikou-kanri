@@ -492,7 +492,11 @@
       "from": "開始日（から）",
       "to": "開始日（まで）",
       "reset": "リセット",
-      "apply": "適用"
+      "apply": "適用",
+      "advanced": "詳細フィルター",
+      "ownerPlaceholder": "担当者を選択",
+      "customerPlaceholder": "顧客を検索",
+      "activeCount": "{{count}} 件の条件"
     },
     "columns": {
       "code": "案件番号",

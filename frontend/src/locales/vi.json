@@ -492,7 +492,11 @@
       "from": "Bắt đầu (từ)",
       "to": "Bắt đầu (đến)",
       "reset": "Xóa lọc",
-      "apply": "Áp dụng"
+      "apply": "Áp dụng",
+      "advanced": "Bộ lọc nâng cao",
+      "ownerPlaceholder": "Chọn phụ trách",
+      "customerPlaceholder": "Tìm khách hàng",
+      "activeCount": "{{count}} điều kiện"
     },
     "columns": {
       "code": "Mã dự án",
