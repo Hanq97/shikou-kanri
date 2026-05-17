@@ -14,6 +14,9 @@ import { NotFoundPage } from '@/features/misc/NotFoundPage';
 import { ProjectDetailPage } from '@/features/project/pages/ProjectDetailPage';
 import { ProjectFormPage } from '@/features/project/pages/ProjectFormPage';
 import { ProjectsListPage } from '@/features/project/pages/ProjectsListPage';
+import { QuoteDetailPage } from '@/features/quote/pages/QuoteDetailPage';
+import { QuoteFormPage } from '@/features/quote/pages/QuoteFormPage';
+import { QuotesListPage } from '@/features/quote/pages/QuotesListPage';
 import { ChangePasswordPage } from '@/features/settings/pages/ChangePasswordPage';
 import { ProfilePage } from '@/features/settings/pages/ProfilePage';
 import { SessionsPage } from '@/features/settings/pages/SessionsPage';
@@ -173,6 +176,48 @@ export const router = createBrowserRouter([
       <AuthGuard>
         <RoleGuard deny={['invited']}>
           <ProjectFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+
+  // F2: Quotes (URL alias /estimates, BE uses /quotes — keeps nav i18n key 見積管理)
+  {
+    path: '/estimates',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin', 'manager', 'employee']}>
+          <QuotesListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/estimates/new',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin', 'manager', 'employee']}>
+          <QuoteFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/estimates/:id',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin', 'manager', 'employee']}>
+          <QuoteDetailPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/estimates/:id/edit',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin', 'manager', 'employee']}>
+          <QuoteFormPage />
         </RoleGuard>
       </AuthGuard>
     ),

@@ -157,7 +157,21 @@
     "NOT_FOUND": "Không tìm thấy đối tượng",
     "VALIDATION_ERROR": "Dữ liệu nhập có lỗi",
     "INTERNAL_ERROR": "Đã xảy ra lỗi không mong muốn",
-    "NETWORK_ERROR": "Lỗi mạng"
+    "NETWORK_ERROR": "Lỗi mạng",
+    "QUOTE_NOT_FOUND": "Không tìm thấy báo giá.",
+    "QUOTE_CONFLICT": "Người khác đã chỉnh sửa. Vui lòng tải lại.",
+    "QUOTE_INVALID_STATUS_TRANSITION": "Không cho phép chuyển trạng thái này.",
+    "QUOTE_TIER2_REQUIRES_ADMIN": "Cần admin duyệt (> ¥10.000.000).",
+    "QUOTE_REJECT_REASON_REQUIRED": "Lý do từ chối phải ≥ 5 ký tự.",
+    "QUOTE_DELETE_REASON_REQUIRED": "Lý do xóa phải ≥ 5 ký tự.",
+    "QUOTE_LOCKED": "Báo giá này không thể chỉnh ở trạng thái hiện tại.",
+    "QUOTE_CAN_ONLY_VERSION_FROM_SENT": "Chỉ có thể tạo bản mới từ báo giá đã gửi.",
+    "QUOTE_VERSION_REASON_REQUIRED": "Lý do thay đổi phải ≥ 5 ký tự.",
+    "QUOTE_ANOTHER_WON_EXISTS": "Dự án đã có báo giá trúng thầu khác.",
+    "QUOTE_AT_LEAST_ONE_REQUIRED_LINE": "Cần ít nhất 1 hạng mục bắt buộc.",
+    "UNIT_PRICE_NOT_FOUND": "Không tìm thấy đơn giá master.",
+    "UNIT_PRICE_CODE_EXISTS": "Mã đơn giá đã tồn tại.",
+    "PDF_GENERATION_FAILED": "Tạo PDF thất bại."
   },
   "settings": {
     "title": "Cài đặt tài khoản",
@@ -667,6 +681,91 @@
         "joined": "Ngày tham gia"
       },
       "self": "(bạn)"
+    }
+  },
+  "quote": {
+    "title": "Báo giá",
+    "subtitle": "Tạo, duyệt, gửi và theo dõi báo giá",
+    "createButton": "Tạo báo giá",
+    "empty": "Chưa có báo giá",
+    "totalCount": "Tổng {{total}}",
+    "filters": {
+      "searchPlaceholder": "Tìm theo số báo giá",
+      "status": "Trạng thái",
+      "counterPartyPlaceholder": "Tìm theo đối tác",
+      "minAmount": "Số tiền tối thiểu",
+      "maxAmount": "Số tiền tối đa"
+    },
+    "columns": {
+      "quoteNumber": "Số báo giá",
+      "counterParty": "Đối tác",
+      "status": "Trạng thái",
+      "issuedAt": "Ngày phát hành",
+      "amountTotal": "Tổng (đã VAT)",
+      "updatedAt": "Cập nhật"
+    },
+    "status": {
+      "draft": "Nháp",
+      "submitted": "Chờ duyệt",
+      "pending_admin": "Chờ admin duyệt",
+      "approved": "Đã duyệt",
+      "rejected": "Bị từ chối",
+      "sent": "Đã gửi",
+      "won": "Trúng thầu",
+      "lost": "Mất thầu"
+    },
+    "form": {
+      "createTitle": "Tạo báo giá",
+      "editTitle": "Sửa báo giá",
+      "submit": "Lưu",
+      "labelProject": "Dự án",
+      "labelIssuedAt": "Ngày phát hành",
+      "labelValidUntil": "Hiệu lực đến",
+      "labelQualifiedInvoiceNumber": "Số hóa đơn hợp lệ (適格)",
+      "labelNotes": "Ghi chú",
+      "projectPlaceholder": "Chọn dự án",
+      "qualifiedInvoicePlaceholder": "T1234567890123",
+      "notesPlaceholder": "Ghi chú về báo giá",
+      "linesTitle": "Hạng mục",
+      "linesPlaceholder": "Editor hạng mục sẽ được thêm ở P5.",
+      "linesEditorComingSoon": "Editor sẽ được bổ sung ở phase kế tiếp."
+    },
+    "line": {
+      "itemName": "Hạng mục",
+      "quantity": "Số lượng",
+      "unit": "Đơn vị",
+      "unitPrice": "Đơn giá",
+      "amount": "Thành tiền",
+      "optional": "Tùy chọn"
+    },
+    "detail": {
+      "labelCounterParty": "Đối tác",
+      "labelIssuedAt": "Ngày phát hành",
+      "labelValidUntil": "Hiệu lực đến",
+      "labelQualifiedInvoiceNumber": "Số hóa đơn hợp lệ",
+      "labelAmountSubtotal": "Tạm tính (chưa VAT)",
+      "labelAmountTax": "Thuế VAT",
+      "labelAmountTotal": "Tổng (đã VAT)",
+      "labelApprovedBy": "Người duyệt",
+      "labelNotes": "Ghi chú",
+      "linesTitle": "Hạng mục",
+      "linesEditorComingSoon": "Detail view sẽ được nâng cấp ở phase kế tiếp."
+    },
+    "confirms": {
+      "deleteTitle": "Xóa báo giá?",
+      "deleteContent": "Xóa {{number}}. Cần nhập lý do.",
+      "deleteReasonPlaceholder": "Lý do (tối thiểu 5 ký tự)",
+      "deleteOk": "Xóa"
+    },
+    "messages": {
+      "created": "Đã tạo báo giá.",
+      "updated": "Đã cập nhật báo giá.",
+      "deleted": "Đã xóa báo giá."
+    },
+    "errors": {
+      "atLeastOneRequiredLine": "Cần ít nhất 1 hạng mục bắt buộc.",
+      "validUntilBeforeIssued": "Hiệu lực phải sau ngày phát hành.",
+      "deleteReasonRequired": "Lý do phải dài ít nhất 5 ký tự."
     }
   }
 }

@@ -157,7 +157,21 @@
     "NOT_FOUND": "対象が見つかりません",
     "VALIDATION_ERROR": "入力内容に誤りがあります",
     "INTERNAL_ERROR": "予期せぬエラーが発生しました",
-    "NETWORK_ERROR": "ネットワークエラーが発生しました"
+    "NETWORK_ERROR": "ネットワークエラーが発生しました",
+    "QUOTE_NOT_FOUND": "見積が見つかりません。",
+    "QUOTE_CONFLICT": "他のユーザーが編集しました。再読み込みしてください。",
+    "QUOTE_INVALID_STATUS_TRANSITION": "ステータス遷移は許可されていません。",
+    "QUOTE_TIER2_REQUIRES_ADMIN": "管理者の承認が必要です（¥10,000,000超）。",
+    "QUOTE_REJECT_REASON_REQUIRED": "却下理由は5文字以上必要です。",
+    "QUOTE_DELETE_REASON_REQUIRED": "削除理由は5文字以上必要です。",
+    "QUOTE_LOCKED": "この見積は編集できません。",
+    "QUOTE_CAN_ONLY_VERSION_FROM_SENT": "送付済以降の見積のみ新規版作成できます。",
+    "QUOTE_VERSION_REASON_REQUIRED": "変更理由は5文字以上必要です。",
+    "QUOTE_ANOTHER_WON_EXISTS": "この案件にはすでに受注見積があります。",
+    "QUOTE_AT_LEAST_ONE_REQUIRED_LINE": "少なくとも1つの必須項目が必要です。",
+    "UNIT_PRICE_NOT_FOUND": "単価マスタが見つかりません。",
+    "UNIT_PRICE_CODE_EXISTS": "単価コードはすでに存在します。",
+    "PDF_GENERATION_FAILED": "PDFの生成に失敗しました。"
   },
   "settings": {
     "title": "アカウント設定",
@@ -667,6 +681,91 @@
         "joined": "参加日"
       },
       "self": "（あなた）"
+    }
+  },
+  "quote": {
+    "title": "見積管理",
+    "subtitle": "見積書の作成・承認・送付・受注管理",
+    "createButton": "見積を新規作成",
+    "empty": "見積未登録",
+    "totalCount": "全 {{total}} 件",
+    "filters": {
+      "searchPlaceholder": "見積番号で検索",
+      "status": "ステータス",
+      "counterPartyPlaceholder": "取引先名で検索",
+      "minAmount": "最小金額",
+      "maxAmount": "最大金額"
+    },
+    "columns": {
+      "quoteNumber": "見積番号",
+      "counterParty": "取引先",
+      "status": "ステータス",
+      "issuedAt": "発行日",
+      "amountTotal": "合計（税込）",
+      "updatedAt": "最終更新"
+    },
+    "status": {
+      "draft": "ドラフト",
+      "submitted": "承認待ち",
+      "pending_admin": "管理者承認待ち",
+      "approved": "承認済",
+      "rejected": "却下",
+      "sent": "送付済",
+      "won": "受注",
+      "lost": "失注"
+    },
+    "form": {
+      "createTitle": "見積を新規作成",
+      "editTitle": "見積を編集",
+      "submit": "保存",
+      "labelProject": "案件",
+      "labelIssuedAt": "発行日",
+      "labelValidUntil": "有効期限",
+      "labelQualifiedInvoiceNumber": "適格請求書番号",
+      "labelNotes": "備考",
+      "projectPlaceholder": "案件を選択",
+      "qualifiedInvoicePlaceholder": "T1234567890123",
+      "notesPlaceholder": "備考・お見積に関する注意事項など",
+      "linesTitle": "明細",
+      "linesPlaceholder": "明細エディタは P5 で実装します。",
+      "linesEditorComingSoon": "明細編集 UI は次のフェーズで追加されます。"
+    },
+    "line": {
+      "itemName": "項目名",
+      "quantity": "数量",
+      "unit": "単位",
+      "unitPrice": "単価",
+      "amount": "金額",
+      "optional": "オプション"
+    },
+    "detail": {
+      "labelCounterParty": "取引先",
+      "labelIssuedAt": "発行日",
+      "labelValidUntil": "有効期限",
+      "labelQualifiedInvoiceNumber": "適格請求書番号",
+      "labelAmountSubtotal": "小計（税抜）",
+      "labelAmountTax": "消費税",
+      "labelAmountTotal": "合計（税込）",
+      "labelApprovedBy": "承認者",
+      "labelNotes": "備考",
+      "linesTitle": "明細",
+      "linesEditorComingSoon": "詳細ビューは次のフェーズで強化されます。"
+    },
+    "confirms": {
+      "deleteTitle": "見積を削除しますか？",
+      "deleteContent": "{{number}} を削除します。理由を入力してください。",
+      "deleteReasonPlaceholder": "削除理由（5文字以上）",
+      "deleteOk": "削除"
+    },
+    "messages": {
+      "created": "見積を作成しました。",
+      "updated": "見積を更新しました。",
+      "deleted": "見積を削除しました。"
+    },
+    "errors": {
+      "atLeastOneRequiredLine": "少なくとも1つの必須項目が必要です。",
+      "validUntilBeforeIssued": "有効期限は発行日以降に設定してください。",
+      "deleteReasonRequired": "削除理由は5文字以上必要です。"
     }
   }
 }

@@ -157,7 +157,21 @@
     "NOT_FOUND": "Target not found",
     "VALIDATION_ERROR": "Input contains errors",
     "INTERNAL_ERROR": "An unexpected error occurred",
-    "NETWORK_ERROR": "Network error"
+    "NETWORK_ERROR": "Network error",
+    "QUOTE_NOT_FOUND": "Quote not found.",
+    "QUOTE_CONFLICT": "Another user edited this quote. Please reload.",
+    "QUOTE_INVALID_STATUS_TRANSITION": "Status transition not allowed.",
+    "QUOTE_TIER2_REQUIRES_ADMIN": "Admin approval required (> ¥10,000,000).",
+    "QUOTE_REJECT_REASON_REQUIRED": "Reject reason must be at least 5 characters.",
+    "QUOTE_DELETE_REASON_REQUIRED": "Delete reason must be at least 5 characters.",
+    "QUOTE_LOCKED": "This quote cannot be edited in its current status.",
+    "QUOTE_CAN_ONLY_VERSION_FROM_SENT": "New version can only be created from sent quotes.",
+    "QUOTE_VERSION_REASON_REQUIRED": "Change reason must be at least 5 characters.",
+    "QUOTE_ANOTHER_WON_EXISTS": "Another won quote already exists for this project.",
+    "QUOTE_AT_LEAST_ONE_REQUIRED_LINE": "At least one required line is needed.",
+    "UNIT_PRICE_NOT_FOUND": "Unit price not found.",
+    "UNIT_PRICE_CODE_EXISTS": "Unit price code already exists.",
+    "PDF_GENERATION_FAILED": "PDF generation failed."
   },
   "settings": {
     "title": "Account settings",
@@ -667,6 +681,91 @@
         "joined": "Joined"
       },
       "self": "(you)"
+    }
+  },
+  "quote": {
+    "title": "Quotes",
+    "subtitle": "Create, approve, send and track quotes",
+    "createButton": "New quote",
+    "empty": "No quotes",
+    "totalCount": "{{total}} total",
+    "filters": {
+      "searchPlaceholder": "Search by quote number",
+      "status": "Status",
+      "counterPartyPlaceholder": "Search by counter-party",
+      "minAmount": "Min amount",
+      "maxAmount": "Max amount"
+    },
+    "columns": {
+      "quoteNumber": "Quote #",
+      "counterParty": "Counter-party",
+      "status": "Status",
+      "issuedAt": "Issued",
+      "amountTotal": "Total (tax incl.)",
+      "updatedAt": "Updated"
+    },
+    "status": {
+      "draft": "Draft",
+      "submitted": "Pending approval",
+      "pending_admin": "Pending admin",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "sent": "Sent",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "form": {
+      "createTitle": "New quote",
+      "editTitle": "Edit quote",
+      "submit": "Save",
+      "labelProject": "Project",
+      "labelIssuedAt": "Issued date",
+      "labelValidUntil": "Valid until",
+      "labelQualifiedInvoiceNumber": "Qualified invoice number",
+      "labelNotes": "Notes",
+      "projectPlaceholder": "Select a project",
+      "qualifiedInvoicePlaceholder": "T1234567890123",
+      "notesPlaceholder": "Notes about this quote",
+      "linesTitle": "Lines",
+      "linesPlaceholder": "Line editor lands in P5.",
+      "linesEditorComingSoon": "Line editor will be added in the next phase."
+    },
+    "line": {
+      "itemName": "Item",
+      "quantity": "Qty",
+      "unit": "Unit",
+      "unitPrice": "Unit price",
+      "amount": "Amount",
+      "optional": "Optional"
+    },
+    "detail": {
+      "labelCounterParty": "Counter-party",
+      "labelIssuedAt": "Issued",
+      "labelValidUntil": "Valid until",
+      "labelQualifiedInvoiceNumber": "Qualified invoice #",
+      "labelAmountSubtotal": "Subtotal (excl. tax)",
+      "labelAmountTax": "Tax",
+      "labelAmountTotal": "Total (incl. tax)",
+      "labelApprovedBy": "Approved by",
+      "labelNotes": "Notes",
+      "linesTitle": "Lines",
+      "linesEditorComingSoon": "Detail view will be enhanced in the next phase."
+    },
+    "confirms": {
+      "deleteTitle": "Delete quote?",
+      "deleteContent": "Delete {{number}}. Reason required.",
+      "deleteReasonPlaceholder": "Reason (min 5 chars)",
+      "deleteOk": "Delete"
+    },
+    "messages": {
+      "created": "Quote created.",
+      "updated": "Quote updated.",
+      "deleted": "Quote deleted."
+    },
+    "errors": {
+      "atLeastOneRequiredLine": "At least one required line is needed.",
+      "validUntilBeforeIssued": "Valid-until must be after issued date.",
+      "deleteReasonRequired": "Reason must be at least 5 characters."
     }
   }
 }
