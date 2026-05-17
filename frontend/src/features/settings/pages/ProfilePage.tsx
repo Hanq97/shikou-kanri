@@ -1,5 +1,5 @@
 import { App, Button, Form, Input } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { extractApiError } from '@/shared/api/client';
 import { usersApi } from '@/shared/api/users.api';
@@ -14,6 +14,12 @@ export function ProfilePage(): JSX.Element {
   const reload = useAuthStore((s) => s.loadCurrentUser);
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm<{ name: string; nameKana: string }>();
+
+  useEffect(() => {
+    if (user) {
+      form.setFieldsValue({ name: user.name, nameKana: user.nameKana ?? '' });
+    }
+  }, [user, form]);
 
   if (!user) return <></>;
 
@@ -34,7 +40,10 @@ export function ProfilePage(): JSX.Element {
   }
 
   return (
-    <SettingsLayout title={t('settings.profile.title')} description={t('settings.profile.description')}>
+    <SettingsLayout
+      title={t('settings.profile.title')}
+      description={t('settings.profile.description')}
+    >
       <div className="bg-zinc-50 border border-zinc-200/70 rounded-lg px-4 py-3 mb-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
         <div className="text-zinc-500">{t('settings.profile.labelEmail')}</div>
         <div className="text-zinc-900 font-medium">{user.email}</div>
@@ -45,7 +54,7 @@ export function ProfilePage(): JSX.Element {
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ name: user.name, nameKana: '' }}
+        initialValues={{ name: user.name, nameKana: user.nameKana ?? '' }}
         onFinish={onSubmit}
       >
         <Form.Item

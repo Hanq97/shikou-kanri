@@ -15,25 +15,64 @@ export function SettingsLayout({ title, description, children }: SettingsLayoutP
   const location = useLocation();
 
   const TABS = [
-    { key: 'profile', to: '/settings/profile', label: t('settings.tabs.profile'), icon: UserCircle },
-    { key: 'password', to: '/settings/password', label: t('settings.tabs.password'), icon: KeyRound },
+    {
+      key: 'profile',
+      to: '/settings/profile',
+      label: t('settings.tabs.profile'),
+      icon: UserCircle,
+    },
+    {
+      key: 'password',
+      to: '/settings/password',
+      label: t('settings.tabs.password'),
+      icon: KeyRound,
+    },
     { key: '2fa', to: '/settings/2fa', label: t('settings.tabs.twoFa'), icon: ShieldCheck },
-    { key: 'sessions', to: '/settings/sessions', label: t('settings.tabs.sessions'), icon: Monitor },
+    {
+      key: 'sessions',
+      to: '/settings/sessions',
+      label: t('settings.tabs.sessions'),
+      icon: Monitor,
+    },
   ];
 
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6">
-          <h1 className="m-0 text-2xl font-semibold text-zinc-900 tracking-tight">
+        <div className="mb-4 sm:mb-6">
+          <h1 className="m-0 text-xl sm:text-2xl font-semibold text-zinc-900 tracking-tight">
             {t('settings.title')}
           </h1>
           <p className="m-0 mt-1 text-sm text-zinc-500">{t('settings.subtitle')}</p>
         </div>
 
+        {/* Mobile: horizontal scrollable tabs */}
+        <nav className="md:hidden -mx-3 sm:mx-0 mb-4 overflow-x-auto">
+          <div className="flex gap-1 px-3 sm:px-0 min-w-max">
+            {TABS.map((tab) => {
+              const active = location.pathname.startsWith(tab.to);
+              const Icon = tab.icon;
+              return (
+                <Link
+                  key={tab.key}
+                  to={tab.to}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                    active
+                      ? 'bg-brand-50 text-brand-700 font-medium'
+                      : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  <Icon size={16} className="shrink-0" />
+                  <span>{tab.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6">
-          {/* Side tabs */}
-          <nav className="space-y-0.5">
+          {/* Desktop: side tabs */}
+          <nav className="hidden md:block space-y-0.5">
             {TABS.map((tab) => {
               const active = location.pathname.startsWith(tab.to);
               const Icon = tab.icon;
@@ -57,13 +96,11 @@ export function SettingsLayout({ title, description, children }: SettingsLayoutP
           {/* Content */}
           <div>
             <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card overflow-hidden">
-              <div className="px-6 py-4 border-b border-zinc-200/70">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-200/70">
                 <h2 className="m-0 text-base font-semibold text-zinc-900">{title}</h2>
-                {description && (
-                  <p className="m-0 mt-1 text-sm text-zinc-500">{description}</p>
-                )}
+                {description && <p className="m-0 mt-1 text-sm text-zinc-500">{description}</p>}
               </div>
-              <div className="p-6">{children}</div>
+              <div className="p-4 sm:p-6">{children}</div>
             </div>
           </div>
         </div>

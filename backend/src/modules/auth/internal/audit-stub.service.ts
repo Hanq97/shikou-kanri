@@ -151,14 +151,15 @@ export class AuditStubService {
 
   log2FaDisable(
     userId: string,
-    reason: 'user_self' | 'admin_emergency',
+    reason: 'user_self' | 'admin_emergency' | 'cli_emergency',
     actorId: string | null,
     ctx: RequestContext,
     tx?: Tx,
   ): Promise<void> {
     return this.log(
       {
-        actorUserId: actorId ?? userId,
+        // cli_emergency: actor = system (null). user_self / admin_emergency: actor = explicit or target.
+        actorUserId: reason === 'cli_emergency' ? null : (actorId ?? userId),
         action: 'auth.2fa.disable',
         entityType: 'user',
         entityId: userId,
@@ -340,6 +341,320 @@ export class AuditStubService {
   ): Promise<void> {
     return this.log(
       { action, entityType: 'security', changes: details, ctx },
+      tx,
+    );
+  }
+
+  // === F1: Customer events ===
+
+  logCustomerCreated(
+    customerId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'customer.created',
+        entityType: 'customer',
+        entityId: customerId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logCustomerUpdated(
+    customerId: string,
+    changedFields: string[],
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'customer.updated',
+        entityType: 'customer',
+        entityId: customerId,
+        changes: { fields: changedFields },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logCustomerDeleted(
+    customerId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'customer.deleted',
+        entityType: 'customer',
+        entityId: customerId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logCustomerCsvImported(
+    summary: { created: number; skipped: number; errorCount: number },
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'customer.csv_imported',
+        entityType: 'customer',
+        changes: summary,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  // === F1: Property events ===
+
+  logPropertyCreated(
+    propertyId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'property.created',
+        entityType: 'property',
+        entityId: propertyId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logPropertyUpdated(
+    propertyId: string,
+    changedFields: string[],
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'property.updated',
+        entityType: 'property',
+        entityId: propertyId,
+        changes: { fields: changedFields },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logPropertyDeleted(
+    propertyId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'property.deleted',
+        entityType: 'property',
+        entityId: propertyId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  // === F1: Project events ===
+
+  logProjectCreated(
+    projectId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.created',
+        entityType: 'project',
+        entityId: projectId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectUpdated(
+    projectId: string,
+    changedFields: string[],
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.updated',
+        entityType: 'project',
+        entityId: projectId,
+        changes: { fields: changedFields },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectDeleted(
+    projectId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.deleted',
+        entityType: 'project',
+        entityId: projectId,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectStatusChanged(
+    projectId: string,
+    transition: { from: string; to: string; reason?: string },
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.status_changed',
+        entityType: 'project',
+        entityId: projectId,
+        changes: transition,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectStatusReversed(
+    projectId: string,
+    transition: { from: string; to: string; reason: string },
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.status.reversed',
+        entityType: 'project',
+        entityId: projectId,
+        changes: transition,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectCsvExported(
+    meta: { rowCount: number; filter: Record<string, unknown> },
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.csv_exported',
+        entityType: 'project',
+        changes: meta,
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  // === F1: Project member events ===
+
+  logProjectMemberAdded(
+    projectId: string,
+    userId: string,
+    roleOnProject: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.member_added',
+        entityType: 'project_member',
+        entityId: projectId,
+        changes: { userId, roleOnProject },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectMemberRoleChanged(
+    projectId: string,
+    userId: string,
+    transition: { from: string; to: string },
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.member_role_changed',
+        entityType: 'project_member',
+        entityId: projectId,
+        changes: { userId, ...transition },
+        ctx,
+      },
+      tx,
+    );
+  }
+
+  logProjectMemberRemoved(
+    projectId: string,
+    userId: string,
+    actorId: string,
+    ctx: RequestContext,
+    tx?: Tx,
+  ): Promise<void> {
+    return this.log(
+      {
+        actorUserId: actorId,
+        action: 'project.member_removed',
+        entityType: 'project_member',
+        entityId: projectId,
+        changes: { userId },
+        ctx,
+      },
       tx,
     );
   }

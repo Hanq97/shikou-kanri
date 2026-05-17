@@ -48,6 +48,62 @@ enum RefreshTokenRevokedReason {
   account_disabled
 }
 
+// F1 enums
+
+enum CustomerType {
+  individual
+  corporate
+}
+
+enum PropertyType {
+  new_construction
+  remodel
+  single_family
+  multi_family
+  commercial
+  other
+}
+
+enum PropertyStructure {
+  wood
+  steel
+  rc
+  other
+}
+
+enum ProjectType {
+  new_construction
+  remodel
+  repair
+  aftercare
+}
+
+enum ProjectStatus {
+  quoting
+  received
+  construction
+  completed
+  handed_over
+  cancelled
+}
+
+enum ProjectMemberRole {
+  owner
+  contributor
+  inspector
+  invited_worker
+}
+
+enum FolderType {
+  document
+  drawing
+  schedule
+  photo
+  chalkboard
+  inspection
+  custom
+}
+
 // =============================================================================
 // Core entities
 // =============================================================================
@@ -88,6 +144,17 @@ model User {
   passwordResets  PasswordResetToken[]
   invitationsSent Invitation[] @relation("InvitedBy")
   auditLogs       AuditLog[] @relation("Actor")
+
+  // F1 relations
+  customersCreated  Customer[]      @relation("CustomerCreator")
+  customersUpdated  Customer[]      @relation("CustomerUpdater")
+  propertiesCreated Property[]      @relation("PropertyCreator")
+  propertiesUpdated Property[]      @relation("PropertyUpdater")
+  projectsOwned     Project[]       @relation("ProjectOwner")
+  projectsCreated   Project[]       @relation("ProjectCreator")
+  projectsUpdated   Project[]       @relation("ProjectUpdater")
+  projectMembers    ProjectMember[]
+  savedSearches     SavedSearch[]
 
   @@map("users")
   @@index([status])
@@ -164,4 +231,153 @@ model AuditLog {
   @@index([actorUserId, occurredAt(sort: Desc)])
   @@index([entityType, entityId, occurredAt(sort: Desc)])
   @@index([occurredAt(sort: Desc)])
+}
+
+// =============================================================================
+// F1: 顧客 + 物件 + 案件 entities
+// =============================================================================
+
+model Customer {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerType CustomerType @map("customer_type")
+  name         String       @db.VarChar(200)
+  nameKana     String?      @map("name_kana") @db.VarChar(200)
+  phone        String?      @db.VarChar(20)
+  email        String?      @db.VarChar(255)
+  address      String?      @db.Text
+  isOb         Boolean      @default(false) @map("is_ob")
+  acquiredAt   DateTime?    @map("acquired_at") @db.Date
+  notes        String?      @db.Text
+  // search_text tsvector GENERATED column added via raw SQL migration
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  createdBy  User?      @relation("CustomerCreator", fields: [createdById], references: [id])
+  updatedBy  User?      @relation("CustomerUpdater", fields: [updatedById], references: [id])
+  properties Property[]
+  projects   Project[]
+
+  @@map("customers")
+  @@index([phone])
+  @@index([nameKana])
+  @@index([isOb, deletedAt])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Property {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerId   String            @map("customer_id") @db.Uuid
+  address      String            @db.Text
+  propertyType PropertyType      @map("property_type")
+  structure    PropertyStructure
+  yearBuilt    Int?              @map("year_built")
+  handoverDate DateTime?         @map("handover_date") @db.Date
+  floorAreaSqm Decimal?          @map("floor_area_sqm") @db.Decimal(8, 2)
+  photoUrls    String[]          @map("photo_urls")
+  notes        String?           @db.Text
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  customer  Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  createdBy User?     @relation("PropertyCreator", fields: [createdById], references: [id])
+  updatedBy User?     @relation("PropertyUpdater", fields: [updatedById], references: [id])
+  projects  Project[]
+
+  @@map("properties")
+  @@index([customerId, deletedAt])
+  @@index([handoverDate])
+}
+
+model Project {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectCode   String        @unique @map("project_code") @db.VarChar(20)
+  customerId    String        @map("customer_id") @db.Uuid
+  propertyId    String?       @map("property_id") @db.Uuid
+  projectType   ProjectType   @map("project_type")
+  status        ProjectStatus @default(quoting)
+  name          String        @db.VarChar(200)
+  description   String?       @db.Text
+  ownerUserId   String        @map("owner_user_id") @db.Uuid
+  scheduleStart DateTime?     @map("schedule_start") @db.Date
+  scheduleEnd   DateTime?     @map("schedule_end") @db.Date
+  actualStart   DateTime?     @map("actual_start") @db.Date
+  actualEnd     DateTime?     @map("actual_end") @db.Date
+  amountTotal   Decimal?      @map("amount_total") @db.Decimal(15, 0)
+  // search_text tsvector GENERATED column added via raw SQL migration
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  customer  Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  property  Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  owner     User            @relation("ProjectOwner", fields: [ownerUserId], references: [id])
+  createdBy User?           @relation("ProjectCreator", fields: [createdById], references: [id])
+  updatedBy User?           @relation("ProjectUpdater", fields: [updatedById], references: [id])
+  members   ProjectMember[]
+  folders   Folder[]
+
+  @@map("projects")
+  @@index([status, scheduleStart])
+  @@index([customerId, createdAt(sort: Desc)])
+  @@index([ownerUserId, deletedAt])
+}
+
+model ProjectMember {
+  id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId            String            @map("project_id") @db.Uuid
+  userId               String            @map("user_id") @db.Uuid
+  roleOnProject        ProjectMemberRole @map("role_on_project")
+  folderAccessOverride Json?             @map("folder_access_override")
+  invitedAt            DateTime          @default(now()) @map("invited_at") @db.Timestamptz(6)
+  revokedAt            DateTime?         @map("revoked_at") @db.Timestamptz(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+  @@index([userId, revokedAt])
+}
+
+model Folder {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId          String     @map("project_id") @db.Uuid
+  name               String     @db.VarChar(100)
+  folderType         FolderType @map("folder_type")
+  isPublicForInvited Boolean    @default(false) @map("is_public_for_invited")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("folders")
+  @@index([projectId, folderType])
+}
+
+model SavedSearch {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  scope      String   @db.VarChar(50)
+  name       String   @db.VarChar(100)
+  filterJson Json     @map("filter_json")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, scope, name])
+  @@map("saved_searches")
+  @@index([userId, scope])
 }

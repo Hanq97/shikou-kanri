@@ -26,15 +26,7 @@
     "docker:logs": "docker compose -f docker-compose.dev.yml logs -f"
   },
   "lint-staged": {
-    "backend/**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "frontend/**/*.{ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,md,yml,yaml}": "prettier --write"
+    "**/*.{ts,tsx,js,jsx,json,md,yml,yaml}": "pnpm exec prettier --write"
   },
   "dependencies": {
     "eps-workflow": "file:aifw.tgz"
@@ -52,6 +44,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "eslint": "^8.57.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "prettier": "^3.8.3"

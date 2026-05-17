@@ -35,8 +35,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       }),
     }),
     ThrottlerModule.forRoot([
+      // Global short-window throttle — applies to every endpoint
       { name: 'short', ttl: 60_000, limit: 100 },
-      { name: 'login', ttl: 900_000, limit: 5 },
+      // Named throttler 'login' — high default so it acts as no-op unless overridden.
+      // Sensitive endpoints (login, password reset, 2FA verify) tighten via
+      // @Throttle({ login: { limit: N, ttl: M } }) decorator.
+      { name: 'login', ttl: 900_000, limit: 100_000 },
     ]),
   ],
   controllers: [AuthController, UsersController],

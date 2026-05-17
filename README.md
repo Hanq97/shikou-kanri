@@ -9,14 +9,14 @@ Built by **DEHA Solutions**.
 
 ## 🏗️ Tech stack
 
-| Layer | Tech | ADR |
-|---|---|---|
-| Backend | NestJS 10 + Node.js 20 + TypeScript strict + Prisma | [ADR-002](./documents/architecture/) |
-| Frontend | React 18 + Vite 5 + TypeScript + Ant Design 5 | ADR-003 |
-| Database | PostgreSQL 16 + pg_trgm + pgvector (Phase 3) | ADR-004 |
-| Cloud (Phase 1) | AWS Tokyo (ap-northeast-1) | ADR-005 |
-| Real-time (Phase 2) | Socket.IO + Redis adapter | ADR-008 |
-| CI/CD | GitHub Actions + AWS ECR | ADR-009 |
+| Layer               | Tech                                                | ADR                                  |
+| ------------------- | --------------------------------------------------- | ------------------------------------ |
+| Backend             | NestJS 10 + Node.js 20 + TypeScript strict + Prisma | [ADR-002](./documents/architecture/) |
+| Frontend            | React 18 + Vite 5 + TypeScript + Ant Design 5       | ADR-003                              |
+| Database            | PostgreSQL 16 + pg_trgm + pgvector (Phase 3)        | ADR-004                              |
+| Cloud (Phase 1)     | AWS Tokyo (ap-northeast-1)                          | ADR-005                              |
+| Real-time (Phase 2) | Socket.IO + Redis adapter                           | ADR-008                              |
+| CI/CD               | GitHub Actions + AWS ECR                            | ADR-009                              |
 
 See `documents/architecture/00-overview.md` for full decision summary.
 
@@ -46,6 +46,7 @@ shikou-kanri/
 ## 🚀 Quick start (local dev)
 
 ### Prerequisites
+
 - **Node.js**: >= 20 LTS (current: v24+ OK)
 - **pnpm**: >= 10
 - **Docker Desktop**: with Compose v2+
@@ -75,6 +76,7 @@ pnpm dev
 ```
 
 Access:
+
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3000
 - **Mailhog UI**: http://localhost:8025 (email testing)
@@ -98,20 +100,47 @@ pnpm docker:logs        # Follow service logs
 # Backend specific
 pnpm --filter backend run prisma:studio    # GUI for DB
 pnpm --filter backend run prisma:migrate:dev <name>
+pnpm --filter backend run prisma:seed       # Re-run seed (idempotent: skips existing users/customers)
+pnpm --filter backend test                  # Run unit tests (40 tests / 5 suites)
 ```
 
 ---
 
 ## 🛣️ Development roadmap
 
-| Phase | Duration | Scope | Status |
-|---|---|---|---|
-| Sprint 0 | Setup | Project scaffold, dev environment | ✅ Done |
-| Phase 1 (MVP) | 4 months | F8 auth + F1 customer + F2 quote + F6 aftercare | 🚧 In progress |
-| Phase 2 | 4 months | F3 schedule + F4 chat + F5 inspection + Mobile PWA | ⏳ Planned |
-| Phase 3 | 4 months | F7 dashboard + AI features (Bedrock) | ⏳ Planned |
+| Phase         | Duration | Scope                                              | Status         |
+| ------------- | -------- | -------------------------------------------------- | -------------- |
+| Sprint 0      | Setup    | Project scaffold, dev environment                  | ✅ Done        |
+| Phase 1 (MVP) | 4 months | F8 auth + F1 customer + F2 quote + F6 aftercare    | 🚧 In progress |
+| Phase 2       | 4 months | F3 schedule + F4 chat + F5 inspection + Mobile PWA | ⏳ Planned     |
+| Phase 3       | 4 months | F7 dashboard + AI features (Bedrock)               | ⏳ Planned     |
 
 See [`documents/architecture/08-mvp-scope-and-roadmap.md`](./documents/architecture/08-mvp-scope-and-roadmap.md) for full detail.
+
+### F1 顧客・案件管理 feature status
+
+| ID    | Feature                                                    | Status |
+| ----- | ---------------------------------------------------------- | ------ |
+| F1-01 | 顧客 CRUD + dedup phone                                    | ✅     |
+| F1-02 | 物件 CRUD + 写真 upload (base64 ≤150KB)                    | ✅     |
+| F1-03 | 案件 core + state machine + Kanban DnD                     | ✅     |
+| F1-04 | 工事履歴 timeline tab in CustomerDetailPage                | ✅     |
+| F1-05 | プロジェクトメンバー管理 + last-owner protection           | ✅     |
+| F1-06 | Multi-criteria filter + saved searches + CSV import/export | ✅     |
+
+Backend: 14 endpoints (project) + 4 endpoints (members) + 3 (saved searches) + import/export.
+Frontend: list (table ↔ Kanban) + detail (3 tabs) + form (pre-acquisition flow) + responsive across all breakpoints.
+Mobile-first: 6-column Kanban → horizontal scroll snap; tables → card list; modals → full-width.
+
+### Seeded dev users (password `DevPassword123!`)
+
+| Email                             | Role         | Purpose                                                       |
+| --------------------------------- | ------------ | ------------------------------------------------------------- |
+| `admin@dev.shikou-kanri.local`    | system_admin | Primary admin                                                 |
+| `admin2@dev.shikou-kanri.local`   | system_admin | Backup admin (2FA recovery)                                   |
+| `manager@dev.shikou-kanri.local`  | manager      | Sales manager                                                 |
+| `employee@dev.shikou-kanri.local` | employee     | Sales staff                                                   |
+| `worker@dev.shikou-kanri.local`   | invited      | 職人 — restricted to assigned projects only (FR-MEM-005 test) |
 
 ---
 
@@ -145,6 +174,7 @@ Architecture-level work already complete via `/architect`. See artifacts in `.cl
 ## 📋 Compliance
 
 This system supports:
+
 - 個人情報保護法 (APPI — Japan Personal Information Protection Act)
 - 電子帳簿保存法 (Electronic Bookkeeping Law — quote/contract handling)
 - 瑕疵担保責任 (Defect Liability — 10-year inspection records retention)
@@ -160,4 +190,4 @@ Report security issues via private channel to DEHA Solutions security team.
 
 ---
 
-*© 2026 DEHA Solutions for 藤和建設株式会社*
+_© 2026 DEHA Solutions for 藤和建設株式会社_

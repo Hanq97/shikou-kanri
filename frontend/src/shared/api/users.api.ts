@@ -9,6 +9,8 @@ export interface UserSummary {
   role: UserRole;
   status: UserStatus;
   twoFaEnabled: boolean;
+  lockedUntil: string | null;
+  requireAdminUnlock: boolean;
   lastLoginAt: string | null;
   createdAt: string;
   updatedAt: string;

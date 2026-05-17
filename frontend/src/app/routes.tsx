@@ -5,8 +5,15 @@ import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 import { TwoFaChallengePage } from '@/features/auth/pages/TwoFaChallengePage';
+import { CustomerDetailPage } from '@/features/customer/pages/CustomerDetailPage';
+import { CustomerFormPage } from '@/features/customer/pages/CustomerFormPage';
+import { CustomerImportPage } from '@/features/customer/pages/CustomerImportPage';
+import { CustomersListPage } from '@/features/customer/pages/CustomersListPage';
 import { HomePage } from '@/features/home/HomePage';
 import { NotFoundPage } from '@/features/misc/NotFoundPage';
+import { ProjectDetailPage } from '@/features/project/pages/ProjectDetailPage';
+import { ProjectFormPage } from '@/features/project/pages/ProjectFormPage';
+import { ProjectsListPage } from '@/features/project/pages/ProjectsListPage';
 import { ChangePasswordPage } from '@/features/settings/pages/ChangePasswordPage';
 import { ProfilePage } from '@/features/settings/pages/ProfilePage';
 import { SessionsPage } from '@/features/settings/pages/SessionsPage';
@@ -91,6 +98,86 @@ export const router = createBrowserRouter([
     ),
   },
 
+  // F1: Customers
+  {
+    path: '/customers',
+    element: (
+      <AuthGuard>
+        <RoleGuard deny={['invited']}>
+          <CustomersListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/customers/new',
+    element: (
+      <AuthGuard>
+        <RoleGuard deny={['invited']}>
+          <CustomerFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/customers/:id',
+    element: (
+      <AuthGuard>
+        <RoleGuard deny={['invited']}>
+          <CustomerDetailPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/customers/:id/edit',
+    element: (
+      <AuthGuard>
+        <RoleGuard deny={['invited']}>
+          <CustomerFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+
+  // F1: Projects (invited filtered server-side)
+  {
+    path: '/projects',
+    element: (
+      <AuthGuard>
+        <ProjectsListPage />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/projects/new',
+    element: (
+      <AuthGuard>
+        <RoleGuard deny={['invited']}>
+          <ProjectFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/projects/:id',
+    element: (
+      <AuthGuard>
+        <ProjectDetailPage />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/projects/:id/edit',
+    element: (
+      <AuthGuard>
+        <RoleGuard deny={['invited']}>
+          <ProjectFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+
   // Admin
   {
     path: '/admin/users',
@@ -98,6 +185,16 @@ export const router = createBrowserRouter([
       <AuthGuard>
         <RoleGuard roles={['system_admin', 'manager']}>
           <UsersListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/admin/customer-import',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin']}>
+          <CustomerImportPage />
         </RoleGuard>
       </AuthGuard>
     ),

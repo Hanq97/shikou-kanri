@@ -9,6 +9,7 @@ export interface AuthenticatedUser {
   id: string;
   email: string;
   name: string;
+  nameKana: string | null;
   role: UserRoleName;
   status: UserStatusName;
   twoFaEnabled: boolean;

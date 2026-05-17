@@ -26,7 +26,13 @@
     "minutes": "phút",
     "seconds": "giây",
     "items": "bản ghi",
-    "people": "người"
+    "people": "người",
+    "errors": {
+      "forbiddenTitle": "Không có quyền truy cập",
+      "forbiddenSubtitle": "Bạn không có quyền xem trang này.",
+      "notFoundTitle": "Không tìm thấy",
+      "notFoundSubtitle": "Tài nguyên không tồn tại hoặc đã bị xóa."
+    }
   },
   "brand": {
     "appName": "Hệ thống quản lý thi công",
@@ -43,6 +49,7 @@
     "users": "Quản lý người dùng",
     "sidebarExpand": "Mở rộng sidebar",
     "sidebarCollapse": "Thu gọn sidebar",
+    "sidebarOpen": "Mở menu",
     "notifications": "Thông báo",
     "language": "Ngôn ngữ"
   },
@@ -169,7 +176,7 @@
       "labelName": "Họ tên",
       "labelNameKana": "Tên (kana)",
       "namePlaceholder": "Yamada Taro",
-      "nameKanaPlaceholder": "やまだ たろう",
+      "nameKanaPlaceholder": "VD: グエン クオック ハ (katakana, tùy chọn)",
       "nameRequired": "Vui lòng nhập họ tên",
       "updateSuccess": "Đã cập nhật hồ sơ"
     },
@@ -242,6 +249,155 @@
     "twoFaDisabled": "Tắt",
     "footer": "F8-AUTH MVP — Phase 1 dashboard sẽ được triển khai dần"
   },
+  "customer": {
+    "title": "Quản lý khách hàng",
+    "subtitle": "Đăng ký, chỉnh sửa, tìm kiếm khách hàng",
+    "createButton": "Thêm khách hàng",
+    "searchPlaceholder": "Tìm theo tên, điện thoại, địa chỉ",
+    "filterOb": "Chỉ khách OB",
+    "obBadge": "OB",
+    "nameNotSet": "(chưa đặt)",
+    "phoneNotSet": "—",
+    "totalCount": "Tổng {{total}} khách",
+    "empty": "Chưa có khách hàng",
+    "import": {
+      "title": "Nhập CSV khách hàng",
+      "subtitle": "Đăng ký hàng loạt khách hàng từ file CSV (chỉ admin)",
+      "selectFile": "Chọn file CSV",
+      "selectedFile": "Đã chọn: {{name}}",
+      "noFile": "Chưa chọn file",
+      "submit": "Bắt đầu nhập",
+      "cancel": "Hủy",
+      "instructions": "CSV cột: customer_type, name, name_kana, phone, email, address, is_ob, acquired_at, notes",
+      "instructionsDetail": "customer_type phải là individual hoặc corporate. is_ob true/false. acquired_at YYYY-MM-DD.",
+      "result": "Kết quả nhập",
+      "created": "{{count}} bản ghi tạo mới",
+      "skipped": "{{count}} bỏ qua (trùng SĐT)",
+      "errors": "{{count}} lỗi",
+      "errorRow": "Hàng {{row}}: {{message}}",
+      "noErrors": "Không có lỗi",
+      "downloadTemplate": "Tải template CSV"
+    },
+    "tabs": {
+      "overview": "Tổng quan",
+      "properties": "Bất động sản",
+      "history": "Lịch sử"
+    },
+    "columns": {
+      "name": "Họ tên",
+      "type": "Loại",
+      "phone": "Điện thoại",
+      "address": "Địa chỉ",
+      "ob": "OB",
+      "updatedAt": "Cập nhật"
+    },
+    "type": {
+      "individual": "Cá nhân",
+      "corporate": "Doanh nghiệp"
+    },
+    "form": {
+      "createTitle": "Thêm khách hàng",
+      "editTitle": "Chỉnh sửa khách hàng",
+      "labelType": "Loại khách hàng",
+      "labelName": "Họ tên",
+      "labelNameCorporate": "Tên công ty",
+      "labelNameKana": "Tên (kana)",
+      "labelPhone": "Điện thoại",
+      "labelEmail": "Email",
+      "labelAddress": "Địa chỉ",
+      "labelIsOb": "Khách OB",
+      "labelAcquiredAt": "Ngày giao dịch đầu",
+      "labelNotes": "Ghi chú",
+      "namePlaceholder": "Nguyễn Văn A",
+      "namePlaceholderCorporate": "Công ty TNHH ABC",
+      "nameKanaPlaceholder": "VD: グエン クオック ハ (katakana, tùy chọn)",
+      "phonePlaceholder": "03-1234-5678",
+      "emailPlaceholder": "example@example.com",
+      "addressPlaceholder": "Địa chỉ",
+      "submit": "Lưu"
+    },
+    "detail": {
+      "overviewTitle": "Thông tin cơ bản",
+      "labelEmail": "Email",
+      "labelAddress": "Địa chỉ",
+      "labelAcquiredAt": "Giao dịch đầu",
+      "labelNotes": "Ghi chú",
+      "noNotes": "(không có ghi chú)"
+    },
+    "duplicate": {
+      "title": "Có thể trùng lặp",
+      "description": "Khách hàng với cùng số điện thoại đã tồn tại:",
+      "continueButton": "Vẫn đăng ký",
+      "continueButtonUpdate": "Vẫn cập nhật"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa khách hàng",
+      "deleteContent": "Xóa {{name}}? (Soft delete — có thể khôi phục sau)",
+      "deleteOk": "Xóa"
+    },
+    "messages": {
+      "created": "Đã tạo khách hàng",
+      "updated": "Đã cập nhật khách hàng",
+      "deleted": "Đã xóa khách hàng"
+    },
+    "errors": {
+      "nameRequired": "Vui lòng nhập họ tên",
+      "phoneInvalid": "Định dạng điện thoại không hợp lệ",
+      "emailInvalid": "Định dạng email không hợp lệ"
+    }
+  },
+  "property": {
+    "tabTitle": "Bất động sản",
+    "addButton": "Thêm BĐS",
+    "empty": "Chưa có bất động sản",
+    "type": {
+      "new_construction": "Xây mới",
+      "remodel": "Cải tạo",
+      "single_family": "Nhà riêng",
+      "multi_family": "Chung cư",
+      "commercial": "Thương mại",
+      "other": "Khác"
+    },
+    "structure": {
+      "wood": "Gỗ",
+      "steel": "Thép",
+      "rc": "RC",
+      "other": "Khác"
+    },
+    "fields": {
+      "address": "Địa chỉ",
+      "propertyType": "Loại",
+      "structure": "Kết cấu",
+      "yearBuilt": "Năm xây",
+      "handoverDate": "Ngày bàn giao",
+      "floorAreaSqm": "Diện tích sàn (m²)",
+      "photos": "Ảnh ngoại quan",
+      "notes": "Ghi chú"
+    },
+    "form": {
+      "createTitle": "Thêm bất động sản",
+      "editTitle": "Sửa bất động sản",
+      "submit": "Lưu"
+    },
+    "photo": {
+      "uploadHint": "Click hoặc kéo để thêm ảnh (tối đa 3, tự co lại)",
+      "tooLarge": "Ảnh quá lớn",
+      "tooMany": "Tối đa 3 ảnh"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa bất động sản",
+      "deleteContent": "Xóa BĐS này?",
+      "deleteOk": "Xóa"
+    },
+    "messages": {
+      "created": "Đã thêm bất động sản",
+      "updated": "Đã cập nhật bất động sản",
+      "deleted": "Đã xóa bất động sản"
+    },
+    "errors": {
+      "addressRequired": "Vui lòng nhập địa chỉ"
+    }
+  },
   "users": {
     "title": "Quản lý người dùng",
     "subtitle": "Mời người dùng, quản lý vai trò và trạng thái",
@@ -258,6 +414,7 @@
     },
     "nameNotSet": "(chưa đặt)",
     "twoFaEnabled": "Bật",
+    "lockedBadge": "Đang khóa",
     "neverLoggedIn": "Chưa đăng nhập",
     "totalCount": "Tổng {{total}} bản ghi",
     "menu": {
@@ -332,5 +489,184 @@
   "notFound": {
     "title": "Không tìm thấy trang",
     "subtitle": "Trang bạn tìm không tồn tại hoặc đã bị di chuyển."
+  },
+  "project": {
+    "title": "Quản lý dự án",
+    "subtitle": "Vòng đời: báo giá → nhận đơn → thi công → bàn giao",
+    "createButton": "Tạo dự án mới",
+    "empty": "Chưa có dự án",
+    "totalCount": "Tổng {{total}} dự án",
+    "searchPlaceholder": "Tìm theo mã, tên dự án, khách hàng",
+    "viewToggle": {
+      "table": "Bảng",
+      "kanban": "Kanban"
+    },
+    "filters": {
+      "title": "Bộ lọc",
+      "status": "Trạng thái",
+      "type": "Loại",
+      "owner": "Phụ trách",
+      "customer": "Khách hàng",
+      "from": "Bắt đầu (từ)",
+      "to": "Bắt đầu (đến)",
+      "reset": "Xóa lọc",
+      "apply": "Áp dụng",
+      "advanced": "Bộ lọc nâng cao",
+      "ownerPlaceholder": "Chọn phụ trách",
+      "customerPlaceholder": "Tìm khách hàng",
+      "activeCount": "{{count}} điều kiện"
+    },
+    "columns": {
+      "code": "Mã dự án",
+      "name": "Tên dự án",
+      "customer": "Khách hàng",
+      "status": "Trạng thái",
+      "type": "Loại",
+      "owner": "Phụ trách",
+      "scheduleStart": "Dự kiến bắt đầu",
+      "scheduleEnd": "Dự kiến hoàn thành",
+      "amountTotal": "Số tiền",
+      "updatedAt": "Cập nhật"
+    },
+    "status": {
+      "quoting": "Báo giá",
+      "received": "Nhận đơn",
+      "construction": "Thi công",
+      "completed": "Hoàn thành",
+      "handed_over": "Đã bàn giao",
+      "cancelled": "Hủy"
+    },
+    "type": {
+      "new_construction": "Xây mới",
+      "remodel": "Cải tạo",
+      "repair": "Sửa chữa",
+      "aftercare": "Bảo trì"
+    },
+    "memberRole": {
+      "owner": "Chủ dự án",
+      "contributor": "Thành viên",
+      "inspector": "Kiểm tra",
+      "invited_worker": "Khách mời"
+    },
+    "folderType": {
+      "document": "Tài liệu",
+      "drawing": "Bản vẽ",
+      "schedule": "Tiến độ",
+      "photo": "Ảnh",
+      "chalkboard": "Bảng đen",
+      "inspection": "Kiểm tra",
+      "custom": "Tùy chỉnh"
+    },
+    "tabs": {
+      "overview": "Tổng quan",
+      "members": "Thành viên",
+      "folders": "Thư mục"
+    },
+    "form": {
+      "createTitle": "Tạo dự án mới",
+      "editTitle": "Sửa dự án",
+      "submit": "Lưu",
+      "labelCustomer": "Khách hàng",
+      "labelProperty": "Bất động sản",
+      "labelType": "Loại dự án",
+      "labelName": "Tên dự án",
+      "labelDescription": "Mô tả",
+      "labelOwner": "Phụ trách",
+      "labelScheduleStart": "Dự kiến bắt đầu",
+      "labelScheduleEnd": "Dự kiến hoàn thành",
+      "labelPreAcquisition": "Chưa có khách (đang gom đất)",
+      "preAcquisitionHint": "Tạo dự án khi chưa xác định khách. Có thể thay thế bằng khách hàng thực sau.",
+      "namePlaceholder": "VD: Yamada bathroom remodel",
+      "customerPlaceholder": "Chọn khách hàng",
+      "propertyPlaceholder": "Chọn bất động sản (tùy chọn)",
+      "ownerPlaceholder": "Chọn phụ trách"
+    },
+    "detail": {
+      "overviewTitle": "Thông tin dự án",
+      "labelCode": "Mã",
+      "labelStatus": "Trạng thái",
+      "labelType": "Loại",
+      "labelCustomer": "Khách hàng",
+      "labelProperty": "Bất động sản",
+      "labelOwner": "Phụ trách",
+      "labelScheduleStart": "Dự kiến bắt đầu",
+      "labelScheduleEnd": "Dự kiến hoàn thành",
+      "labelActualStart": "Thực bắt đầu",
+      "labelActualEnd": "Thực hoàn thành",
+      "labelAmountTotal": "Số tiền hợp đồng",
+      "labelDescription": "Mô tả",
+      "noDescription": "(trống)",
+      "noProperty": "(chưa thiết lập)",
+      "foldersTitle": "Thư mục mặc định"
+    },
+    "actions": {
+      "changeStatus": "Đổi trạng thái",
+      "reverseStatus": "Hoàn trạng thái (admin)",
+      "reverseTitle": "Hoàn trạng thái",
+      "reverseTarget": "Hoàn về",
+      "reverseReason": "Lý do (≥5 ký tự)",
+      "reverseSubmit": "Thực hiện hoàn",
+      "amountTotal": "Số tiền hợp đồng (JPY)",
+      "amountTotalRequired": "Cần số tiền để chuyển sang Nhận đơn",
+      "cancelReason": "Lý do hủy (≥5 ký tự)",
+      "confirmTransitionTitle": "Đổi trạng thái?",
+      "confirmTransitionContent": "Đổi từ {{from}} sang {{to}}."
+    },
+    "messages": {
+      "created": "Đã tạo dự án",
+      "updated": "Đã cập nhật dự án",
+      "deleted": "Đã xóa dự án",
+      "statusChanged": "Đã đổi trạng thái",
+      "statusReversed": "Đã hoàn trạng thái"
+    },
+    "confirms": {
+      "deleteTitle": "Xóa dự án?",
+      "deleteContent": "{{name}} ({{code}}) sẽ bị xóa. Không thể hoàn tác.",
+      "deleteOk": "Xóa"
+    },
+    "errors": {
+      "nameRequired": "Cần nhập tên dự án",
+      "customerRequired": "Chọn khách hàng (hoặc đánh dấu chưa có khách)",
+      "scheduleRangeInvalid": "Ngày hoàn thành phải sau ngày bắt đầu"
+    },
+    "savedSearches": {
+      "title": "Tìm kiếm đã lưu",
+      "saveButton": "Lưu bộ lọc hiện tại",
+      "saveTitle": "Lưu tìm kiếm",
+      "nameLabel": "Tên",
+      "namePlaceholder": "VD: Dự án đang thi công",
+      "nameRequired": "Cần nhập tên",
+      "saved": "Đã lưu",
+      "deleted": "Đã xóa",
+      "empty": "Chưa có tìm kiếm đã lưu",
+      "exportCsv": "Xuất CSV",
+      "deleteTitle": "Xóa?"
+    },
+    "members": {
+      "title": "Thành viên",
+      "subtitle": "Thành viên tham gia dự án",
+      "addButton": "Thêm thành viên",
+      "empty": "Chưa có thành viên",
+      "addTitle": "Thêm thành viên",
+      "addUserLabel": "Người dùng",
+      "addRoleLabel": "Vai trò",
+      "addUserPlaceholder": "Tìm người dùng",
+      "submit": "Thêm",
+      "changeRoleTitle": "Đổi vai trò",
+      "removeTitle": "Bỏ thành viên",
+      "removeContent": "Bỏ {{name}} khỏi dự án?",
+      "removeOk": "Bỏ",
+      "messages": {
+        "added": "Đã thêm thành viên",
+        "roleChanged": "Đã đổi vai trò",
+        "removed": "Đã bỏ thành viên"
+      },
+      "columns": {
+        "user": "Người dùng",
+        "role": "Vai trò",
+        "joined": "Ngày tham gia"
+      },
+      "self": "(bạn)"
+    }
   }
 }

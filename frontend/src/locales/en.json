@@ -26,7 +26,13 @@
     "minutes": "min",
     "seconds": "s",
     "items": "items",
-    "people": "people"
+    "people": "people",
+    "errors": {
+      "forbiddenTitle": "Access denied",
+      "forbiddenSubtitle": "You don't have permission to view this page.",
+      "notFoundTitle": "Not found",
+      "notFoundSubtitle": "The requested resource does not exist or has been removed."
+    }
   },
   "brand": {
     "appName": "Construction Management",
@@ -43,6 +49,7 @@
     "users": "Users",
     "sidebarExpand": "Expand sidebar",
     "sidebarCollapse": "Collapse sidebar",
+    "sidebarOpen": "Open menu",
     "notifications": "Notifications",
     "language": "Language"
   },
@@ -169,7 +176,7 @@
       "labelName": "Name",
       "labelNameKana": "Name (kana)",
       "namePlaceholder": "Yamada Taro",
-      "nameKanaPlaceholder": "やまだ たろう",
+      "nameKanaPlaceholder": "e.g. ヤマダ タロウ (katakana, optional)",
       "nameRequired": "Please enter your name",
       "updateSuccess": "Profile updated"
     },
@@ -242,6 +249,155 @@
     "twoFaDisabled": "Disabled",
     "footer": "F8-AUTH MVP — Phase 1 dashboard will be implemented incrementally"
   },
+  "customer": {
+    "title": "Customers",
+    "subtitle": "Register, edit, and search customers",
+    "createButton": "New customer",
+    "searchPlaceholder": "Search by name, phone, or address",
+    "filterOb": "OB customers only",
+    "obBadge": "OB",
+    "nameNotSet": "(unset)",
+    "phoneNotSet": "—",
+    "totalCount": "{{total}} total",
+    "empty": "No customers yet",
+    "import": {
+      "title": "Customer CSV import",
+      "subtitle": "Bulk-register customers from a CSV file (admin only)",
+      "selectFile": "Select CSV file",
+      "selectedFile": "Selected: {{name}}",
+      "noFile": "No file selected",
+      "submit": "Start import",
+      "cancel": "Cancel",
+      "instructions": "CSV columns: customer_type, name, name_kana, phone, email, address, is_ob, acquired_at, notes",
+      "instructionsDetail": "customer_type must be individual or corporate. is_ob true/false. acquired_at YYYY-MM-DD.",
+      "result": "Import result",
+      "created": "{{count}} created",
+      "skipped": "{{count}} skipped (duplicate phone)",
+      "errors": "{{count}} errors",
+      "errorRow": "Row {{row}}: {{message}}",
+      "noErrors": "No errors",
+      "downloadTemplate": "Download template CSV"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "properties": "Properties",
+      "history": "History"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "phone": "Phone",
+      "address": "Address",
+      "ob": "OB",
+      "updatedAt": "Last updated"
+    },
+    "type": {
+      "individual": "Individual",
+      "corporate": "Corporate"
+    },
+    "form": {
+      "createTitle": "New customer",
+      "editTitle": "Edit customer",
+      "labelType": "Customer type",
+      "labelName": "Name",
+      "labelNameCorporate": "Company name",
+      "labelNameKana": "Name (kana)",
+      "labelPhone": "Phone",
+      "labelEmail": "Email",
+      "labelAddress": "Address",
+      "labelIsOb": "OB customer",
+      "labelAcquiredAt": "First transaction date",
+      "labelNotes": "Notes",
+      "namePlaceholder": "Yamada Taro",
+      "namePlaceholderCorporate": "Towa Corporation",
+      "nameKanaPlaceholder": "e.g. ヤマダ タロウ (katakana, optional)",
+      "phonePlaceholder": "03-1234-5678",
+      "emailPlaceholder": "example@example.com",
+      "addressPlaceholder": "Address",
+      "submit": "Save"
+    },
+    "detail": {
+      "overviewTitle": "Basic information",
+      "labelEmail": "Email",
+      "labelAddress": "Address",
+      "labelAcquiredAt": "First transaction",
+      "labelNotes": "Notes",
+      "noNotes": "(no notes)"
+    },
+    "duplicate": {
+      "title": "Possible duplicate",
+      "description": "A customer with the same phone number already exists:",
+      "continueButton": "Register anyway",
+      "continueButtonUpdate": "Update anyway"
+    },
+    "confirms": {
+      "deleteTitle": "Delete customer",
+      "deleteContent": "Delete {{name}}? (Soft delete — restorable later)",
+      "deleteOk": "Delete"
+    },
+    "messages": {
+      "created": "Customer registered",
+      "updated": "Customer updated",
+      "deleted": "Customer deleted"
+    },
+    "errors": {
+      "nameRequired": "Please enter a name",
+      "phoneInvalid": "Invalid phone format",
+      "emailInvalid": "Invalid email format"
+    }
+  },
+  "property": {
+    "tabTitle": "Properties",
+    "addButton": "Add property",
+    "empty": "No properties registered",
+    "type": {
+      "new_construction": "New construction",
+      "remodel": "Remodel target",
+      "single_family": "Single family",
+      "multi_family": "Multi-family",
+      "commercial": "Commercial",
+      "other": "Other"
+    },
+    "structure": {
+      "wood": "Wood",
+      "steel": "Steel",
+      "rc": "RC",
+      "other": "Other"
+    },
+    "fields": {
+      "address": "Address",
+      "propertyType": "Type",
+      "structure": "Structure",
+      "yearBuilt": "Year built",
+      "handoverDate": "Handover date",
+      "floorAreaSqm": "Floor area (m²)",
+      "photos": "Exterior photos",
+      "notes": "Notes"
+    },
+    "form": {
+      "createTitle": "Add property",
+      "editTitle": "Edit property",
+      "submit": "Save"
+    },
+    "photo": {
+      "uploadHint": "Click or drag to add photos (max 3, auto-resized)",
+      "tooLarge": "Photo too large",
+      "tooMany": "Maximum 3 photos"
+    },
+    "confirms": {
+      "deleteTitle": "Delete property",
+      "deleteContent": "Delete this property?",
+      "deleteOk": "Delete"
+    },
+    "messages": {
+      "created": "Property added",
+      "updated": "Property updated",
+      "deleted": "Property deleted"
+    },
+    "errors": {
+      "addressRequired": "Please enter an address"
+    }
+  },
   "users": {
     "title": "User management",
     "subtitle": "Invite users and manage roles & statuses",
@@ -258,6 +414,7 @@
     },
     "nameNotSet": "(not set)",
     "twoFaEnabled": "Enabled",
+    "lockedBadge": "Locked",
     "neverLoggedIn": "Never logged in",
     "totalCount": "{{total}} total",
     "menu": {
@@ -332,5 +489,184 @@
   "notFound": {
     "title": "Page not found",
     "subtitle": "The page you are looking for does not exist or has been moved."
+  },
+  "project": {
+    "title": "Projects",
+    "subtitle": "Project lifecycle: quote → received → construction → handover",
+    "createButton": "New project",
+    "empty": "No projects yet",
+    "totalCount": "{{total}} total",
+    "searchPlaceholder": "Search by code, name, or customer",
+    "viewToggle": {
+      "table": "Table",
+      "kanban": "Kanban"
+    },
+    "filters": {
+      "title": "Filters",
+      "status": "Status",
+      "type": "Type",
+      "owner": "Owner",
+      "customer": "Customer",
+      "from": "Start date (from)",
+      "to": "Start date (to)",
+      "reset": "Reset",
+      "apply": "Apply",
+      "advanced": "Advanced filters",
+      "ownerPlaceholder": "Select owner",
+      "customerPlaceholder": "Search customer",
+      "activeCount": "{{count}} active"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "customer": "Customer",
+      "status": "Status",
+      "type": "Type",
+      "owner": "Owner",
+      "scheduleStart": "Start",
+      "scheduleEnd": "End",
+      "amountTotal": "Amount",
+      "updatedAt": "Updated"
+    },
+    "status": {
+      "quoting": "Quoting",
+      "received": "Received",
+      "construction": "Construction",
+      "completed": "Completed",
+      "handed_over": "Handed over",
+      "cancelled": "Cancelled"
+    },
+    "type": {
+      "new_construction": "New construction",
+      "remodel": "Remodel",
+      "repair": "Repair",
+      "aftercare": "Aftercare"
+    },
+    "memberRole": {
+      "owner": "Owner",
+      "contributor": "Contributor",
+      "inspector": "Inspector",
+      "invited_worker": "Invited worker"
+    },
+    "folderType": {
+      "document": "Document",
+      "drawing": "Drawing",
+      "schedule": "Schedule",
+      "photo": "Photo",
+      "chalkboard": "Chalkboard",
+      "inspection": "Inspection",
+      "custom": "Custom"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "members": "Members",
+      "folders": "Folders"
+    },
+    "form": {
+      "createTitle": "New project",
+      "editTitle": "Edit project",
+      "submit": "Save",
+      "labelCustomer": "Customer",
+      "labelProperty": "Property",
+      "labelType": "Project type",
+      "labelName": "Project name",
+      "labelDescription": "Description",
+      "labelOwner": "Owner",
+      "labelScheduleStart": "Start date",
+      "labelScheduleEnd": "End date",
+      "labelPreAcquisition": "Pre-acquisition (customer TBD)",
+      "preAcquisitionHint": "Start a project before customer is confirmed. Can be replaced with a real customer later.",
+      "namePlaceholder": "e.g. Yamada bathroom remodel",
+      "customerPlaceholder": "Select customer",
+      "propertyPlaceholder": "Select property (optional)",
+      "ownerPlaceholder": "Select owner"
+    },
+    "detail": {
+      "overviewTitle": "Project information",
+      "labelCode": "Code",
+      "labelStatus": "Status",
+      "labelType": "Type",
+      "labelCustomer": "Customer",
+      "labelProperty": "Property",
+      "labelOwner": "Owner",
+      "labelScheduleStart": "Scheduled start",
+      "labelScheduleEnd": "Scheduled end",
+      "labelActualStart": "Actual start",
+      "labelActualEnd": "Actual end",
+      "labelAmountTotal": "Contract amount",
+      "labelDescription": "Description",
+      "noDescription": "(empty)",
+      "noProperty": "(not set)",
+      "foldersTitle": "Default folders"
+    },
+    "actions": {
+      "changeStatus": "Change status",
+      "reverseStatus": "Reverse status (admin)",
+      "reverseTitle": "Reverse status",
+      "reverseTarget": "Reverse to",
+      "reverseReason": "Reason (5+ chars)",
+      "reverseSubmit": "Reverse",
+      "amountTotal": "Contract amount (JPY)",
+      "amountTotalRequired": "Amount required to move to Received",
+      "cancelReason": "Cancel reason (5+ chars)",
+      "confirmTransitionTitle": "Change status?",
+      "confirmTransitionContent": "Change from {{from}} to {{to}}."
+    },
+    "messages": {
+      "created": "Project created",
+      "updated": "Project updated",
+      "deleted": "Project deleted",
+      "statusChanged": "Status changed",
+      "statusReversed": "Status reversed"
+    },
+    "confirms": {
+      "deleteTitle": "Delete project?",
+      "deleteContent": "{{name}} ({{code}}) will be deleted. This cannot be undone.",
+      "deleteOk": "Delete"
+    },
+    "errors": {
+      "nameRequired": "Project name is required",
+      "customerRequired": "Select a customer (or check pre-acquisition)",
+      "scheduleRangeInvalid": "End date must be after start date"
+    },
+    "savedSearches": {
+      "title": "Saved searches",
+      "saveButton": "Save current filters",
+      "saveTitle": "Save search",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Active projects only",
+      "nameRequired": "Name is required",
+      "saved": "Saved",
+      "deleted": "Deleted",
+      "empty": "No saved searches",
+      "exportCsv": "Export CSV",
+      "deleteTitle": "Delete?"
+    },
+    "members": {
+      "title": "Members",
+      "subtitle": "Members on this project",
+      "addButton": "Add member",
+      "empty": "No members yet",
+      "addTitle": "Add member",
+      "addUserLabel": "User",
+      "addRoleLabel": "Role",
+      "addUserPlaceholder": "Search users",
+      "submit": "Add",
+      "changeRoleTitle": "Change role",
+      "removeTitle": "Remove member",
+      "removeContent": "Remove {{name}} from the project?",
+      "removeOk": "Remove",
+      "messages": {
+        "added": "Member added",
+        "roleChanged": "Role changed",
+        "removed": "Member removed"
+      },
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "joined": "Joined"
+      },
+      "self": "(you)"
+    }
   }
 }

@@ -5,6 +5,7 @@ import { HashService } from '../../../shared/crypto/hash.service';
 import {
   Auth2FaInvalidError,
   AuthAccountSuspendedError,
+  AuthCannotSelfActionError,
   AuthInvalidCredentialsError,
   AuthInvitationExpiredError,
   AuthInvitationInvalidError,
@@ -451,7 +452,9 @@ export class AuthService {
 
     if (user.role === 'system_admin') {
       // Admin cannot self-disable (audit policy). Use admin emergency endpoint via another admin.
-      throw new AuthInvalidCredentialsError();
+      throw new AuthCannotSelfActionError(
+        'システム管理者は自分自身の2要素認証を無効化できません。別の管理者に依頼してください。',
+      );
     }
 
     const passwordValid = await this.password.verify(
@@ -594,6 +597,7 @@ export class AuthService {
       id: string;
       email: string;
       name: string;
+      nameKana: string | null;
       role: string;
       status: string;
       twoFaEnabled: boolean;
@@ -606,6 +610,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       name: user.name,
+      nameKana: user.nameKana,
       role: user.role as AuthenticatedUser['role'],
       status: user.status as AuthenticatedUser['status'],
       twoFaEnabled: user.twoFaEnabled,

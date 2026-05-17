@@ -26,7 +26,13 @@
     "minutes": "分",
     "seconds": "秒",
     "items": "件",
-    "people": "名"
+    "people": "名",
+    "errors": {
+      "forbiddenTitle": "アクセス権限がありません",
+      "forbiddenSubtitle": "この画面を表示する権限がありません。",
+      "notFoundTitle": "見つかりません",
+      "notFoundSubtitle": "指定されたリソースが存在しないか、削除された可能性があります。"
+    }
   },
   "brand": {
     "appName": "施工管理システム",
@@ -43,6 +49,7 @@
     "users": "ユーザー管理",
     "sidebarExpand": "サイドバーを展開",
     "sidebarCollapse": "サイドバーを折りたたむ",
+    "sidebarOpen": "メニューを開く",
     "notifications": "通知",
     "language": "言語"
   },
@@ -242,6 +249,155 @@
     "twoFaDisabled": "無効",
     "footer": "F8-AUTH MVP — Phase 1 ダッシュボードは順次実装予定です"
   },
+  "customer": {
+    "title": "顧客管理",
+    "subtitle": "顧客情報の登録・編集・検索",
+    "createButton": "顧客を新規登録",
+    "searchPlaceholder": "氏名・電話・住所で検索",
+    "filterOb": "OB顧客のみ",
+    "obBadge": "OB",
+    "nameNotSet": "(未設定)",
+    "phoneNotSet": "—",
+    "totalCount": "全 {{total}} 件",
+    "empty": "顧客未登録",
+    "import": {
+      "title": "顧客 CSV インポート",
+      "subtitle": "CSV ファイルから顧客を一括登録（管理者のみ）",
+      "selectFile": "CSVファイルを選択",
+      "selectedFile": "選択済み: {{name}}",
+      "noFile": "ファイル未選択",
+      "submit": "インポート開始",
+      "cancel": "キャンセル",
+      "instructions": "CSVカラム: customer_type, name, name_kana, phone, email, address, is_ob, acquired_at, notes",
+      "instructionsDetail": "customer_type は individual または corporate。is_ob は true/false。acquired_at は YYYY-MM-DD。",
+      "result": "インポート結果",
+      "created": "{{count}} 件作成",
+      "skipped": "{{count}} 件スキップ（電話番号重複）",
+      "errors": "{{count}} 件エラー",
+      "errorRow": "{{row}} 行目: {{message}}",
+      "noErrors": "エラーはありません",
+      "downloadTemplate": "テンプレートCSVをダウンロード"
+    },
+    "tabs": {
+      "overview": "概要",
+      "properties": "物件",
+      "history": "履歴"
+    },
+    "columns": {
+      "name": "氏名",
+      "type": "種別",
+      "phone": "電話番号",
+      "address": "住所",
+      "ob": "OB",
+      "updatedAt": "最終更新"
+    },
+    "type": {
+      "individual": "個人",
+      "corporate": "法人"
+    },
+    "form": {
+      "createTitle": "顧客新規登録",
+      "editTitle": "顧客情報編集",
+      "labelType": "顧客種別",
+      "labelName": "氏名",
+      "labelNameCorporate": "会社名",
+      "labelNameKana": "フリガナ",
+      "labelPhone": "電話番号",
+      "labelEmail": "メールアドレス",
+      "labelAddress": "住所",
+      "labelIsOb": "OB顧客",
+      "labelAcquiredAt": "初回取引日",
+      "labelNotes": "備考",
+      "namePlaceholder": "山田 太郎",
+      "namePlaceholderCorporate": "株式会社○○",
+      "nameKanaPlaceholder": "ヤマダ タロウ",
+      "phonePlaceholder": "03-1234-5678",
+      "emailPlaceholder": "example@example.com",
+      "addressPlaceholder": "東京都...",
+      "submit": "保存"
+    },
+    "detail": {
+      "overviewTitle": "基本情報",
+      "labelEmail": "メールアドレス",
+      "labelAddress": "住所",
+      "labelAcquiredAt": "初回取引日",
+      "labelNotes": "備考",
+      "noNotes": "（備考なし）"
+    },
+    "duplicate": {
+      "title": "重複の可能性",
+      "description": "同じ電話番号の顧客が既に存在します：",
+      "continueButton": "このまま登録",
+      "continueButtonUpdate": "このまま更新"
+    },
+    "confirms": {
+      "deleteTitle": "顧客を削除",
+      "deleteContent": "{{name}} を削除しますか？（ソフトデリート、後で復元可能）",
+      "deleteOk": "削除する"
+    },
+    "messages": {
+      "created": "顧客を登録しました",
+      "updated": "顧客情報を更新しました",
+      "deleted": "顧客を削除しました"
+    },
+    "errors": {
+      "nameRequired": "氏名を入力してください",
+      "phoneInvalid": "電話番号の形式が不正です",
+      "emailInvalid": "メールアドレスの形式が不正です"
+    }
+  },
+  "property": {
+    "tabTitle": "物件",
+    "addButton": "物件を追加",
+    "empty": "物件未登録",
+    "type": {
+      "new_construction": "新築",
+      "remodel": "リフォーム対象",
+      "single_family": "戸建",
+      "multi_family": "集合住宅",
+      "commercial": "商業",
+      "other": "その他"
+    },
+    "structure": {
+      "wood": "木造",
+      "steel": "鉄骨",
+      "rc": "RC造",
+      "other": "その他"
+    },
+    "fields": {
+      "address": "住所",
+      "propertyType": "物件種別",
+      "structure": "構造",
+      "yearBuilt": "築年",
+      "handoverDate": "引渡日",
+      "floorAreaSqm": "延床面積 (m²)",
+      "photos": "外観写真",
+      "notes": "備考"
+    },
+    "form": {
+      "createTitle": "物件を追加",
+      "editTitle": "物件を編集",
+      "submit": "保存"
+    },
+    "photo": {
+      "uploadHint": "クリック または ドラッグして写真を追加（最大3枚、自動で縮小されます）",
+      "tooLarge": "写真サイズが大きすぎます",
+      "tooMany": "写真は3枚までです"
+    },
+    "confirms": {
+      "deleteTitle": "物件を削除",
+      "deleteContent": "この物件を削除しますか？",
+      "deleteOk": "削除する"
+    },
+    "messages": {
+      "created": "物件を登録しました",
+      "updated": "物件情報を更新しました",
+      "deleted": "物件を削除しました"
+    },
+    "errors": {
+      "addressRequired": "住所を入力してください"
+    }
+  },
   "users": {
     "title": "ユーザー管理",
     "subtitle": "アカウントの招待・ロール・ステータスを管理",
@@ -258,6 +414,7 @@
     },
     "nameNotSet": "(未設定)",
     "twoFaEnabled": "有効",
+    "lockedBadge": "ロック中",
     "neverLoggedIn": "未ログイン",
     "totalCount": "全 {{total}} 件",
     "menu": {
@@ -332,5 +489,184 @@
   "notFound": {
     "title": "ページが見つかりません",
     "subtitle": "お探しのページは存在しないか、移動された可能性があります。"
+  },
+  "project": {
+    "title": "案件管理",
+    "subtitle": "見積→受注→施工→引渡しの案件管理",
+    "createButton": "案件を新規作成",
+    "empty": "案件未登録",
+    "totalCount": "全 {{total}} 件",
+    "searchPlaceholder": "案件番号・案件名・顧客名で検索",
+    "viewToggle": {
+      "table": "テーブル",
+      "kanban": "カンバン"
+    },
+    "filters": {
+      "title": "フィルター",
+      "status": "ステータス",
+      "type": "種別",
+      "owner": "担当者",
+      "customer": "顧客",
+      "from": "開始日（から）",
+      "to": "開始日（まで）",
+      "reset": "リセット",
+      "apply": "適用",
+      "advanced": "詳細フィルター",
+      "ownerPlaceholder": "担当者を選択",
+      "customerPlaceholder": "顧客を検索",
+      "activeCount": "{{count}} 件の条件"
+    },
+    "columns": {
+      "code": "案件番号",
+      "name": "案件名",
+      "customer": "顧客",
+      "status": "ステータス",
+      "type": "種別",
+      "owner": "担当者",
+      "scheduleStart": "予定開始",
+      "scheduleEnd": "予定完了",
+      "amountTotal": "金額",
+      "updatedAt": "最終更新"
+    },
+    "status": {
+      "quoting": "見積中",
+      "received": "受注",
+      "construction": "施工中",
+      "completed": "完了",
+      "handed_over": "引渡し済",
+      "cancelled": "キャンセル"
+    },
+    "type": {
+      "new_construction": "新築",
+      "remodel": "リフォーム",
+      "repair": "修繕",
+      "aftercare": "アフターケア"
+    },
+    "memberRole": {
+      "owner": "オーナー",
+      "contributor": "メンバー",
+      "inspector": "検査担当",
+      "invited_worker": "招待ユーザー"
+    },
+    "folderType": {
+      "document": "文書",
+      "drawing": "図面",
+      "schedule": "工程",
+      "photo": "写真",
+      "chalkboard": "黒板",
+      "inspection": "検査",
+      "custom": "カスタム"
+    },
+    "tabs": {
+      "overview": "概要",
+      "members": "メンバー",
+      "folders": "フォルダ"
+    },
+    "form": {
+      "createTitle": "案件を新規作成",
+      "editTitle": "案件を編集",
+      "submit": "保存",
+      "labelCustomer": "顧客",
+      "labelProperty": "物件",
+      "labelType": "案件種別",
+      "labelName": "案件名",
+      "labelDescription": "説明",
+      "labelOwner": "担当者",
+      "labelScheduleStart": "予定開始日",
+      "labelScheduleEnd": "予定完了日",
+      "labelPreAcquisition": "土地仕入れ前（顧客未確定）",
+      "preAcquisitionHint": "顧客が未確定の段階で案件を起票。後で実顧客に置換できます。",
+      "namePlaceholder": "例: 山田様邸 浴室リフォーム",
+      "customerPlaceholder": "顧客を選択",
+      "propertyPlaceholder": "物件を選択（任意）",
+      "ownerPlaceholder": "担当者を選択"
+    },
+    "detail": {
+      "overviewTitle": "案件情報",
+      "labelCode": "案件番号",
+      "labelStatus": "ステータス",
+      "labelType": "種別",
+      "labelCustomer": "顧客",
+      "labelProperty": "物件",
+      "labelOwner": "担当者",
+      "labelScheduleStart": "予定開始",
+      "labelScheduleEnd": "予定完了",
+      "labelActualStart": "実開始",
+      "labelActualEnd": "実完了",
+      "labelAmountTotal": "受注金額",
+      "labelDescription": "説明",
+      "noDescription": "（未入力）",
+      "noProperty": "（未設定）",
+      "foldersTitle": "デフォルトフォルダ"
+    },
+    "actions": {
+      "changeStatus": "ステータス変更",
+      "reverseStatus": "ステータス差戻し（管理者）",
+      "reverseTitle": "ステータス差戻し",
+      "reverseTarget": "差戻し先",
+      "reverseReason": "理由（5文字以上）",
+      "reverseSubmit": "差戻し実行",
+      "amountTotal": "受注金額（円）",
+      "amountTotalRequired": "受注ステータスへ進めるには金額が必要です",
+      "cancelReason": "キャンセル理由（5文字以上）",
+      "confirmTransitionTitle": "ステータスを変更しますか？",
+      "confirmTransitionContent": "{{from}} から {{to}} へ変更します。"
+    },
+    "messages": {
+      "created": "案件を作成しました",
+      "updated": "案件を更新しました",
+      "deleted": "案件を削除しました",
+      "statusChanged": "ステータスを変更しました",
+      "statusReversed": "ステータスを差戻しました"
+    },
+    "confirms": {
+      "deleteTitle": "案件を削除しますか？",
+      "deleteContent": "{{name}} （{{code}}）を削除します。元に戻せません。",
+      "deleteOk": "削除する"
+    },
+    "errors": {
+      "nameRequired": "案件名を入力してください",
+      "customerRequired": "顧客を選択してください（または土地仕入れ前を選択）",
+      "scheduleRangeInvalid": "完了予定日は開始予定日より後にしてください"
+    },
+    "savedSearches": {
+      "title": "保存した検索",
+      "saveButton": "現在のフィルターを保存",
+      "saveTitle": "検索条件を保存",
+      "nameLabel": "名前",
+      "namePlaceholder": "例: 進行中の案件のみ",
+      "nameRequired": "名前を入力してください",
+      "saved": "保存しました",
+      "deleted": "削除しました",
+      "empty": "保存された検索はありません",
+      "exportCsv": "CSVエクスポート",
+      "deleteTitle": "削除しますか？"
+    },
+    "members": {
+      "title": "メンバー",
+      "subtitle": "案件に参加するメンバー",
+      "addButton": "メンバーを追加",
+      "empty": "メンバー未登録",
+      "addTitle": "メンバーを追加",
+      "addUserLabel": "ユーザー",
+      "addRoleLabel": "役割",
+      "addUserPlaceholder": "ユーザーを検索",
+      "submit": "追加",
+      "changeRoleTitle": "役割を変更",
+      "removeTitle": "メンバーを外す",
+      "removeContent": "{{name}} を案件から外しますか？",
+      "removeOk": "外す",
+      "messages": {
+        "added": "メンバーを追加しました",
+        "roleChanged": "役割を変更しました",
+        "removed": "メンバーを外しました"
+      },
+      "columns": {
+        "user": "ユーザー",
+        "role": "役割",
+        "joined": "参加日"
+      },
+      "self": "（あなた）"
+    }
   }
 }

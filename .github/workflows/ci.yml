@@ -46,6 +46,12 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Test
+        run: pnpm test --ci --runInBand
+        env:
+          # Tests are unit-only (mocked) — no DB required.
+          NODE_ENV: test
+
       - name: Build
         run: pnpm build
 

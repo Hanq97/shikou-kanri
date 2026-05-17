@@ -1,4 +1,4 @@
-import { Avatar, Dropdown, type MenuProps } from 'antd';
+import { Avatar, Drawer, Dropdown, Grid, type MenuProps } from 'antd';
 import {
   Bell,
   Briefcase,
@@ -7,6 +7,7 @@ import {
   Home,
   KeyRound,
   LogOut,
+  Menu as MenuIcon,
   Monitor,
   PanelLeftClose,
   PanelLeftOpen,
@@ -33,8 +34,18 @@ interface NavDef {
 const NAV_DEFS: NavDef[] = [
   { key: 'home', to: '/home', icon: <Home size={18} /> },
   { key: 'projects', to: '/projects', icon: <Briefcase size={18} /> },
-  { key: 'estimates', to: '/estimates', icon: <FileText size={18} /> },
-  { key: 'customers', to: '/customers', icon: <Users size={18} /> },
+  {
+    key: 'estimates',
+    to: '/estimates',
+    icon: <FileText size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
+  {
+    key: 'customers',
+    to: '/customers',
+    icon: <Users size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
   {
     key: 'users',
     to: '/admin/users',
@@ -52,7 +63,10 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
   const { user, logout, hasAnyRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const screens = Grid.useBreakpoint();
+  const isMobile = !screens.sm;
   const [collapsed, setCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const visibleNav = useMemo(
     () => NAV_DEFS.filter((item) => !item.roles || hasAnyRole(item.roles as never)),
@@ -97,69 +111,112 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
     },
   ];
 
+  function renderBrand(forceExpanded: boolean): JSX.Element {
+    const expanded = forceExpanded || !collapsed;
+    return (
+      <div
+        className={`h-14 flex items-center border-b border-zinc-200/70 ${
+          expanded ? 'px-4' : 'justify-center px-2'
+        }`}
+      >
+        <div className="w-8 h-8 rounded-lg bg-brand-500 text-white grid place-items-center shrink-0">
+          <HardHat size={18} strokeWidth={2.2} />
+        </div>
+        {expanded && (
+          <div className="ml-2.5 overflow-hidden">
+            <p className="m-0 text-sm font-semibold text-zinc-900 leading-tight">
+              {t('brand.appNameShort')}
+            </p>
+            <p className="m-0 text-[11px] text-zinc-500 leading-tight">{t('brand.clientName')}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function renderNav(forceExpanded: boolean, onItemClick?: () => void): JSX.Element {
+    const expanded = forceExpanded || !collapsed;
+    return (
+      <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
+        {visibleNav.map((item) => {
+          const active =
+            location.pathname === item.to || location.pathname.startsWith(item.to + '/');
+          const label = t(`nav.${item.key}`);
+          return (
+            <Link
+              key={item.key}
+              to={item.to}
+              title={!expanded ? label : undefined}
+              onClick={onItemClick}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                active
+                  ? 'bg-brand-50 text-brand-700 font-medium'
+                  : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+              } ${!expanded ? 'justify-center' : ''}`}
+            >
+              <span className="shrink-0">{item.icon}</span>
+              {expanded && <span className="truncate">{label}</span>}
+            </Link>
+          );
+        })}
+      </nav>
+    );
+  }
+
   return (
     <div className="min-h-screen flex bg-zinc-50">
-      {/* Sidebar */}
-      <aside
-        className={`${
-          collapsed ? 'w-16' : 'w-60'
-        } shrink-0 bg-white border-r border-zinc-200/70 flex flex-col transition-[width] duration-200 sticky top-0 h-screen relative`}
-      >
-        {/* Brand */}
-        <div
-          className={`h-14 flex items-center border-b border-zinc-200/70 ${
-            collapsed ? 'justify-center px-2' : 'px-4'
-          }`}
+      {/* Desktop sidebar (≥sm) */}
+      {!isMobile && (
+        <aside
+          className={`${
+            collapsed ? 'w-16' : 'w-60'
+          } shrink-0 bg-white border-r border-zinc-200/70 flex flex-col transition-[width] duration-200 sticky top-0 h-screen relative`}
         >
-          <div className="w-8 h-8 rounded-lg bg-brand-500 text-white grid place-items-center shrink-0">
-            <HardHat size={18} strokeWidth={2.2} />
-          </div>
-          {!collapsed && (
-            <div className="ml-2.5 overflow-hidden">
-              <p className="m-0 text-sm font-semibold text-zinc-900 leading-tight">
-                {t('brand.appNameShort')}
-              </p>
-              <p className="m-0 text-[11px] text-zinc-500 leading-tight">{t('brand.clientName')}</p>
-            </div>
-          )}
-        </div>
+          {renderBrand(false)}
+          {renderNav(false)}
+        </aside>
+      )}
 
-        {/* Nav */}
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-          {visibleNav.map((item) => {
-            const active =
-              location.pathname === item.to || location.pathname.startsWith(item.to + '/');
-            const label = t(`nav.${item.key}`);
-            return (
-              <Link
-                key={item.key}
-                to={item.to}
-                title={collapsed ? label : undefined}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                  active
-                    ? 'bg-brand-50 text-brand-700 font-medium'
-                    : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
-                } ${collapsed ? 'justify-center' : ''}`}
-              >
-                <span className="shrink-0">{item.icon}</span>
-                {!collapsed && <span className="truncate">{label}</span>}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
+      {/* Mobile drawer (<sm) */}
+      {isMobile && (
+        <Drawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          placement="left"
+          width={260}
+          closable={false}
+          styles={{ body: { padding: 0 }, header: { display: 'none' } }}
+        >
+          <div className="h-full flex flex-col bg-white">
+            {renderBrand(true)}
+            {renderNav(true, () => setDrawerOpen(false))}
+          </div>
+        </Drawer>
+      )}
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-14 bg-white border-b border-zinc-200/70 flex items-center justify-between px-4 sticky top-0 z-10">
+        <header className="h-14 bg-white border-b border-zinc-200/70 flex items-center justify-between px-3 sm:px-4 sticky top-0 z-10">
           <button
             type="button"
-            onClick={() => setCollapsed((v) => !v)}
-            aria-label={collapsed ? t('nav.sidebarExpand') : t('nav.sidebarCollapse')}
+            onClick={() => (isMobile ? setDrawerOpen(true) : setCollapsed((v) => !v))}
+            aria-label={
+              isMobile
+                ? t('nav.sidebarOpen')
+                : collapsed
+                  ? t('nav.sidebarExpand')
+                  : t('nav.sidebarCollapse')
+            }
             className="w-9 h-9 rounded-lg grid place-items-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors bg-transparent border-0 cursor-pointer"
           >
-            {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+            {isMobile ? (
+              <MenuIcon size={18} />
+            ) : collapsed ? (
+              <PanelLeftOpen size={18} />
+            ) : (
+              <PanelLeftClose size={18} />
+            )}
           </button>
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
@@ -173,21 +230,19 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
             <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
               <button
                 type="button"
-                className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-lg hover:bg-zinc-100 transition-colors bg-transparent border-0 cursor-pointer ml-1"
+                className="flex items-center gap-2.5 pl-1 pr-2 sm:pr-3 py-1 rounded-lg hover:bg-zinc-100 transition-colors bg-transparent border-0 cursor-pointer ml-1"
               >
                 <Avatar size={32} icon={<User size={16} />} className="!bg-brand-500" />
-                <div className="text-left leading-tight hidden sm:block">
+                <div className="text-left leading-tight hidden md:block">
                   <p className="m-0 text-sm font-medium text-zinc-900">{user.name}</p>
-                  <p className="m-0 text-[11px] text-zinc-500">
-                    {t(`users.roles.${user.role}`)}
-                  </p>
+                  <p className="m-0 text-[11px] text-zinc-500">{t(`users.roles.${user.role}`)}</p>
                 </div>
               </button>
             </Dropdown>
           </div>
         </header>
 
-        <main className="flex-1 p-6 overflow-x-auto">{children}</main>
+        <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-x-auto">{children}</main>
       </div>
     </div>
   );
