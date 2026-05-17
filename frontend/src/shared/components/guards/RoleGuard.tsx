@@ -1,6 +1,9 @@
-import { Result } from 'antd';
+import { Button, Result } from 'antd';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import type { UserRole } from '@/shared/api/types';
+import { AppLayout } from '@/shared/components/layout/AppLayout';
 import { useAuthStore } from '@/shared/stores/authStore';
 
 interface RoleGuardProps {
@@ -13,6 +16,8 @@ interface RoleGuardProps {
 }
 
 export function RoleGuard({ roles, deny, children, fallback }: RoleGuardProps): JSX.Element {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const allowed = (() => {
     if (!user) return false;
@@ -21,16 +26,20 @@ export function RoleGuard({ roles, deny, children, fallback }: RoleGuardProps): 
     return true;
   })();
   if (!allowed) {
+    if (fallback) return <>{fallback}</>;
     return (
-      <>
-        {fallback ?? (
-          <Result
-            status="403"
-            title="アクセス権限がありません"
-            subTitle="この画面を表示する権限がありません。"
-          />
-        )}
-      </>
+      <AppLayout>
+        <Result
+          status="403"
+          title={t('common.errors.forbiddenTitle')}
+          subTitle={t('common.errors.forbiddenSubtitle')}
+          extra={
+            <Button type="primary" onClick={() => navigate('/home')}>
+              {t('common.backToHome')}
+            </Button>
+          }
+        />
+      </AppLayout>
     );
   }
   return <>{children}</>;
