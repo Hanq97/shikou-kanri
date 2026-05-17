@@ -12,6 +12,21 @@ export interface ImportResult {
   errors: ImportError[];
 }
 
+export interface CustomerProjectTimelineItem {
+  id: string;
+  projectCode: string;
+  name: string;
+  projectType: string;
+  status: string;
+  scheduleStart: string | null;
+  scheduleEnd: string | null;
+  actualEnd: string | null;
+  amountTotal: string | null;
+  createdAt: string;
+  property: { id: string; address: string } | null;
+  owner: { id: string; name: string };
+}
+
 export type CustomerType = 'individual' | 'corporate';
 
 export interface CustomerSummary {
@@ -100,6 +115,13 @@ export const customersApi = {
 
   async softDelete(id: string): Promise<void> {
     await apiClient.delete(`/customers/${id}`);
+  },
+
+  async listProjects(id: string): Promise<CustomerProjectTimelineItem[]> {
+    const { data } = await apiClient.get<{
+      data: CustomerProjectTimelineItem[];
+    }>(`/customers/${id}/projects`);
+    return data.data;
   },
 
   async import(file: File): Promise<ImportResult> {

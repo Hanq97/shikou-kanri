@@ -220,6 +220,66 @@ export class CustomersService {
     });
   }
 
+  async listProjectsByCustomer(
+    customerId: string,
+    requester: AuthenticatedUser,
+  ): Promise<
+    Array<{
+      id: string;
+      projectCode: string;
+      name: string;
+      projectType: string;
+      status: string;
+      scheduleStart: Date | null;
+      scheduleEnd: Date | null;
+      actualEnd: Date | null;
+      amountTotal: string | null;
+      createdAt: Date;
+      property: { id: string; address: string } | null;
+      owner: { id: string; name: string };
+    }>
+  > {
+    if (requester.role === 'invited')
+      throw new AuthInsufficientPermissionError();
+
+    const customer = await this.repo.findById(customerId);
+    if (!customer) throw new CustomerNotFoundError(customerId);
+
+    const projects = await this.prisma.project.findMany({
+      where: { customerId, deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        projectCode: true,
+        name: true,
+        projectType: true,
+        status: true,
+        scheduleStart: true,
+        scheduleEnd: true,
+        actualEnd: true,
+        amountTotal: true,
+        createdAt: true,
+        property: { select: { id: true, address: true } },
+        owner: { select: { id: true, name: true } },
+      },
+    });
+
+    return projects.map((p) => ({
+      id: p.id,
+      projectCode: p.projectCode,
+      name: p.name,
+      projectType: p.projectType,
+      status: p.status,
+      scheduleStart: p.scheduleStart,
+      scheduleEnd: p.scheduleEnd,
+      actualEnd: p.actualEnd,
+      amountTotal: p.amountTotal !== null ? p.amountTotal.toString() : null,
+      createdAt: p.createdAt,
+      property: p.property,
+      owner: p.owner,
+    }));
+  }
+
   /**
    * Pre-acquisition placeholder customer for projects without a real customer.
    * Called by ProjectsService during create when preAcquisition=true.

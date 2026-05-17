@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { extractApiError } from '@/shared/api/client';
 import { customersApi } from '@/shared/api/customers.api';
 import { propertiesApi } from '@/shared/api/properties.api';
@@ -29,6 +29,8 @@ export function ProjectFormPage(): JSX.Element {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { id } = useParams<{ id?: string }>();
+  const [searchParams] = useSearchParams();
+  const prefilledCustomerId = searchParams.get('customerId') ?? '';
   const isEdit = Boolean(id);
 
   const [submitting, setSubmitting] = useState(false);
@@ -57,6 +59,12 @@ export function ProjectFormPage(): JSX.Element {
       }),
   });
 
+  const { data: prefilledCustomer } = useQuery({
+    queryKey: ['customers', 'detail', prefilledCustomerId],
+    queryFn: () => customersApi.get(prefilledCustomerId),
+    enabled: Boolean(prefilledCustomerId) && !isEdit,
+  });
+
   const { data: usersList } = useQuery({
     queryKey: ['users', 'picker'],
     queryFn: () => usersApi.list({ status: 'active', pageSize: 100, sortBy: 'name' }),
@@ -73,7 +81,7 @@ export function ProjectFormPage(): JSX.Element {
     resolver: zodResolver(ProjectSchema),
     defaultValues: {
       preAcquisition: false,
-      customerId: '',
+      customerId: prefilledCustomerId,
       propertyId: '',
       projectType: 'new_construction',
       name: '',
@@ -140,8 +148,14 @@ export function ProjectFormPage(): JSX.Element {
         label: existing.customer.name,
       });
     }
+    if (prefilledCustomer && !opts.find((o) => o.value === prefilledCustomer.id)) {
+      opts.unshift({
+        value: prefilledCustomer.id,
+        label: prefilledCustomer.name,
+      });
+    }
     return opts;
-  }, [customerList, existing, isEdit]);
+  }, [customerList, existing, isEdit, prefilledCustomer]);
 
   const propertyOptions = useMemo(
     () =>

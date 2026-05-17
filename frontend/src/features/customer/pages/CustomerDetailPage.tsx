@@ -11,6 +11,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { CustomerTypeTag } from '../components/CustomerTypeTag';
 import { ObBadge } from '../components/ObBadge';
+import { ProjectTimelineTab } from '../components/ProjectTimelineTab';
 import { PropertyListTab } from '../components/PropertyListTab';
 
 export function CustomerDetailPage(): JSX.Element {
@@ -198,11 +199,7 @@ export function CustomerDetailPage(): JSX.Element {
             {
               key: 'history',
               label: t('customer.tabs.history'),
-              children: (
-                <div className="bg-white border border-zinc-200/70 rounded-xl shadow-card p-8 text-center text-sm text-zinc-500">
-                  P7 で実装予定 (Project timeline)
-                </div>
-              ),
+              children: <ProjectTimelineTab customerId={customer.id} />,
             },
           ]}
         />

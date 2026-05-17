@@ -81,11 +81,10 @@ export class CustomersController {
   @Get(':id/projects')
   @Roles('system_admin', 'manager', 'employee')
   async getProjects(
-    @Param('id', new ParseUUIDPipe()) _id: string,
-    @CurrentUser() _user: AuthenticatedUser,
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
-    // Stub — full implementation in P7 (timeline view) via project module
-    return { data: [], total: 0, page: 1, pageSize: 50 };
+    return { data: await this.service.listProjectsByCustomer(id, user) };
   }
 
   @Post()
