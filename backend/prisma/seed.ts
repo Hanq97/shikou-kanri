@@ -707,6 +707,482 @@ async function seedF1(prisma: PrismaClient): Promise<void> {
   );
 }
 
+type ScheduleSeedStatus =
+  | 'pending'
+  | 'notified'
+  | 'overdue'
+  | 'completed'
+  | 'cancelled';
+
+function addYears(base: Date, years: number): Date {
+  const d = new Date(base);
+  d.setUTCFullYear(d.getUTCFullYear() + years);
+  return d;
+}
+
+function deriveStatus(scheduledDate: Date, today: Date): ScheduleSeedStatus {
+  const diffDays = Math.floor(
+    (scheduledDate.getTime() - today.getTime()) / 86_400_000,
+  );
+  if (diffDays < 0) return 'overdue';
+  if (diffDays <= 14) return 'notified';
+  return 'pending';
+}
+
+async function seedF6(prisma: PrismaClient): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log('🌱 Seeding F6 aftercare sample data...');
+
+  const admin = await prisma.user.findUnique({
+    where: { email: 'admin@dev.shikou-kanri.local' },
+  });
+  const manager = await prisma.user.findUnique({
+    where: { email: 'manager@dev.shikou-kanri.local' },
+  });
+  const employee = await prisma.user.findUnique({
+    where: { email: 'employee@dev.shikou-kanri.local' },
+  });
+  if (!admin || !manager || !employee) {
+    // eslint-disable-next-line no-console
+    console.log('  ⚠️  Required users missing; skipping F6 seed');
+    return;
+  }
+
+  if ((await prisma.maintenanceSchedule.count()) > 0) {
+    // eslint-disable-next-line no-console
+    console.log('  ↩  F6 sample data already exists, skipping');
+    return;
+  }
+
+  // 7 additional customers — realistic Japanese names, Tokyo wards
+  const customersData = [
+    {
+      name: '佐藤 健一',
+      nameKana: 'サトウ ケンイチ',
+      phone: '09011112233',
+      email: 'sato.kenichi@example.com',
+      address: '東京都新宿区西新宿8-1-1',
+      isOb: true,
+      acquiredAt: new Date('2024-05-30'),
+      notes: '新築引渡し済（昨年）',
+    },
+    {
+      name: '鈴木 美香',
+      nameKana: 'スズキ ミカ',
+      phone: '08022223344',
+      email: 'suzuki.mika@example.com',
+      address: '東京都渋谷区代々木3-2-1',
+      isOb: true,
+      acquiredAt: new Date('2023-11-30'),
+      notes: '点検時期に苦情あり',
+    },
+    {
+      name: '高橋 浩二',
+      nameKana: 'タカハシ コウジ',
+      phone: '09033334455',
+      email: 'takahashi@example.com',
+      address: '東京都港区赤坂6-1-5',
+      isOb: true,
+      acquiredAt: new Date('2017-07-20'),
+      notes: '物件2件（自宅+投資用）',
+    },
+    {
+      name: '渡辺 千恵',
+      nameKana: 'ワタナベ チエ',
+      phone: '08044445566',
+      email: 'watanabe.chie@example.com',
+      address: '東京都世田谷区下北沢2-10-3',
+      isOb: true,
+      acquiredAt: new Date('2014-04-01'),
+      notes: '10年点検対象',
+    },
+    {
+      name: '伊藤 良太',
+      nameKana: 'イトウ リョウタ',
+      phone: '09055556677',
+      email: 'ito.ryota@example.com',
+      address: '東京都杉並区高円寺南5-3-2',
+      isOb: true,
+      acquiredAt: new Date('2022-10-01'),
+      notes: '兄弟で2件購入',
+    },
+    {
+      name: '山本 由美',
+      nameKana: 'ヤマモト ユミ',
+      phone: '08066667788',
+      email: 'yamamoto.yumi@example.com',
+      address: '東京都目黒区自由が丘1-15-7',
+      isOb: true,
+      acquiredAt: new Date('2025-12-01'),
+      notes: '新規引渡し（今年末予定）',
+    },
+    {
+      name: '中村 正樹',
+      nameKana: 'ナカムラ マサキ',
+      phone: '09077778899',
+      email: 'nakamura.masaki@example.com',
+      address: '東京都品川区五反田4-8-1',
+      isOb: true,
+      acquiredAt: new Date('2016-09-15'),
+      notes: 'リフォーム要望多め',
+    },
+  ];
+
+  const newCustomers = [];
+  for (const c of customersData) {
+    const created = await prisma.customer.create({
+      data: {
+        customerType: 'individual',
+        ...c,
+        createdById: admin.id,
+        updatedById: admin.id,
+      },
+    });
+    newCustomers.push(created);
+  }
+  const [sato, suzuki, takahashi, watanabe, ito, yamamoto, nakamura] =
+    newCustomers;
+
+  // Find existing F1 customers to extend with more properties
+  const yamada = await prisma.customer.findFirst({
+    where: { name: '山田 太郎', deletedAt: null },
+  });
+  const towaTrading = await prisma.customer.findFirst({
+    where: { name: '株式会社 藤和商事', deletedAt: null },
+  });
+
+  // 11 new properties — varied wards + handover dates spanning 2014–2025
+  type PropSeed = {
+    customerId: string;
+    address: string;
+    propertyType:
+      | 'new_construction'
+      | 'remodel'
+      | 'single_family'
+      | 'multi_family'
+      | 'commercial'
+      | 'other';
+    structure: 'wood' | 'steel' | 'rc' | 'other';
+    yearBuilt: number;
+    handoverDate: Date;
+    floorAreaSqm: number;
+    notes: string;
+  };
+  const propertiesData: PropSeed[] = [
+    {
+      customerId: sato.id,
+      address: '東京都新宿区西新宿8-1-1',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2025,
+      handoverDate: new Date('2025-05-30'),
+      floorAreaSqm: 105.0,
+      notes: '新築木造2階建て',
+    },
+    {
+      customerId: suzuki.id,
+      address: '東京都渋谷区代々木3-2-1',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2024,
+      handoverDate: new Date('2024-12-01'),
+      floorAreaSqm: 88.5,
+      notes: '1年点検時期超過',
+    },
+    {
+      customerId: takahashi.id,
+      address: '東京都港区赤坂6-1-5',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2017,
+      handoverDate: new Date('2017-08-15'),
+      floorAreaSqm: 142.0,
+      notes: '自宅、定期点検中',
+    },
+    {
+      customerId: takahashi.id,
+      address: '東京都中央区銀座7-12-4',
+      propertyType: 'multi_family',
+      structure: 'rc',
+      yearBuilt: 2021,
+      handoverDate: new Date('2021-06-10'),
+      floorAreaSqm: 65.0,
+      notes: '投資用マンション',
+    },
+    {
+      customerId: watanabe.id,
+      address: '東京都世田谷区下北沢2-10-3',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2014,
+      handoverDate: new Date('2014-04-15'),
+      floorAreaSqm: 110.0,
+      notes: '10年点検必要',
+    },
+    {
+      customerId: ito.id,
+      address: '東京都杉並区高円寺南5-3-2',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2022,
+      handoverDate: new Date('2022-11-20'),
+      floorAreaSqm: 95.0,
+      notes: '兄弟物件1',
+    },
+    {
+      customerId: ito.id,
+      address: '東京都杉並区荻窪4-2-8',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2023,
+      handoverDate: new Date('2023-08-01'),
+      floorAreaSqm: 92.5,
+      notes: '兄弟物件2',
+    },
+    {
+      customerId: yamamoto.id,
+      address: '東京都目黒区自由が丘1-15-7',
+      propertyType: 'single_family',
+      structure: 'wood',
+      yearBuilt: 2025,
+      handoverDate: new Date('2025-12-15'),
+      floorAreaSqm: 118.0,
+      notes: '年末引渡し予定',
+    },
+    {
+      customerId: nakamura.id,
+      address: '東京都品川区五反田4-8-1',
+      propertyType: 'single_family',
+      structure: 'steel',
+      yearBuilt: 2016,
+      handoverDate: new Date('2016-09-30'),
+      floorAreaSqm: 130.0,
+      notes: '鉄骨造、リフォーム実績あり',
+    },
+  ];
+  if (yamada) {
+    propertiesData.push({
+      customerId: yamada.id,
+      address: '東京都新宿区西新宿1-1-2',
+      propertyType: 'multi_family',
+      structure: 'rc',
+      yearBuilt: 2020,
+      handoverDate: new Date('2020-04-01'),
+      floorAreaSqm: 80.0,
+      notes: '山田様セカンドハウス',
+    });
+  }
+  if (towaTrading) {
+    propertiesData.push({
+      customerId: towaTrading.id,
+      address: '東京都港区六本木5-5-5',
+      propertyType: 'commercial',
+      structure: 'rc',
+      yearBuilt: 2018,
+      handoverDate: new Date('2018-03-15'),
+      floorAreaSqm: 380.0,
+      notes: '藤和商事 六本木支店',
+    });
+  }
+
+  const newProperties = [];
+  for (const p of propertiesData) {
+    const created = await prisma.property.create({
+      data: {
+        ...p,
+        photoUrls: [],
+        createdById: admin.id,
+        updatedById: admin.id,
+      },
+    });
+    newProperties.push(created);
+  }
+
+  // Generate 4 schedules per property with handoverDate (incl F1 props)
+  const propsWithHandover = await prisma.property.findMany({
+    where: { handoverDate: { not: null }, deletedAt: null },
+    select: { id: true, handoverDate: true, address: true },
+  });
+
+  const TODAY = new Date('2026-05-19');
+  const MILESTONES: Array<{
+    type: 'one_year' | 'three_year' | 'five_year' | 'ten_year';
+    years: number;
+  }> = [
+    { type: 'one_year', years: 1 },
+    { type: 'three_year', years: 3 },
+    { type: 'five_year', years: 5 },
+    { type: 'ten_year', years: 10 },
+  ];
+  let schedulesCreated = 0;
+  for (const prop of propsWithHandover) {
+    if (!prop.handoverDate) continue;
+    for (const m of MILESTONES) {
+      const scheduledDate = addYears(prop.handoverDate, m.years);
+      const status = deriveStatus(scheduledDate, TODAY);
+      const notifiedAt =
+        status === 'notified' || status === 'overdue'
+          ? new Date(scheduledDate.getTime() - 14 * 86_400_000)
+          : null;
+      await prisma.maintenanceSchedule.create({
+        data: {
+          propertyId: prop.id,
+          scheduleType: m.type,
+          scheduledDate,
+          status,
+          notifiedAt,
+          createdById: admin.id,
+          updatedById: admin.id,
+        },
+      });
+      schedulesCreated++;
+    }
+  }
+
+  // Mark a few past 'overdue' schedules as 'completed' for variety
+  const completionTargets = await prisma.maintenanceSchedule.findMany({
+    where: {
+      status: 'overdue',
+      scheduledDate: { lt: new Date('2025-01-01') },
+    },
+    take: 4,
+    orderBy: { scheduledDate: 'asc' },
+    include: { property: { include: { customer: true } } },
+  });
+
+  // Aftercare records: 10 mixed types/statuses
+  const records: Array<{
+    customerId: string;
+    propertyId: string | null;
+    scheduleId: string | null;
+    recordType: 'inspection' | 'repair' | 'inquiry' | 'complaint' | 'other';
+    status: 'open' | 'in_progress' | 'resolved' | 'closed';
+    occurredAt: Date;
+    title: string;
+    description: string;
+    handledById: string;
+    resolvedAt: Date | null;
+    resolutionNotes: string | null;
+  }> = [];
+
+  for (const sch of completionTargets) {
+    records.push({
+      customerId: sch.property.customer.id,
+      propertyId: sch.property.id,
+      scheduleId: sch.id,
+      recordType: 'inspection',
+      status: 'closed',
+      occurredAt: sch.scheduledDate,
+      title: `定期点検実施 (${sch.scheduleType})`,
+      description: '担当者訪問の上、外壁・屋根・配管を点検。異常なし。',
+      handledById: employee.id,
+      resolvedAt: new Date(sch.scheduledDate.getTime() + 7 * 86_400_000),
+      resolutionNotes: '点検完了、報告書送付済み',
+    });
+  }
+
+  // Additional standalone records — repair/inquiry/complaint
+  const ito1Prop = newProperties.find((p) => p.customerId === ito.id);
+  if (ito1Prop) {
+    records.push({
+      customerId: ito.id,
+      propertyId: ito1Prop.id,
+      scheduleId: null,
+      recordType: 'repair',
+      status: 'in_progress',
+      occurredAt: new Date('2026-05-10'),
+      title: '雨漏り修理依頼',
+      description: '寝室天井に雨染みが発生。早急対応希望。',
+      handledById: employee.id,
+      resolvedAt: null,
+      resolutionNotes: null,
+    });
+  }
+  const suzukiProp = newProperties.find((p) => p.customerId === suzuki.id);
+  if (suzukiProp) {
+    records.push({
+      customerId: suzuki.id,
+      propertyId: suzukiProp.id,
+      scheduleId: null,
+      recordType: 'complaint',
+      status: 'open',
+      occurredAt: new Date('2026-05-15'),
+      title: '1年点検の連絡なし',
+      description: '昨年12月引渡しから1年点検の案内がなく、不安を感じている。',
+      handledById: manager.id,
+      resolvedAt: null,
+      resolutionNotes: null,
+    });
+  }
+  records.push({
+    customerId: takahashi.id,
+    propertyId: null,
+    scheduleId: null,
+    recordType: 'inquiry',
+    status: 'resolved',
+    occurredAt: new Date('2026-04-22'),
+    title: '増築の見積依頼',
+    description: '自宅2階に1部屋追加できないか相談。',
+    handledById: manager.id,
+    resolvedAt: new Date('2026-05-02'),
+    resolutionNotes: '現地調査済み、見積提示済',
+  });
+  if (yamada) {
+    records.push({
+      customerId: yamada.id,
+      propertyId: null,
+      scheduleId: null,
+      recordType: 'inquiry',
+      status: 'closed',
+      occurredAt: new Date('2025-11-08'),
+      title: 'エアコン交換の相談',
+      description: 'リビングのエアコン故障、推奨機種の問い合わせ',
+      handledById: employee.id,
+      resolvedAt: new Date('2025-11-15'),
+      resolutionNotes: '推奨機種紹介、業者手配済',
+    });
+  }
+  records.push({
+    customerId: nakamura.id,
+    propertyId: null,
+    scheduleId: null,
+    recordType: 'other',
+    status: 'closed',
+    occurredAt: new Date('2025-09-01'),
+    title: '駐車場拡張工事の相談',
+    description: '隣地購入に伴う駐車場拡張、可能性ヒアリング',
+    handledById: manager.id,
+    resolvedAt: new Date('2025-09-20'),
+    resolutionNotes: '別途プロジェクト化、F1で管理中',
+  });
+
+  for (const r of records) {
+    const created = await prisma.aftercareRecord.create({
+      data: {
+        ...r,
+        createdById: admin.id,
+        updatedById: admin.id,
+      },
+    });
+    // Link back: if record completes a schedule, update schedule
+    if (r.scheduleId) {
+      await prisma.maintenanceSchedule.update({
+        where: { id: r.scheduleId },
+        data: {
+          status: 'completed',
+          completedAt: r.resolvedAt ?? new Date(),
+          completedRecordId: created.id,
+        },
+      });
+    }
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(
+    `  ✓  F6 sample: 7 customers, ${propertiesData.length} properties, ${schedulesCreated} schedules, ${records.length} aftercare records`,
+  );
+}
+
 async function main(): Promise<void> {
   const prisma = new PrismaClient();
   const passwordHash = await argon2.hash(SEED_PASSWORD, ARGON2_OPTIONS);
@@ -738,6 +1214,7 @@ async function main(): Promise<void> {
   await seedF1(prisma);
   await ensureInvitedMemberships(prisma);
   await seedF2(prisma);
+  await seedF6(prisma);
 
   // eslint-disable-next-line no-console
   console.log('');
