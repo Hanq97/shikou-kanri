@@ -33,6 +33,12 @@ interface NavDef {
 
 const NAV_DEFS: NavDef[] = [
   { key: 'home', to: '/home', icon: <Home size={18} /> },
+  {
+    key: 'customers',
+    to: '/customers',
+    icon: <Users size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
   { key: 'projects', to: '/projects', icon: <Briefcase size={18} /> },
   {
     key: 'estimates',
@@ -41,22 +47,16 @@ const NAV_DEFS: NavDef[] = [
     roles: ['system_admin', 'manager', 'employee'],
   },
   {
-    key: 'customers',
-    to: '/customers',
-    icon: <Users size={18} />,
-    roles: ['system_admin', 'manager', 'employee'],
+    key: 'unitPrices',
+    to: '/admin/unit-prices',
+    icon: <HardHat size={18} />,
+    roles: ['system_admin'],
   },
   {
     key: 'users',
     to: '/admin/users',
     icon: <ShieldCheck size={18} />,
     roles: ['system_admin', 'manager'],
-  },
-  {
-    key: 'unitPrices',
-    to: '/admin/unit-prices',
-    icon: <HardHat size={18} />,
-    roles: ['system_admin'],
   },
 ];
 
