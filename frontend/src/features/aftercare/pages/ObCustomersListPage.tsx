@@ -88,7 +88,7 @@ export function ObCustomersListPage(): JSX.Element {
 
   const columns: ColumnsType<OBCustomerSummary> = [
     {
-      title: t('customers.list.name'),
+      title: t('customer.columns.name'),
       dataIndex: 'name',
       key: 'name',
       render: (_, row) => (
@@ -101,7 +101,7 @@ export function ObCustomersListPage(): JSX.Element {
       ),
     },
     {
-      title: t('customers.list.phone'),
+      title: t('customer.columns.phone'),
       dataIndex: 'phone',
       key: 'phone',
       width: 140,

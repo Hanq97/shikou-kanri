@@ -125,7 +125,7 @@ export function SchedulesListPage(): JSX.Element {
       ),
     },
     {
-      title: t('customers.detail.customer'),
+      title: t('customer.columns.name'),
       key: 'customer',
       render: (_, row) => (
         <Link to={`/customers/${row.customerId}`} className="text-brand-700 hover:underline">
