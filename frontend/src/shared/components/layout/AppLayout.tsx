@@ -1,6 +1,5 @@
 import { Avatar, Drawer, Dropdown, Grid, type MenuProps } from 'antd';
 import {
-  Bell,
   Briefcase,
   Database,
   FileText,
@@ -23,6 +22,7 @@ import {
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -264,13 +264,7 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
           </button>
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
-            <button
-              type="button"
-              className="w-9 h-9 rounded-lg grid place-items-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors bg-transparent border-0 cursor-pointer relative"
-              aria-label={t('nav.notifications')}
-            >
-              <Bell size={18} />
-            </button>
+            <NotificationBell />
             <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
               <button
                 type="button"

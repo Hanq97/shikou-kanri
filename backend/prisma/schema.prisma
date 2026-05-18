@@ -171,6 +171,11 @@ model User {
   aftercareRecordsUpdated     AftercareRecord[]     @relation("AftercareRecordUpdater")
   aftercareRecordsHandled     AftercareRecord[]     @relation("AftercareRecordHandler")
 
+  // W3 relations
+  chatMessagesAuthored ChatMessage[]      @relation("ChatMessageAuthor")
+  chatMessageReads     ChatMessageRead[]
+  notifications        Notification[]
+
   @@map("users")
   @@index([status])
   @@index([role, status])
@@ -217,16 +222,19 @@ model Invitation {
   name        String?
   tokenHash   String    @unique @map("token_hash")
   role        UserRole
+  projectId   String?   @map("project_id") @db.Uuid
   expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
   usedAt      DateTime? @map("used_at") @db.Timestamptz(6)
   invitedById String    @map("invited_by") @db.Uuid
   cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(6)
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  invitedBy User @relation("InvitedBy", fields: [invitedById], references: [id])
+  invitedBy User     @relation("InvitedBy", fields: [invitedById], references: [id])
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@map("invitations")
   @@index([email, expiresAt])
+  @@index([projectId])
 }
 
 model AuditLog {
@@ -337,14 +345,16 @@ model Project {
   createdById String?   @map("created_by") @db.Uuid
   updatedById String?   @map("updated_by") @db.Uuid
 
-  customer  Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  property  Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  owner     User            @relation("ProjectOwner", fields: [ownerUserId], references: [id])
-  createdBy User?           @relation("ProjectCreator", fields: [createdById], references: [id])
-  updatedBy User?           @relation("ProjectUpdater", fields: [updatedById], references: [id])
-  members   ProjectMember[]
-  folders   Folder[]
-  quotes    Quote[]
+  customer     Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  property     Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  owner        User            @relation("ProjectOwner", fields: [ownerUserId], references: [id])
+  createdBy    User?           @relation("ProjectCreator", fields: [createdById], references: [id])
+  updatedBy    User?           @relation("ProjectUpdater", fields: [updatedById], references: [id])
+  members      ProjectMember[]
+  folders      Folder[]
+  quotes       Quote[]
+  chatMessages ChatMessage[]
+  invitations  Invitation[]
 
   @@map("projects")
   @@index([status, scheduleStart])
@@ -622,4 +632,81 @@ model AftercareRecord {
   @@index([customerId, occurredAt(sort: Desc)])
   @@index([propertyId, occurredAt(sort: Desc)])
   @@index([status, occurredAt])
+}
+
+// =============================================================================
+// W3 — Chat + Notifications
+// =============================================================================
+
+enum NotificationKind {
+  chat_new_message
+  chat_mention
+  quote_approval_request
+  aftercare_due
+  project_member_added
+  other
+}
+
+model ChatMessage {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId       String  @map("project_id") @db.Uuid
+  authorId        String  @map("author_id") @db.Uuid
+  body            String  @db.Text
+  attachmentCount Int     @default(0) @map("attachment_count")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author      User              @relation("ChatMessageAuthor", fields: [authorId], references: [id])
+  attachments ChatAttachment[]
+  reads       ChatMessageRead[]
+
+  @@map("chat_messages")
+  @@index([projectId, createdAt(sort: Desc)])
+}
+
+model ChatAttachment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  messageId  String   @map("message_id") @db.Uuid
+  fileName   String   @map("file_name") @db.VarChar(255)
+  mimeType   String   @map("mime_type") @db.VarChar(100)
+  sizeBytes  Int      @map("size_bytes")
+  dataBase64 String   @map("data_base64") @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("chat_attachments")
+  @@index([messageId])
+}
+
+model ChatMessageRead {
+  messageId String   @map("message_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  readAt    DateTime @default(now()) @map("read_at") @db.Timestamptz(6)
+
+  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([messageId, userId])
+  @@map("chat_message_reads")
+  @@index([userId, readAt])
+}
+
+model Notification {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  kind      NotificationKind
+  title     String           @db.VarChar(200)
+  body      String?          @db.Text
+  link      String?          @db.VarChar(500)
+  readAt    DateTime?        @map("read_at") @db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+  @@index([userId, readAt, createdAt(sort: Desc)])
 }

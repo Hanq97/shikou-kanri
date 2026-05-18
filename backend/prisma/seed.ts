@@ -1183,6 +1183,188 @@ async function seedF6(prisma: PrismaClient): Promise<void> {
   );
 }
 
+async function seedW3(prisma: PrismaClient): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log('🌱 Seeding W3 chat + notifications sample data...');
+
+  const admin = await prisma.user.findUnique({
+    where: { email: 'admin@dev.shikou-kanri.local' },
+  });
+  const employee = await prisma.user.findUnique({
+    where: { email: 'employee@dev.shikou-kanri.local' },
+  });
+  if (!admin || !employee) {
+    // eslint-disable-next-line no-console
+    console.log('  ⚠️  Required users missing; skipping W3 seed');
+    return;
+  }
+
+  if ((await prisma.chatMessage.count()) > 0) {
+    // eslint-disable-next-line no-console
+    console.log('  ↩  W3 sample chat already exists, skipping');
+    return;
+  }
+
+  const project = await prisma.project.findFirst({
+    where: { name: '田中様邸 キッチンリフォーム', deletedAt: null },
+  });
+  if (!project) {
+    // eslint-disable-next-line no-console
+    console.log('  ⚠️  Demo project missing; skipping W3 chat seed');
+    return;
+  }
+
+  const messages = [
+    {
+      author: employee,
+      body: 'お疲れさまです。田中様邸キッチンの現地調査完了しました。',
+      offsetMin: 60 * 24 * 5,
+    },
+    {
+      author: admin,
+      body: 'ありがとうございます。寸法はいかがでしたか?',
+      offsetMin: 60 * 24 * 4,
+    },
+    {
+      author: employee,
+      body: '幅2400mm、奥行600mmです。L字配置で問題なさそうです。',
+      offsetMin: 60 * 24 * 4 - 30,
+    },
+    {
+      author: admin,
+      body: 'OKです。見積に反映お願いします。納期は2週間後を目処に。',
+      offsetMin: 60 * 24 * 3,
+    },
+    {
+      author: employee,
+      body: '了解しました。今週中に見積出します。',
+      offsetMin: 60 * 24 * 3 - 60,
+    },
+    {
+      author: employee,
+      body: '見積完成しました。承認お願いします。',
+      offsetMin: 60 * 24 * 1,
+    },
+    { author: admin, body: '確認しました。承認します。', offsetMin: 60 * 6 },
+    {
+      author: employee,
+      body: '承認ありがとうございます!着工準備します。',
+      offsetMin: 60 * 2,
+    },
+  ];
+
+  const now = Date.now();
+  const createdMessages = [];
+  for (const m of messages) {
+    const msg = await prisma.chatMessage.create({
+      data: {
+        projectId: project.id,
+        authorId: m.author.id,
+        body: m.body,
+        createdAt: new Date(now - m.offsetMin * 60_000),
+        updatedAt: new Date(now - m.offsetMin * 60_000),
+      },
+    });
+    createdMessages.push(msg);
+  }
+
+  // Admin already read the first 6, employee read all
+  for (let i = 0; i < createdMessages.length; i++) {
+    const msg = createdMessages[i];
+    // employee reads all of their own + admin replies up to last
+    if (i < createdMessages.length) {
+      await prisma.chatMessageRead.upsert({
+        where: {
+          messageId_userId: { messageId: msg.id, userId: employee.id },
+        },
+        create: {
+          messageId: msg.id,
+          userId: employee.id,
+          readAt: new Date(now - 60 * 60_000),
+        },
+        update: {},
+      });
+    }
+    // admin only read first 6 (last 2 still unread)
+    if (i < 6) {
+      await prisma.chatMessageRead.upsert({
+        where: {
+          messageId_userId: { messageId: msg.id, userId: admin.id },
+        },
+        create: {
+          messageId: msg.id,
+          userId: admin.id,
+          readAt: new Date(now - 4 * 60 * 60_000),
+        },
+        update: {},
+      });
+    }
+  }
+
+  // Notifications for admin
+  const notifData = [
+    {
+      kind: 'chat_new_message' as const,
+      title: '新しいメッセージ - 田中様邸 キッチンリフォーム',
+      body: '営業一郎: 承認ありがとうございます!着工準備します。',
+      link: `/projects/${project.id}`,
+      offsetMin: 60 * 2,
+      readAt: null,
+    },
+    {
+      kind: 'aftercare_due' as const,
+      title: '【1年点検】まもなく予定日',
+      body: '佐藤 健一様 - 2026-05-30 (あと11日)',
+      link: '/aftercare/schedules',
+      offsetMin: 60 * 24,
+      readAt: null,
+    },
+    {
+      kind: 'quote_approval_request' as const,
+      title: '見積承認依頼',
+      body: 'Q-2026-0001 田中様邸 キッチンリフォーム ¥1,500,000',
+      link: '/estimates',
+      offsetMin: 60 * 24 * 2,
+      readAt: new Date(now - 60 * 60 * 60_000),
+    },
+    {
+      kind: 'project_member_added' as const,
+      title: '案件メンバーに追加されました',
+      body: '藤和商事本社 外壁修繕',
+      link: '/projects',
+      offsetMin: 60 * 24 * 3,
+      readAt: new Date(now - 2 * 24 * 60 * 60_000),
+    },
+    {
+      kind: 'other' as const,
+      title: 'システムメンテナンスのお知らせ',
+      body: '2026-06-01 02:00-04:00 (JST)',
+      link: null,
+      offsetMin: 60 * 24 * 5,
+      readAt: new Date(now - 4 * 24 * 60 * 60_000),
+    },
+  ];
+
+  for (const n of notifData) {
+    await prisma.notification.create({
+      data: {
+        userId: admin.id,
+        kind: n.kind,
+        title: n.title,
+        body: n.body,
+        link: n.link,
+        readAt: n.readAt,
+        createdAt: new Date(now - n.offsetMin * 60_000),
+      },
+    });
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(
+    `  ✓  W3 sample: ${createdMessages.length} chat messages, ${notifData.length} notifications`,
+  );
+}
+
 async function main(): Promise<void> {
   const prisma = new PrismaClient();
   const passwordHash = await argon2.hash(SEED_PASSWORD, ARGON2_OPTIONS);
@@ -1215,6 +1397,7 @@ async function main(): Promise<void> {
   await ensureInvitedMemberships(prisma);
   await seedF2(prisma);
   await seedF6(prisma);
+  await seedW3(prisma);
 
   // eslint-disable-next-line no-console
   console.log('');
