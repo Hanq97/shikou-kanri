@@ -386,8 +386,18 @@
       "ongoingProjects": "Dự án đang chạy",
       "monthlyEstimates": "Báo giá tháng này",
       "aftercare": "Thông báo bảo trì",
-      "obCustomers": "Khách hàng OB"
+      "obCustomers": "Khách hàng OB",
+      "pendingQuotes": "Báo giá chờ duyệt",
+      "overdueAftercare": "Bảo trì quá hạn",
+      "activeCustomers": "Tổng khách hàng"
     },
+    "alerts": {
+      "aftercareDue14d": "Bảo trì trong 14 ngày",
+      "pendingApprovals": "Báo giá chờ duyệt",
+      "viewAll": "Xem tất cả",
+      "empty": "Không có"
+    },
+    "recentActivity": "Hoạt động gần đây",
     "accountInfo": "Thông tin tài khoản",
     "labelEmail": "Email",
     "labelRole": "Vai trò",

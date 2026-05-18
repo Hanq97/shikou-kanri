@@ -386,8 +386,18 @@
       "ongoingProjects": "Ongoing projects",
       "monthlyEstimates": "Estimates this month",
       "aftercare": "Aftercare notifications",
-      "obCustomers": "OB customers"
+      "obCustomers": "OB customers",
+      "pendingQuotes": "Pending quote approvals",
+      "overdueAftercare": "Overdue aftercare",
+      "activeCustomers": "Total customers"
     },
+    "alerts": {
+      "aftercareDue14d": "Aftercare due (14 days)",
+      "pendingApprovals": "Pending approvals",
+      "viewAll": "View all",
+      "empty": "None"
+    },
+    "recentActivity": "Recent activity",
     "accountInfo": "Account information",
     "labelEmail": "Email",
     "labelRole": "Role",

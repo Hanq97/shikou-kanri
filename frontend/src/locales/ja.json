@@ -386,8 +386,18 @@
       "ongoingProjects": "進行中の案件",
       "monthlyEstimates": "今月の見積",
       "aftercare": "アフター通知",
-      "obCustomers": "OB顧客"
+      "obCustomers": "OB顧客",
+      "pendingQuotes": "承認待ち見積",
+      "overdueAftercare": "期限超過アフター",
+      "activeCustomers": "顧客総数"
     },
+    "alerts": {
+      "aftercareDue14d": "14日以内の点検予定",
+      "pendingApprovals": "承認待ち見積",
+      "viewAll": "すべて表示",
+      "empty": "該当なし"
+    },
+    "recentActivity": "最近のアクティビティ",
     "accountInfo": "アカウント情報",
     "labelEmail": "メールアドレス",
     "labelRole": "ロール",

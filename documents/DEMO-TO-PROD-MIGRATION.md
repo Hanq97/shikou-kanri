@@ -53,29 +53,53 @@
 
 ## F8-03 — 監査ログ (Audit Log) — Phase 1 Core
 
-_To be filled when W2 starts._
+**Status**: 🟡 Read-only viewer real, write infra deferred
+**Built**: W2 D1-D2
+
+| Mục | Demo state | Prod-grade upgrade |
+|---|---|---|
+| Viewer endpoint + UI | 🟢 Real (admin can browse 114+ logs at /admin/audit-logs) | — |
+| Audit write path | 🟡 Synchronous (writes block primary op briefly) | Async queue (BullMQ) to avoid latency spikes |
+| Long-term storage | 🟡 All logs in single PG table | S3 archival for logs > 1 year, partition by month |
+| Log retention policy | 🔴 No purge | Configurable retention + automated archival job |
 
 ## F8-04 — バックアップ・リストア — Phase 1 Core
 
-**Planned status**: 🔴 UI giả (Phase 2)
+**Status**: 🔴 Mock UI only
+**Built**: W2 D3
 
 | Mục | Demo state | Prod-grade upgrade |
 |---|---|---|
-| Backup list page | 🔴 Mock data (static backup history rows) | Wire to RDS automated snapshot API |
-| Restore button | 🔴 Fake spinner + success modal | Real restore workflow with confirmation + audit log |
-| Backup schedule config | 🔴 Read-only display | Editable cron via admin UI |
+| Backup list page | 🔴 8 hardcoded backup rows in `BackupsListPage.tsx` (`INITIAL_BACKUPS`) | Query AWS RDS automated snapshot API + show real S3 CRR state |
+| "Backup now" button | 🔴 3s fake spinner + prepend new row | Trigger real RDS manual snapshot via SDK |
+| "Restore" button | 🔴 5s fake spinner + success modal | Real restore workflow: confirm → trigger PITR → audit log entry → notify ops |
+| Retention display | 🔴 Static 30/90 days | Pull from RDS instance config |
 
 ## Migration tool — Phase 1 Core
 
-**Planned status**: 🔴 UI giả
+**Status**: 🔴 Mock UI (customer tab links to real)
+**Built**: W2 D3
 
 | Mục | Demo state | Prod-grade upgrade |
 |---|---|---|
-| CSV upload wizard | 🔴 Real upload but fake parse animation + canned success | Real CSV parsing via existing F1 import infra extended to property+handover_date |
+| Customer CSV | 🟢 Real (link to existing `/admin/customer-import`) | — |
+| Property CSV upload | 🔴 Real file accept, fake parse (2s) → random row count | Extend `customer-import.service.ts` pattern: parse → validate → upsert property with FK to customer email |
+| 引渡日 CSV | 🔴 Same mock as property | Property address match → update handover_date → trigger schedule regeneration |
+| Validation step | 🔴 Random fake invalid count | Real per-row Zod validation with line-level error reporting |
+| Import progress | 🔴 4s delay then "done" | Stream progress via WebSocket or polling |
 
 ## BD-01 — Home Dashboard
 
-_To be filled when W2 starts. Plan: real widgets wiring to F1/F2/F6 counts._
+**Status**: 🟢 Real widgets wired to F1/F2/F6
+**Built**: W2 D4-D5
+
+| Mục | Demo state | Prod-grade upgrade |
+|---|---|---|
+| 4 KPI cards | 🟢 Real counts from DB | — |
+| Aftercare 14d alerts | 🟢 Real query | — |
+| Pending quote approvals | 🟢 Real query | — |
+| Recent activity feed | 🟡 Merged from 3 sources at query time | Pre-aggregated activity_log table for faster query at scale |
+| Chart visualizations | 🔴 Not in scope (deferred to Phase 3 F7-01/02) | Real-time charts via recharts + materialized views |
 
 ---
 
