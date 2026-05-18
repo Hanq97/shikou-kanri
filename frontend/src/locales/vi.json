@@ -56,7 +56,9 @@
     "language": "Ngôn ngữ",
     "unitPrices": "Đơn giá",
     "aftercare": "Bảo trì",
-    "auditLogs": "Nhật ký kiểm toán"
+    "auditLogs": "Nhật ký kiểm toán",
+    "backups": "Sao lưu",
+    "migration": "Di chuyển dữ liệu"
   },
   "audit": {
     "title": "Nhật ký kiểm toán",
@@ -70,6 +72,76 @@
       "entity": "Đối tượng",
       "ip": "IP",
       "changes": "Thay đổi"
+    }
+  },
+  "backups": {
+    "title": "Quản lý sao lưu",
+    "runNow": "Sao lưu ngay",
+    "runSuccess": "Sao lưu hoàn tất",
+    "restore": "Khôi phục",
+    "restoreConfirmTitle": "Khôi phục bản sao lưu này?",
+    "restoreConfirmDesc": "Toàn bộ dữ liệu sẽ bị thay thế. Tiếp tục?",
+    "restoreConfirmOk": "Khôi phục",
+    "restoreCompleted": "Khôi phục hoàn tất",
+    "restoreCompletedDetail": "Đã khôi phục về trạng thái {{date}}",
+    "stat": {
+      "total": "Tổng số sao lưu",
+      "totalSize": "Tổng dung lượng",
+      "ok": "Thành công"
+    },
+    "type": {
+      "auto": "Tự động",
+      "manual": "Thủ công"
+    },
+    "status": {
+      "success": "Thành công",
+      "failed": "Thất bại",
+      "in_progress": "Đang chạy"
+    },
+    "columns": {
+      "backupAt": "Thời điểm",
+      "type": "Loại",
+      "size": "Dung lượng",
+      "status": "Trạng thái",
+      "retention": "Lưu giữ"
+    }
+  },
+  "migration": {
+    "title": "Công cụ di chuyển dữ liệu",
+    "uploadHint": "Kéo thả file CSV hoặc nhấp để chọn",
+    "nextValidate": "Tiếp: Kiểm tra",
+    "nextImport": "Bắt đầu import",
+    "validating": "Đang kiểm tra...",
+    "validatingDesc": "Kiểm tra dữ liệu CSV",
+    "validateResult": "Tìm thấy: hợp lệ {{valid}} / lỗi {{invalid}}",
+    "invalidWarn": "Các dòng lỗi sẽ bị bỏ qua",
+    "allGood": "Tất cả hợp lệ",
+    "importing": "Đang import...",
+    "importingDesc": "Đang ghi vào database",
+    "doneTitle": "Hoàn tất",
+    "doneDetail": "Đã import {{imported}} / bỏ qua {{skipped}}",
+    "startOver": "Bắt đầu lại",
+    "steps": {
+      "upload": "Upload",
+      "validate": "Kiểm tra",
+      "import": "Import",
+      "done": "Hoàn tất"
+    },
+    "tabs": {
+      "customer": "Khách hàng",
+      "property": "Bất động sản",
+      "handover": "Ngày bàn giao"
+    },
+    "customer": {
+      "title": "Import CSV khách hàng",
+      "desc": "Dùng trang import khách hàng đã có.",
+      "goto": "Đi tới import khách hàng"
+    },
+    "property": {
+      "schema": "Cột CSV: customer_email, address, property_type, structure, year_built, floor_area_sqm, notes"
+    },
+    "handover": {
+      "schema": "Cột CSV: property_address, handover_date (YYYY-MM-DD)"
     }
   },
   "aftercare": {

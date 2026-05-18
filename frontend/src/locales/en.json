@@ -56,7 +56,9 @@
     "language": "Language",
     "unitPrices": "Unit prices",
     "aftercare": "Aftercare",
-    "auditLogs": "Audit logs"
+    "auditLogs": "Audit logs",
+    "backups": "Backups",
+    "migration": "Data migration"
   },
   "audit": {
     "title": "Audit Logs",
@@ -70,6 +72,76 @@
       "entity": "Target",
       "ip": "IP",
       "changes": "Changes"
+    }
+  },
+  "backups": {
+    "title": "Backup Management",
+    "runNow": "Backup now",
+    "runSuccess": "Backup completed",
+    "restore": "Restore",
+    "restoreConfirmTitle": "Restore this backup?",
+    "restoreConfirmDesc": "All data will be replaced. Continue?",
+    "restoreConfirmOk": "Restore",
+    "restoreCompleted": "Restore complete",
+    "restoreCompletedDetail": "Restored to state at {{date}}",
+    "stat": {
+      "total": "Total backups",
+      "totalSize": "Total size",
+      "ok": "Successful"
+    },
+    "type": {
+      "auto": "Auto",
+      "manual": "Manual"
+    },
+    "status": {
+      "success": "Success",
+      "failed": "Failed",
+      "in_progress": "Running"
+    },
+    "columns": {
+      "backupAt": "When",
+      "type": "Type",
+      "size": "Size",
+      "status": "Status",
+      "retention": "Retention"
+    }
+  },
+  "migration": {
+    "title": "Data Migration Tool",
+    "uploadHint": "Drag & drop CSV file or click to select",
+    "nextValidate": "Next: Validate",
+    "nextImport": "Start import",
+    "validating": "Validating...",
+    "validatingDesc": "Checking CSV data",
+    "validateResult": "Found: {{valid}} valid / {{invalid}} invalid",
+    "invalidWarn": "Invalid rows will be skipped",
+    "allGood": "All rows valid",
+    "importing": "Importing...",
+    "importingDesc": "Writing to database",
+    "doneTitle": "Migration complete",
+    "doneDetail": "Imported {{imported}} / skipped {{skipped}}",
+    "startOver": "Start over",
+    "steps": {
+      "upload": "Upload",
+      "validate": "Validate",
+      "import": "Import",
+      "done": "Done"
+    },
+    "tabs": {
+      "customer": "Customer",
+      "property": "Property",
+      "handover": "Handover date"
+    },
+    "customer": {
+      "title": "Customer CSV import",
+      "desc": "Use the existing customer import page.",
+      "goto": "Go to customer import"
+    },
+    "property": {
+      "schema": "CSV fields: customer_email, address, property_type, structure, year_built, floor_area_sqm, notes"
+    },
+    "handover": {
+      "schema": "CSV fields: property_address, handover_date (YYYY-MM-DD)"
     }
   },
   "aftercare": {

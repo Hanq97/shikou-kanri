@@ -2,6 +2,7 @@ import { Avatar, Drawer, Dropdown, Grid, type MenuProps } from 'antd';
 import {
   Bell,
   Briefcase,
+  Database,
   FileText,
   HardHat,
   History,
@@ -13,6 +14,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
+  Upload,
   User,
   UserCircle,
   Users,
@@ -32,7 +34,9 @@ type NavKey =
   | 'aftercare'
   | 'users'
   | 'unitPrices'
-  | 'auditLogs';
+  | 'auditLogs'
+  | 'backups'
+  | 'migration';
 
 interface NavDef {
   key: NavKey;
@@ -78,6 +82,18 @@ const NAV_DEFS: NavDef[] = [
     key: 'auditLogs',
     to: '/admin/audit-logs',
     icon: <History size={18} />,
+    roles: ['system_admin'],
+  },
+  {
+    key: 'backups',
+    to: '/admin/backups',
+    icon: <Database size={18} />,
+    roles: ['system_admin'],
+  },
+  {
+    key: 'migration',
+    to: '/admin/migration',
+    icon: <Upload size={18} />,
     roles: ['system_admin'],
   },
 ];
