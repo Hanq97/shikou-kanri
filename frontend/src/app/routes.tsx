@@ -1,4 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { AuditLogsListPage } from '@/features/admin/pages/AuditLogsListPage';
+import { BackupsListPage } from '@/features/admin/pages/BackupsListPage';
+import { MigrationWizardPage } from '@/features/admin/pages/MigrationWizardPage';
 import { UnitPricesListPage } from '@/features/admin/pages/UnitPricesListPage';
 import { UsersListPage } from '@/features/admin/pages/UsersListPage';
 import { ObCustomersListPage } from '@/features/aftercare/pages/ObCustomersListPage';
@@ -265,6 +268,36 @@ export const router = createBrowserRouter([
       <AuthGuard>
         <RoleGuard roles={['system_admin']}>
           <UnitPricesListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/admin/audit-logs',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin']}>
+          <AuditLogsListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/admin/backups',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin']}>
+          <BackupsListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/admin/migration',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin']}>
+          <MigrationWizardPage />
         </RoleGuard>
       </AuthGuard>
     ),

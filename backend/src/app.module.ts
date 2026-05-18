@@ -6,7 +6,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
 import { AftercareModule } from './modules/aftercare/aftercare.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { AuthModule } from './modules/auth';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { NotificationModule } from './modules/notification';
 import { ProjectModule } from './modules/project/project.module';
@@ -38,6 +40,8 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
     ProjectModule,
     QuoteModule,
     AftercareModule,
+    AuditModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [

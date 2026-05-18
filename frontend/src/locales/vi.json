@@ -55,7 +55,134 @@
     "notifications": "Thông báo",
     "language": "Ngôn ngữ",
     "unitPrices": "Đơn giá",
-    "aftercare": "Bảo trì"
+    "aftercare": "Bảo trì",
+    "auditLogs": "Nhật ký kiểm toán",
+    "backups": "Sao lưu",
+    "migration": "Di chuyển dữ liệu"
+  },
+  "audit": {
+    "title": "Nhật ký kiểm toán",
+    "system": "Hệ thống",
+    "searchPlaceholder": "Tìm action / người dùng",
+    "filterAction": "Lọc theo action",
+    "columns": {
+      "occurredAt": "Thời điểm",
+      "actor": "Người dùng",
+      "action": "Action",
+      "entity": "Đối tượng",
+      "ip": "IP",
+      "changes": "Thay đổi"
+    },
+    "entities": {
+      "user": "Người dùng",
+      "customer": "Khách hàng",
+      "property": "Bất động sản",
+      "project": "Dự án",
+      "quote": "Báo giá",
+      "schedule": "Lịch",
+      "aftercare_record": "Bảo trì"
+    },
+    "actions": {
+      "auth.login.success": "Đăng nhập thành công",
+      "auth.login.failure": "Đăng nhập thất bại",
+      "auth.login.pending_2fa": "Chờ 2FA",
+      "auth.logout": "Đăng xuất",
+      "auth.2fa.enroll": "Đăng ký 2FA",
+      "auth.2fa.failed": "2FA thất bại",
+      "auth.2fa.admin_disable": "Admin tắt 2FA",
+      "auth.password.reset_requested": "Yêu cầu đặt lại mật khẩu",
+      "auth.password.reset": "Đặt lại mật khẩu",
+      "user.profile.updated": "Cập nhật hồ sơ",
+      "customer.created": "Tạo khách hàng",
+      "property.created": "Tạo bất động sản",
+      "property.deleted": "Xóa bất động sản",
+      "project.created": "Tạo dự án",
+      "project.status_changed": "Đổi trạng thái dự án",
+      "project.status.reversed": "Hoàn tác trạng thái dự án",
+      "project.member_added": "Thêm thành viên",
+      "project.member_removed": "Xóa thành viên",
+      "project.member_role_changed": "Đổi vai trò thành viên",
+      "project.csv_exported": "Export CSV dự án",
+      "quote.created": "Tạo báo giá",
+      "quote.updated": "Cập nhật báo giá",
+      "quote.submitted": "Gửi báo giá",
+      "quote.approved": "Duyệt báo giá",
+      "quote.rejected": "Từ chối báo giá",
+      "quote.sent": "Gửi báo giá đi",
+      "quote.won": "Trúng thầu",
+      "quote.version_created": "Tạo phiên bản báo giá",
+      "quote.pdf_downloaded": "Tải PDF báo giá"
+    }
+  },
+  "backups": {
+    "title": "Quản lý sao lưu",
+    "runNow": "Sao lưu ngay",
+    "runSuccess": "Sao lưu hoàn tất",
+    "restore": "Khôi phục",
+    "restoreConfirmTitle": "Khôi phục bản sao lưu này?",
+    "restoreConfirmDesc": "Toàn bộ dữ liệu sẽ bị thay thế. Tiếp tục?",
+    "restoreConfirmOk": "Khôi phục",
+    "restoreCompleted": "Khôi phục hoàn tất",
+    "restoreCompletedDetail": "Đã khôi phục về trạng thái {{date}}",
+    "stat": {
+      "total": "Tổng số sao lưu",
+      "totalSize": "Tổng dung lượng",
+      "ok": "Thành công"
+    },
+    "type": {
+      "auto": "Tự động",
+      "manual": "Thủ công"
+    },
+    "status": {
+      "success": "Thành công",
+      "failed": "Thất bại",
+      "in_progress": "Đang chạy"
+    },
+    "columns": {
+      "backupAt": "Thời điểm",
+      "type": "Loại",
+      "size": "Dung lượng",
+      "status": "Trạng thái",
+      "retention": "Lưu giữ"
+    }
+  },
+  "migration": {
+    "title": "Công cụ di chuyển dữ liệu",
+    "uploadHint": "Kéo thả file CSV hoặc nhấp để chọn",
+    "nextValidate": "Tiếp: Kiểm tra",
+    "nextImport": "Bắt đầu import",
+    "validating": "Đang kiểm tra...",
+    "validatingDesc": "Kiểm tra dữ liệu CSV",
+    "validateResult": "Tìm thấy: hợp lệ {{valid}} / lỗi {{invalid}}",
+    "invalidWarn": "Các dòng lỗi sẽ bị bỏ qua",
+    "allGood": "Tất cả hợp lệ",
+    "importing": "Đang import...",
+    "importingDesc": "Đang ghi vào database",
+    "doneTitle": "Hoàn tất",
+    "doneDetail": "Đã import {{imported}} / bỏ qua {{skipped}}",
+    "startOver": "Bắt đầu lại",
+    "steps": {
+      "upload": "Upload",
+      "validate": "Kiểm tra",
+      "import": "Import",
+      "done": "Hoàn tất"
+    },
+    "tabs": {
+      "customer": "Khách hàng",
+      "property": "Bất động sản",
+      "handover": "Ngày bàn giao"
+    },
+    "customer": {
+      "title": "Import CSV khách hàng",
+      "desc": "Dùng trang import khách hàng đã có.",
+      "goto": "Đi tới import khách hàng"
+    },
+    "property": {
+      "schema": "Cột CSV: customer_email, address, property_type, structure, year_built, floor_area_sqm, notes"
+    },
+    "handover": {
+      "schema": "Cột CSV: property_address, handover_date (YYYY-MM-DD)"
+    }
   },
   "aftercare": {
     "none": "Không có",
@@ -299,8 +426,18 @@
       "ongoingProjects": "Dự án đang chạy",
       "monthlyEstimates": "Báo giá tháng này",
       "aftercare": "Thông báo bảo trì",
-      "obCustomers": "Khách hàng OB"
+      "obCustomers": "Khách hàng OB",
+      "pendingQuotes": "Báo giá chờ duyệt",
+      "overdueAftercare": "Bảo trì quá hạn",
+      "activeCustomers": "Tổng khách hàng"
     },
+    "alerts": {
+      "aftercareDue14d": "Bảo trì trong 14 ngày",
+      "pendingApprovals": "Báo giá chờ duyệt",
+      "viewAll": "Xem tất cả",
+      "empty": "Không có"
+    },
+    "recentActivity": "Hoạt động gần đây",
     "accountInfo": "Thông tin tài khoản",
     "labelEmail": "Email",
     "labelRole": "Vai trò",

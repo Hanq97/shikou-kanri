@@ -55,7 +55,134 @@
     "notifications": "Notifications",
     "language": "Language",
     "unitPrices": "Unit prices",
-    "aftercare": "Aftercare"
+    "aftercare": "Aftercare",
+    "auditLogs": "Audit logs",
+    "backups": "Backups",
+    "migration": "Data migration"
+  },
+  "audit": {
+    "title": "Audit Logs",
+    "system": "System",
+    "searchPlaceholder": "Search action / actor",
+    "filterAction": "Filter by action",
+    "columns": {
+      "occurredAt": "When",
+      "actor": "Actor",
+      "action": "Action",
+      "entity": "Target",
+      "ip": "IP",
+      "changes": "Changes"
+    },
+    "entities": {
+      "user": "User",
+      "customer": "Customer",
+      "property": "Property",
+      "project": "Project",
+      "quote": "Quote",
+      "schedule": "Schedule",
+      "aftercare_record": "Aftercare record"
+    },
+    "actions": {
+      "auth.login.success": "Login success",
+      "auth.login.failure": "Login failed",
+      "auth.login.pending_2fa": "2FA pending",
+      "auth.logout": "Logout",
+      "auth.2fa.enroll": "2FA enrolled",
+      "auth.2fa.failed": "2FA failed",
+      "auth.2fa.admin_disable": "2FA admin disable",
+      "auth.password.reset_requested": "Password reset requested",
+      "auth.password.reset": "Password reset",
+      "user.profile.updated": "Profile updated",
+      "customer.created": "Customer created",
+      "property.created": "Property created",
+      "property.deleted": "Property deleted",
+      "project.created": "Project created",
+      "project.status_changed": "Project status changed",
+      "project.status.reversed": "Project status reversed",
+      "project.member_added": "Member added",
+      "project.member_removed": "Member removed",
+      "project.member_role_changed": "Member role changed",
+      "project.csv_exported": "Project CSV exported",
+      "quote.created": "Quote created",
+      "quote.updated": "Quote updated",
+      "quote.submitted": "Quote submitted",
+      "quote.approved": "Quote approved",
+      "quote.rejected": "Quote rejected",
+      "quote.sent": "Quote sent",
+      "quote.won": "Quote won",
+      "quote.version_created": "Quote version created",
+      "quote.pdf_downloaded": "Quote PDF downloaded"
+    }
+  },
+  "backups": {
+    "title": "Backup Management",
+    "runNow": "Backup now",
+    "runSuccess": "Backup completed",
+    "restore": "Restore",
+    "restoreConfirmTitle": "Restore this backup?",
+    "restoreConfirmDesc": "All data will be replaced. Continue?",
+    "restoreConfirmOk": "Restore",
+    "restoreCompleted": "Restore complete",
+    "restoreCompletedDetail": "Restored to state at {{date}}",
+    "stat": {
+      "total": "Total backups",
+      "totalSize": "Total size",
+      "ok": "Successful"
+    },
+    "type": {
+      "auto": "Auto",
+      "manual": "Manual"
+    },
+    "status": {
+      "success": "Success",
+      "failed": "Failed",
+      "in_progress": "Running"
+    },
+    "columns": {
+      "backupAt": "When",
+      "type": "Type",
+      "size": "Size",
+      "status": "Status",
+      "retention": "Retention"
+    }
+  },
+  "migration": {
+    "title": "Data Migration Tool",
+    "uploadHint": "Drag & drop CSV file or click to select",
+    "nextValidate": "Next: Validate",
+    "nextImport": "Start import",
+    "validating": "Validating...",
+    "validatingDesc": "Checking CSV data",
+    "validateResult": "Found: {{valid}} valid / {{invalid}} invalid",
+    "invalidWarn": "Invalid rows will be skipped",
+    "allGood": "All rows valid",
+    "importing": "Importing...",
+    "importingDesc": "Writing to database",
+    "doneTitle": "Migration complete",
+    "doneDetail": "Imported {{imported}} / skipped {{skipped}}",
+    "startOver": "Start over",
+    "steps": {
+      "upload": "Upload",
+      "validate": "Validate",
+      "import": "Import",
+      "done": "Done"
+    },
+    "tabs": {
+      "customer": "Customer",
+      "property": "Property",
+      "handover": "Handover date"
+    },
+    "customer": {
+      "title": "Customer CSV import",
+      "desc": "Use the existing customer import page.",
+      "goto": "Go to customer import"
+    },
+    "property": {
+      "schema": "CSV fields: customer_email, address, property_type, structure, year_built, floor_area_sqm, notes"
+    },
+    "handover": {
+      "schema": "CSV fields: property_address, handover_date (YYYY-MM-DD)"
+    }
   },
   "aftercare": {
     "none": "None",
@@ -299,8 +426,18 @@
       "ongoingProjects": "Ongoing projects",
       "monthlyEstimates": "Estimates this month",
       "aftercare": "Aftercare notifications",
-      "obCustomers": "OB customers"
+      "obCustomers": "OB customers",
+      "pendingQuotes": "Pending quote approvals",
+      "overdueAftercare": "Overdue aftercare",
+      "activeCustomers": "Total customers"
     },
+    "alerts": {
+      "aftercareDue14d": "Aftercare due (14 days)",
+      "pendingApprovals": "Pending approvals",
+      "viewAll": "View all",
+      "empty": "None"
+    },
+    "recentActivity": "Recent activity",
     "accountInfo": "Account information",
     "labelEmail": "Email",
     "labelRole": "Role",

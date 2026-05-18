@@ -55,7 +55,134 @@
     "notifications": "通知",
     "language": "言語",
     "unitPrices": "単価マスタ",
-    "aftercare": "アフター"
+    "aftercare": "アフター",
+    "auditLogs": "監査ログ",
+    "backups": "バックアップ",
+    "migration": "データ移行"
+  },
+  "audit": {
+    "title": "監査ログ",
+    "system": "システム",
+    "searchPlaceholder": "アクション/担当者で検索",
+    "filterAction": "アクション絞り込み",
+    "columns": {
+      "occurredAt": "日時",
+      "actor": "担当者",
+      "action": "アクション",
+      "entity": "対象",
+      "ip": "IPアドレス",
+      "changes": "変更内容"
+    },
+    "entities": {
+      "user": "ユーザー",
+      "customer": "顧客",
+      "property": "物件",
+      "project": "案件",
+      "quote": "見積",
+      "schedule": "スケジュール",
+      "aftercare_record": "アフター履歴"
+    },
+    "actions": {
+      "auth.login.success": "ログイン成功",
+      "auth.login.failure": "ログイン失敗",
+      "auth.login.pending_2fa": "2FA待ち",
+      "auth.logout": "ログアウト",
+      "auth.2fa.enroll": "2FA登録",
+      "auth.2fa.failed": "2FA失敗",
+      "auth.2fa.admin_disable": "2FA管理者解除",
+      "auth.password.reset_requested": "パスワード再設定依頼",
+      "auth.password.reset": "パスワード再設定",
+      "user.profile.updated": "プロフィール更新",
+      "customer.created": "顧客作成",
+      "property.created": "物件作成",
+      "property.deleted": "物件削除",
+      "project.created": "案件作成",
+      "project.status_changed": "案件ステータス変更",
+      "project.status.reversed": "案件ステータス取消",
+      "project.member_added": "担当者追加",
+      "project.member_removed": "担当者削除",
+      "project.member_role_changed": "担当者ロール変更",
+      "project.csv_exported": "案件CSV出力",
+      "quote.created": "見積作成",
+      "quote.updated": "見積更新",
+      "quote.submitted": "見積提出",
+      "quote.approved": "見積承認",
+      "quote.rejected": "見積却下",
+      "quote.sent": "見積送付",
+      "quote.won": "見積受注",
+      "quote.version_created": "見積バージョン作成",
+      "quote.pdf_downloaded": "見積PDFダウンロード"
+    }
+  },
+  "backups": {
+    "title": "バックアップ管理",
+    "runNow": "今すぐバックアップ",
+    "runSuccess": "バックアップ完了しました",
+    "restore": "復元",
+    "restoreConfirmTitle": "このバックアップを復元しますか?",
+    "restoreConfirmDesc": "全データが置き換わります。本当に実行しますか?",
+    "restoreConfirmOk": "復元する",
+    "restoreCompleted": "復元完了",
+    "restoreCompletedDetail": "{{date}} の状態に戻しました",
+    "stat": {
+      "total": "総バックアップ数",
+      "totalSize": "合計サイズ",
+      "ok": "成功"
+    },
+    "type": {
+      "auto": "自動",
+      "manual": "手動"
+    },
+    "status": {
+      "success": "成功",
+      "failed": "失敗",
+      "in_progress": "実行中"
+    },
+    "columns": {
+      "backupAt": "実行日時",
+      "type": "種別",
+      "size": "サイズ",
+      "status": "ステータス",
+      "retention": "保持期間"
+    }
+  },
+  "migration": {
+    "title": "データ移行ツール",
+    "uploadHint": "CSVファイルをドラッグ&ドロップまたはクリックで選択",
+    "nextValidate": "次へ: 検証",
+    "nextImport": "インポート開始",
+    "validating": "検証中...",
+    "validatingDesc": "CSVデータをチェックしています",
+    "validateResult": "検出: 有効 {{valid}}件 / 無効 {{invalid}}件",
+    "invalidWarn": "無効な行はスキップされます",
+    "allGood": "全データが有効です",
+    "importing": "インポート中...",
+    "importingDesc": "データベースに登録しています",
+    "doneTitle": "移行完了",
+    "doneDetail": "登録 {{imported}}件 / スキップ {{skipped}}件",
+    "startOver": "もう一度",
+    "steps": {
+      "upload": "アップロード",
+      "validate": "検証",
+      "import": "インポート",
+      "done": "完了"
+    },
+    "tabs": {
+      "customer": "顧客",
+      "property": "物件",
+      "handover": "引渡日"
+    },
+    "customer": {
+      "title": "顧客CSVインポート",
+      "desc": "顧客データは既存のインポート画面を使用してください。",
+      "goto": "顧客インポートへ"
+    },
+    "property": {
+      "schema": "CSV項目: customer_email, address, property_type, structure, year_built, floor_area_sqm, notes"
+    },
+    "handover": {
+      "schema": "CSV項目: property_address, handover_date (YYYY-MM-DD)"
+    }
   },
   "aftercare": {
     "none": "なし",
@@ -299,8 +426,18 @@
       "ongoingProjects": "進行中の案件",
       "monthlyEstimates": "今月の見積",
       "aftercare": "アフター通知",
-      "obCustomers": "OB顧客"
+      "obCustomers": "OB顧客",
+      "pendingQuotes": "承認待ち見積",
+      "overdueAftercare": "期限超過アフター",
+      "activeCustomers": "顧客総数"
     },
+    "alerts": {
+      "aftercareDue14d": "14日以内の点検予定",
+      "pendingApprovals": "承認待ち見積",
+      "viewAll": "すべて表示",
+      "empty": "該当なし"
+    },
+    "recentActivity": "最近のアクティビティ",
     "accountInfo": "アカウント情報",
     "labelEmail": "メールアドレス",
     "labelRole": "ロール",
