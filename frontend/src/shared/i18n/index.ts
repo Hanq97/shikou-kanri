@@ -11,7 +11,10 @@ import vi from '@/locales/vi.json';
 export const SUPPORTED_LANGUAGES = ['ja', 'en', 'vi'] as const;
 export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
-export const LANGUAGE_DISPLAY: Record<AppLanguage, { label: string; nativeLabel: string; flag: string }> = {
+export const LANGUAGE_DISPLAY: Record<
+  AppLanguage,
+  { label: string; nativeLabel: string; flag: string }
+> = {
   ja: { label: 'Japanese', nativeLabel: '日本語', flag: '🇯🇵' },
   en: { label: 'English', nativeLabel: 'English', flag: '🇬🇧' },
   vi: { label: 'Vietnamese', nativeLabel: 'Tiếng Việt', flag: '🇻🇳' },
@@ -36,7 +39,7 @@ void i18n
       vi: { translation: vi },
     },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       lookupLocalStorage: 'shikou-kanri.lang',
       caches: ['localStorage'],
     },

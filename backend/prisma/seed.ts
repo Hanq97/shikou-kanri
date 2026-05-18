@@ -58,6 +58,317 @@ const TEST_USERS = [
   },
 ];
 
+async function seedF2(prisma: PrismaClient): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log('🌱 Seeding F2 unit_prices sample data...');
+
+  const admin = await prisma.user.findUnique({
+    where: { email: 'admin@dev.shikou-kanri.local' },
+  });
+  if (!admin) {
+    // eslint-disable-next-line no-console
+    console.log('  ⚠️  Admin user missing; skipping F2 seed');
+    return;
+  }
+
+  if ((await prisma.unitPrice.count()) > 0) {
+    // eslint-disable-next-line no-console
+    console.log('  ↩  F2 unit_prices already exists, skipping');
+    return;
+  }
+
+  const samples: Array<{
+    code: string;
+    category: string;
+    itemName: string;
+    description?: string;
+    unit: string;
+    defaultUnitPrice: number;
+    supplierName?: string;
+  }> = [
+    // 解体工事 (Demolition)
+    {
+      code: 'DML-001',
+      category: '解体工事',
+      itemName: '内装解体',
+      unit: 'm²',
+      defaultUnitPrice: 5000,
+    },
+    {
+      code: 'DML-002',
+      category: '解体工事',
+      itemName: '木造家屋解体',
+      unit: '坪',
+      defaultUnitPrice: 30000,
+    },
+    {
+      code: 'DML-003',
+      category: '解体工事',
+      itemName: 'RC造解体',
+      unit: '坪',
+      defaultUnitPrice: 50000,
+    },
+    {
+      code: 'DML-004',
+      category: '解体工事',
+      itemName: '産業廃棄物処分費',
+      unit: 'm³',
+      defaultUnitPrice: 15000,
+    },
+
+    // 基礎工事 (Foundation)
+    {
+      code: 'FND-001',
+      category: '基礎工事',
+      itemName: 'べた基礎',
+      unit: 'm²',
+      defaultUnitPrice: 18000,
+    },
+    {
+      code: 'FND-002',
+      category: '基礎工事',
+      itemName: '布基礎',
+      unit: 'm²',
+      defaultUnitPrice: 15000,
+    },
+    {
+      code: 'FND-003',
+      category: '基礎工事',
+      itemName: '地盤改良',
+      unit: 'm²',
+      defaultUnitPrice: 12000,
+    },
+
+    // 木工事 (Carpentry)
+    {
+      code: 'WD-001',
+      category: '木工事',
+      itemName: 'フローリング張替',
+      unit: 'm²',
+      defaultUnitPrice: 8000,
+    },
+    {
+      code: 'WD-002',
+      category: '木工事',
+      itemName: '畳張替 (い草)',
+      unit: '畳',
+      defaultUnitPrice: 15000,
+    },
+    {
+      code: 'WD-003',
+      category: '木工事',
+      itemName: '木造軸組',
+      unit: 'm²',
+      defaultUnitPrice: 25000,
+    },
+    {
+      code: 'WD-004',
+      category: '木工事',
+      itemName: '建具取付',
+      unit: '本',
+      defaultUnitPrice: 18000,
+    },
+
+    // 屋根工事 (Roofing)
+    {
+      code: 'ROOF-001',
+      category: '屋根工事',
+      itemName: '瓦交換',
+      unit: 'm²',
+      defaultUnitPrice: 12000,
+    },
+    {
+      code: 'ROOF-002',
+      category: '屋根工事',
+      itemName: 'スレート葺き',
+      unit: 'm²',
+      defaultUnitPrice: 8000,
+    },
+    {
+      code: 'ROOF-003',
+      category: '屋根工事',
+      itemName: '雨樋交換',
+      unit: 'm',
+      defaultUnitPrice: 4500,
+    },
+    {
+      code: 'ROOF-004',
+      category: '屋根工事',
+      itemName: '屋根塗装 (シリコン)',
+      unit: 'm²',
+      defaultUnitPrice: 3500,
+    },
+
+    // 外壁工事 (External wall)
+    {
+      code: 'EXT-001',
+      category: '外壁工事',
+      itemName: '外壁塗装 (シリコン)',
+      unit: 'm²',
+      defaultUnitPrice: 3000,
+    },
+    {
+      code: 'EXT-002',
+      category: '外壁工事',
+      itemName: '外壁塗装 (フッ素)',
+      unit: 'm²',
+      defaultUnitPrice: 4500,
+    },
+    {
+      code: 'EXT-003',
+      category: '外壁工事',
+      itemName: 'サイディング張替',
+      unit: 'm²',
+      defaultUnitPrice: 6000,
+    },
+    {
+      code: 'EXT-004',
+      category: '外壁工事',
+      itemName: 'コーキング打替',
+      unit: 'm',
+      defaultUnitPrice: 1200,
+    },
+
+    // 設備工事 (Equipment)
+    {
+      code: 'KCH-001',
+      category: '設備工事',
+      itemName: 'システムキッチン交換',
+      unit: '式',
+      defaultUnitPrice: 800000,
+    },
+    {
+      code: 'BTH-001',
+      category: '設備工事',
+      itemName: 'ユニットバス交換',
+      unit: '式',
+      defaultUnitPrice: 700000,
+    },
+    {
+      code: 'WC-001',
+      category: '設備工事',
+      itemName: 'トイレ交換',
+      unit: '台',
+      defaultUnitPrice: 150000,
+    },
+    {
+      code: 'WC-002',
+      category: '設備工事',
+      itemName: '洗面台交換',
+      unit: '台',
+      defaultUnitPrice: 80000,
+    },
+    {
+      code: 'PLM-001',
+      category: '設備工事',
+      itemName: '配管工事 (給排水)',
+      unit: 'm',
+      defaultUnitPrice: 5000,
+    },
+    {
+      code: 'ELC-001',
+      category: '設備工事',
+      itemName: '配線工事',
+      unit: 'm',
+      defaultUnitPrice: 1500,
+    },
+    {
+      code: 'ELC-002',
+      category: '設備工事',
+      itemName: 'LED照明取付',
+      unit: '台',
+      defaultUnitPrice: 8000,
+    },
+    {
+      code: 'AC-001',
+      category: '設備工事',
+      itemName: 'エアコン取付',
+      unit: '台',
+      defaultUnitPrice: 25000,
+    },
+
+    // 仕上工事 (Finishing)
+    {
+      code: 'CLR-001',
+      category: '仕上工事',
+      itemName: 'クロス張替',
+      unit: 'm²',
+      defaultUnitPrice: 1200,
+    },
+    {
+      code: 'CLR-002',
+      category: '仕上工事',
+      itemName: 'クッションフロア張替',
+      unit: 'm²',
+      defaultUnitPrice: 3500,
+    },
+    {
+      code: 'PNT-001',
+      category: '仕上工事',
+      itemName: '内装塗装',
+      unit: 'm²',
+      defaultUnitPrice: 2500,
+    },
+    {
+      code: 'TIL-001',
+      category: '仕上工事',
+      itemName: 'タイル張替',
+      unit: 'm²',
+      defaultUnitPrice: 8000,
+    },
+
+    // 諸経費 (Misc)
+    {
+      code: 'SCF-001',
+      category: '諸経費',
+      itemName: '足場設置・解体',
+      unit: '式',
+      defaultUnitPrice: 80000,
+    },
+    {
+      code: 'SCF-002',
+      category: '諸経費',
+      itemName: '養生シート',
+      unit: '式',
+      defaultUnitPrice: 25000,
+    },
+    {
+      code: 'MGT-001',
+      category: '諸経費',
+      itemName: '現場管理費',
+      unit: '式',
+      defaultUnitPrice: 50000,
+    },
+    {
+      code: 'TRP-001',
+      category: '諸経費',
+      itemName: '運搬費',
+      unit: '回',
+      defaultUnitPrice: 15000,
+    },
+    {
+      code: 'CLN-001',
+      category: '諸経費',
+      itemName: '清掃費',
+      unit: '式',
+      defaultUnitPrice: 20000,
+    },
+  ];
+
+  for (const sample of samples) {
+    await prisma.unitPrice.create({
+      data: {
+        ...sample,
+        isActive: true,
+        createdById: admin.id,
+        updatedById: admin.id,
+      },
+    });
+  }
+  // eslint-disable-next-line no-console
+  console.log(`  ✓  F2 seeded ${samples.length} unit_prices`);
+}
+
 async function ensureInvitedMemberships(prisma: PrismaClient): Promise<void> {
   const worker = await prisma.user.findUnique({
     where: { email: 'worker@dev.shikou-kanri.local' },
@@ -426,6 +737,7 @@ async function main(): Promise<void> {
 
   await seedF1(prisma);
   await ensureInvitedMemberships(prisma);
+  await seedF2(prisma);
 
   // eslint-disable-next-line no-console
   console.log('');

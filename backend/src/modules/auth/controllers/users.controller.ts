@@ -46,7 +46,7 @@ export class UsersController {
 
   // === List & detail ===
 
-  @Roles('system_admin', 'manager')
+  @Roles('system_admin', 'manager', 'employee')
   @Get()
   async list(@Query() query: ListUsersQueryDto) {
     return this.users.list({

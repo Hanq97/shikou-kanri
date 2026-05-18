@@ -101,7 +101,7 @@ pnpm docker:logs        # Follow service logs
 pnpm --filter backend run prisma:studio    # GUI for DB
 pnpm --filter backend run prisma:migrate:dev <name>
 pnpm --filter backend run prisma:seed       # Re-run seed (idempotent: skips existing users/customers)
-pnpm --filter backend test                  # Run unit tests (40 tests / 5 suites)
+pnpm --filter backend test                  # Run unit tests (81 tests / 9 suites)
 ```
 
 ---
@@ -131,6 +131,24 @@ See [`documents/architecture/08-mvp-scope-and-roadmap.md`](./documents/architect
 Backend: 14 endpoints (project) + 4 endpoints (members) + 3 (saved searches) + import/export.
 Frontend: list (table ↔ Kanban) + detail (3 tabs) + form (pre-acquisition flow) + responsive across all breakpoints.
 Mobile-first: 6-column Kanban → horizontal scroll snap; tables → card list; modals → full-width.
+
+### F2 見積管理 feature status
+
+| ID    | Feature                                                                  | Status |
+| ----- | ------------------------------------------------------------------------ | ------ |
+| F2-01 | 見積 CRUD + JSONB snapshot + optimistic locking                          | ✅     |
+| F2-02 | State machine (8 status) + 2-tier approval (¥10M threshold)              | ✅     |
+| F2-03 | Quote number `Q-YYYY-NNNNN` via DB sequence (race-safe)                  | ✅     |
+| F2-04 | Versioning (append-only, change_type: correction/deletion/status_change) | ✅     |
+| F2-05 | Puppeteer + Handlebars PDF (A4, DRAFT watermark, JP layout)              | ✅     |
+| F2-06 | UnitPrice master CRUD + autocomplete picker in line editor               | ✅     |
+| F2-07 | ProjectTab integration + won → "open project?" prompt                    | ✅     |
+| F2-08 | Counter-party search (pg_trgm) + amount range + status multi-filter      | ✅     |
+
+Backend: 15 endpoints (quote) + 4 endpoints (unit-price). Compliance: 電子帳簿保存法 (append-only versioning,
+3 search keys = issuedAt / amountTotal / counterPartyName, 10yr retention).
+Frontend: list + form (with full responsive line editor) + detail (workflow bar + version history accordion) +
+admin master CRUD + ProjectDetailPage tab. URL alias `/estimates` (BE remains `/quotes`).
 
 ### Seeded dev users (password `DevPassword123!`)
 

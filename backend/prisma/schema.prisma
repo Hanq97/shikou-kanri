@@ -156,6 +156,14 @@ model User {
   projectMembers    ProjectMember[]
   savedSearches     SavedSearch[]
 
+  // F2 relations
+  quotesApproved    Quote[]         @relation("QuoteApprover")
+  quotesCreated     Quote[]         @relation("QuoteCreator")
+  quotesUpdated     Quote[]         @relation("QuoteUpdater")
+  quoteVersions     QuoteVersion[]
+  unitPricesCreated UnitPrice[]     @relation("UnitPriceCreator")
+  unitPricesUpdated UnitPrice[]     @relation("UnitPriceUpdater")
+
   @@map("users")
   @@index([status])
   @@index([role, status])
@@ -326,6 +334,7 @@ model Project {
   updatedBy User?           @relation("ProjectUpdater", fields: [updatedById], references: [id])
   members   ProjectMember[]
   folders   Folder[]
+  quotes    Quote[]
 
   @@map("projects")
   @@index([status, scheduleStart])
@@ -380,4 +389,129 @@ model SavedSearch {
   @@unique([userId, scope, name])
   @@map("saved_searches")
   @@index([userId, scope])
+}
+
+// =============================================================================
+// F2: Quote management
+// =============================================================================
+
+enum QuoteStatus {
+  draft
+  submitted
+  pending_admin
+  approved
+  rejected
+  sent
+  won
+  lost
+}
+
+enum QuoteChangeType {
+  correction
+  deletion
+  status_change
+}
+
+model Quote {
+  id                     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quoteNumber            String      @map("quote_number") @db.VarChar(30)
+  projectId              String      @map("project_id") @db.Uuid
+  versionNo              Int         @default(1) @map("version_no")
+  version                Int         @default(0)
+  status                 QuoteStatus @default(draft)
+  issuedAt               DateTime    @map("issued_at") @db.Date
+  validUntil             DateTime?   @map("valid_until") @db.Date
+  counterPartyName       String      @map("counter_party_name") @db.VarChar(200)
+  amountSubtotal         Decimal     @default(0) @map("amount_subtotal") @db.Decimal(15, 0)
+  amountTax              Decimal     @default(0) @map("amount_tax") @db.Decimal(15, 0)
+  amountTotal            Decimal     @default(0) @map("amount_total") @db.Decimal(15, 0)
+  notes                  String?     @db.Text
+  qualifiedInvoiceNumber String?     @map("qualified_invoice_number") @db.VarChar(20)
+  approvedById           String?     @map("approved_by") @db.Uuid
+  approvedAt             DateTime?   @map("approved_at") @db.Timestamptz(6)
+  sentAt                 DateTime?   @map("sent_at") @db.Timestamptz(6)
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  project    Project        @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  approvedBy User?          @relation("QuoteApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  createdBy  User?          @relation("QuoteCreator", fields: [createdById], references: [id])
+  updatedBy  User?          @relation("QuoteUpdater", fields: [updatedById], references: [id])
+  lines      QuoteLine[]
+  versions   QuoteVersion[]
+
+  @@map("quotes")
+  @@unique([quoteNumber, versionNo])
+  @@index([projectId])
+  @@index([issuedAt(sort: Desc)])
+  @@index([amountTotal])
+  @@index([status])
+}
+
+model QuoteLine {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quoteId             String   @map("quote_id") @db.Uuid
+  sortOrder           Int      @map("sort_order")
+  category            String?  @db.VarChar(50)
+  itemName            String   @map("item_name") @db.VarChar(200)
+  description         String?  @db.Text
+  unit                String   @db.VarChar(20)
+  quantity            Decimal  @db.Decimal(15, 2)
+  unitPrice           Decimal  @map("unit_price") @db.Decimal(15, 0)
+  amount              Decimal  @db.Decimal(15, 0)
+  taxRate             Decimal  @default(0.10) @map("tax_rate") @db.Decimal(5, 2)
+  isOptional          Boolean  @default(false) @map("is_optional")
+  unitPriceMasterId   String?  @map("unit_price_master_id") @db.Uuid
+
+  quote           Quote      @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  unitPriceMaster UnitPrice? @relation(fields: [unitPriceMasterId], references: [id], onDelete: SetNull)
+
+  @@map("quote_lines")
+  @@index([quoteId, sortOrder])
+}
+
+model QuoteVersion {
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quoteId      String          @map("quote_id") @db.Uuid
+  versionNo    Int             @map("version_no")
+  changeType   QuoteChangeType @map("change_type")
+  changeReason String          @map("change_reason") @db.Text
+  snapshot     Json
+  changedById  String          @map("changed_by") @db.Uuid
+  changedAt    DateTime        @default(now()) @map("changed_at") @db.Timestamptz(6)
+
+  quote     Quote @relation(fields: [quoteId], references: [id], onDelete: Restrict)
+  changedBy User  @relation(fields: [changedById], references: [id])
+
+  @@map("quote_versions")
+  @@index([quoteId, changedAt(sort: Desc)])
+}
+
+model UnitPrice {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code             String   @unique @db.VarChar(30)
+  category         String?  @db.VarChar(50)
+  itemName         String   @map("item_name") @db.VarChar(200)
+  description      String?  @db.Text
+  unit             String   @db.VarChar(20)
+  defaultUnitPrice Decimal  @map("default_unit_price") @db.Decimal(15, 0)
+  supplierName     String?  @map("supplier_name") @db.VarChar(200)
+  isActive         Boolean  @default(true) @map("is_active")
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  createdBy  User?       @relation("UnitPriceCreator", fields: [createdById], references: [id])
+  updatedBy  User?       @relation("UnitPriceUpdater", fields: [updatedById], references: [id])
+  quoteLines QuoteLine[]
+
+  @@map("unit_prices")
+  @@index([category, isActive])
 }

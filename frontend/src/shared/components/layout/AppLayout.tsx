@@ -22,7 +22,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-type NavKey = 'home' | 'projects' | 'estimates' | 'customers' | 'users';
+type NavKey = 'home' | 'projects' | 'estimates' | 'customers' | 'users' | 'unitPrices';
 
 interface NavDef {
   key: NavKey;
@@ -33,6 +33,12 @@ interface NavDef {
 
 const NAV_DEFS: NavDef[] = [
   { key: 'home', to: '/home', icon: <Home size={18} /> },
+  {
+    key: 'customers',
+    to: '/customers',
+    icon: <Users size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
   { key: 'projects', to: '/projects', icon: <Briefcase size={18} /> },
   {
     key: 'estimates',
@@ -41,10 +47,10 @@ const NAV_DEFS: NavDef[] = [
     roles: ['system_admin', 'manager', 'employee'],
   },
   {
-    key: 'customers',
-    to: '/customers',
-    icon: <Users size={18} />,
-    roles: ['system_admin', 'manager', 'employee'],
+    key: 'unitPrices',
+    to: '/admin/unit-prices',
+    icon: <HardHat size={18} />,
+    roles: ['system_admin'],
   },
   {
     key: 'users',

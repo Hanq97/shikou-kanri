@@ -21,6 +21,10 @@
       {
         "include": "modules/notification/templates/**/*.hbs",
         "outDir": "dist/src"
+      },
+      {
+        "include": "modules/quote/templates/**/*.hbs",
+        "outDir": "dist/src"
       }
     ],
     "watchAssets": true

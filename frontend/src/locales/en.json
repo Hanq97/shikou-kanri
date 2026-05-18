@@ -32,7 +32,9 @@
       "forbiddenSubtitle": "You don't have permission to view this page.",
       "notFoundTitle": "Not found",
       "notFoundSubtitle": "The requested resource does not exist or has been removed."
-    }
+    },
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   },
   "brand": {
     "appName": "Construction Management",
@@ -51,7 +53,8 @@
     "sidebarCollapse": "Collapse sidebar",
     "sidebarOpen": "Open menu",
     "notifications": "Notifications",
-    "language": "Language"
+    "language": "Language",
+    "unitPrices": "Unit prices"
   },
   "userMenu": {
     "profile": "Profile settings",
@@ -157,7 +160,21 @@
     "NOT_FOUND": "Target not found",
     "VALIDATION_ERROR": "Input contains errors",
     "INTERNAL_ERROR": "An unexpected error occurred",
-    "NETWORK_ERROR": "Network error"
+    "NETWORK_ERROR": "Network error",
+    "QUOTE_NOT_FOUND": "Quote not found.",
+    "QUOTE_CONFLICT": "Another user edited this quote. Please reload.",
+    "QUOTE_INVALID_STATUS_TRANSITION": "Status transition not allowed.",
+    "QUOTE_TIER2_REQUIRES_ADMIN": "Admin approval required (> ¥10,000,000).",
+    "QUOTE_REJECT_REASON_REQUIRED": "Reject reason must be at least 5 characters.",
+    "QUOTE_DELETE_REASON_REQUIRED": "Delete reason must be at least 5 characters.",
+    "QUOTE_LOCKED": "This quote cannot be edited in its current status.",
+    "QUOTE_CAN_ONLY_VERSION_FROM_SENT": "New version can only be created from sent quotes.",
+    "QUOTE_VERSION_REASON_REQUIRED": "Change reason must be at least 5 characters.",
+    "QUOTE_ANOTHER_WON_EXISTS": "Another won quote already exists for this project.",
+    "QUOTE_AT_LEAST_ONE_REQUIRED_LINE": "At least one required line is needed.",
+    "UNIT_PRICE_NOT_FOUND": "Unit price not found.",
+    "UNIT_PRICE_CODE_EXISTS": "Unit price code already exists.",
+    "PDF_GENERATION_FAILED": "PDF generation failed."
   },
   "settings": {
     "title": "Account settings",
@@ -560,7 +577,8 @@
     "tabs": {
       "overview": "Overview",
       "members": "Members",
-      "folders": "Folders"
+      "folders": "Folders",
+      "quotes": "Quotes"
     },
     "form": {
       "createTitle": "New project",
@@ -667,6 +685,216 @@
         "joined": "Joined"
       },
       "self": "(you)"
+    }
+  },
+  "quote": {
+    "title": "Quotes",
+    "subtitle": "Create, approve, send and track quotes",
+    "createButton": "New quote",
+    "empty": "No quotes",
+    "totalCount": "{{total}} total",
+    "filters": {
+      "searchPlaceholder": "Search by quote number",
+      "status": "Status",
+      "counterPartyPlaceholder": "Search by counter-party",
+      "minAmount": "Min amount",
+      "maxAmount": "Max amount"
+    },
+    "columns": {
+      "quoteNumber": "Quote #",
+      "counterParty": "Counter-party",
+      "status": "Status",
+      "issuedAt": "Issued",
+      "amountTotal": "Total (tax incl.)",
+      "updatedAt": "Updated"
+    },
+    "status": {
+      "draft": "Draft",
+      "submitted": "Pending approval",
+      "pending_admin": "Pending admin",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "sent": "Sent",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "form": {
+      "createTitle": "New quote",
+      "editTitle": "Edit quote",
+      "submit": "Save",
+      "labelProject": "Project",
+      "labelIssuedAt": "Issued date",
+      "labelValidUntil": "Valid until",
+      "labelQualifiedInvoiceNumber": "Qualified invoice number",
+      "labelNotes": "Notes",
+      "projectPlaceholder": "Select a project",
+      "qualifiedInvoicePlaceholder": "T1234567890123",
+      "notesPlaceholder": "Notes about this quote",
+      "linesTitle": "Lines",
+      "linesPlaceholder": "Line editor lands in P5.",
+      "linesEditorComingSoon": "Line editor will be added in the next phase.",
+      "addLine": "Add line",
+      "noLines": "No lines yet.",
+      "optionalSubtotal": "Optional subtotal"
+    },
+    "line": {
+      "itemName": "Item",
+      "quantity": "Qty",
+      "unit": "Unit",
+      "unitPrice": "Unit price",
+      "amount": "Amount",
+      "optional": "Optional",
+      "itemNameAndDescription": "Item + description",
+      "descriptionPlaceholder": "Description (optional)",
+      "taxRatePercent": "Tax %",
+      "qtyShort": "Qty",
+      "unitPricePickerPlaceholder": "Pick from master"
+    },
+    "detail": {
+      "labelCounterParty": "Counter-party",
+      "labelIssuedAt": "Issued",
+      "labelValidUntil": "Valid until",
+      "labelQualifiedInvoiceNumber": "Qualified invoice #",
+      "labelAmountSubtotal": "Subtotal (excl. tax)",
+      "labelAmountTax": "Tax",
+      "labelAmountTotal": "Total (incl. tax)",
+      "labelApprovedBy": "Approved by",
+      "labelNotes": "Notes",
+      "linesTitle": "Lines",
+      "linesEditorComingSoon": "Detail view will be enhanced in the next phase.",
+      "versionsTitle": "Version history ({{count}})"
+    },
+    "confirms": {
+      "deleteTitle": "Delete quote?",
+      "deleteContent": "Delete {{number}}. Reason required.",
+      "deleteReasonPlaceholder": "Reason (min 5 chars)",
+      "deleteOk": "Delete"
+    },
+    "messages": {
+      "created": "Quote created.",
+      "updated": "Quote updated.",
+      "deleted": "Quote deleted."
+    },
+    "errors": {
+      "atLeastOneRequiredLine": "At least one required line is needed.",
+      "validUntilBeforeIssued": "Valid-until must be after issued date.",
+      "deleteReasonRequired": "Reason must be at least 5 characters.",
+      "reasonMin5": "Reason must be at least 5 characters."
+    },
+    "changeType": {
+      "correction": "Correction",
+      "deletion": "Deletion",
+      "status_change": "Status change"
+    },
+    "actions": {
+      "submit": "Submit",
+      "submitOk": "Submitted for approval.",
+      "approve": "Approve",
+      "approveOk": "Approved.",
+      "reject": "Reject",
+      "rejectOk": "Rejected.",
+      "rejectTitle": "Enter reject reason",
+      "rejectHelp": "Reject reason must be at least 5 characters.",
+      "send": "Send",
+      "sendOk": "Sent.",
+      "won": "Mark won",
+      "wonOk": "Marked as won.",
+      "wonGoToProjectTitle": "Go to project page?",
+      "wonGoToProjectContent": "With the quote won, you can continue scheduling and construction on the linked project.",
+      "wonGoToProjectOk": "Open project",
+      "lost": "Mark lost",
+      "lostOk": "Marked as lost.",
+      "version": "New version",
+      "versionOk": "New version created.",
+      "versionTitle": "Enter change reason",
+      "versionHelp": "Change reason must be at least 5 characters.",
+      "clone": "Clone",
+      "cloneOk": "Cloned.",
+      "pdf": "PDF",
+      "reasonPlaceholder": "Reason (min 5 chars)",
+      "resubmit": "Resubmit",
+      "tier2RequiresAdminBadge": "Awaiting admin",
+      "tier2RequiresAdminInfo": "Quote > ¥10M requires admin approval. Manager can only reject."
+    },
+    "projectTab": {
+      "heading": "Quotes ({{count}})",
+      "empty": "No quotes yet."
+    },
+    "history": {
+      "changeReason": "Change reason",
+      "changedBy": "Changed by",
+      "changedAt": "Changed at",
+      "snapshotStatus": "Status",
+      "snapshotAmount": "Total (incl. tax)",
+      "snapshotLines": "Lines",
+      "lineCount": "{{count}} line(s)",
+      "showRaw": "Show raw JSON",
+      "hideRaw": "Hide raw JSON"
+    }
+  },
+  "unitPrice": {
+    "title": "Unit prices",
+    "subtitle": "Manage unit prices used in quotes (admin only)",
+    "createButton": "Add unit price",
+    "empty": "No unit prices",
+    "totalCount": "{{total}} total",
+    "filters": {
+      "searchPlaceholder": "Search by code or item name",
+      "all": "All",
+      "activeOnly": "Active only",
+      "inactiveOnly": "Inactive only"
+    },
+    "columns": {
+      "code": "Code",
+      "category": "Category",
+      "itemName": "Item",
+      "unit": "Unit",
+      "defaultUnitPrice": "Default price",
+      "isActive": "Status"
+    },
+    "isActive": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "form": {
+      "createTitle": "Add unit price",
+      "editTitle": "Edit unit price",
+      "code": "Code",
+      "category": "Category",
+      "itemName": "Item name",
+      "unit": "Unit",
+      "defaultUnitPrice": "Default unit price",
+      "supplierName": "Supplier",
+      "description": "Description",
+      "isActive": "Active",
+      "codePlaceholder": "e.g. KISO-001",
+      "categoryPlaceholder": "Foundation / Carpentry / Roof...",
+      "unitPlaceholder": "Select unit"
+    },
+    "confirms": {
+      "deleteTitle": "Delete unit price?",
+      "deleteContent": "{{code}} — {{name}}"
+    },
+    "messages": {
+      "created": "Unit price added.",
+      "updated": "Unit price updated.",
+      "deleted": "Unit price deleted."
+    },
+    "unitLabels": {
+      "式": "Set / Lump sum",
+      "m": "Meter",
+      "m²": "Square meter",
+      "m³": "Cubic meter",
+      "個": "Piece",
+      "本": "Stick (long item)",
+      "枚": "Sheet (flat)",
+      "台": "Unit (machine)",
+      "箇所": "Location",
+      "kg": "Kilogram",
+      "L": "Liter",
+      "日": "Day",
+      "時間": "Hour",
+      "人工": "Man-day"
     }
   }
 }

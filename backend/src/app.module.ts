@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth';
 import { CustomerModule } from './modules/customer/customer.module';
 import { NotificationModule } from './modules/notification';
 import { ProjectModule } from './modules/project/project.module';
+import { QuoteModule } from './modules/quote/quote.module';
 import { CryptoModule } from './shared/crypto/crypto.module';
 import { PrismaModule } from './shared/database/prisma.module';
 import { GlobalExceptionFilter } from './shared/exceptions/global-exception.filter';
@@ -32,6 +33,7 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
     AuthModule,
     CustomerModule,
     ProjectModule,
+    QuoteModule,
   ],
   controllers: [AppController],
   providers: [

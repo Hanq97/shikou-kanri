@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>{{quote.quoteNumber}} - 見積書</title>
+<style>
+  @page { size: A4; margin: 15mm; }
+  body {
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    font-size: 11pt;
+    color: #1f1f1f;
+    margin: 0;
+    padding: 0;
+  }
+  .header { display: flex; justify-content: space-between; align-items: start; border-bottom: 2px solid #1f1f1f; padding-bottom: 12px; margin-bottom: 24px; }
+  .company { font-size: 14pt; font-weight: bold; }
+  .company-info { font-size: 9pt; color: #555; margin-top: 4px; line-height: 1.5; }
+  .quote-meta { text-align: right; }
+  .quote-number { font-family: monospace; font-size: 14pt; font-weight: bold; color: #2a6cd1; }
+  .quote-date { font-size: 10pt; margin-top: 4px; }
+  .title { text-align: center; font-size: 20pt; font-weight: bold; letter-spacing: 8px; margin: 24px 0; }
+  .counter-party { font-size: 13pt; font-weight: bold; margin-bottom: 8px; }
+  .greeting { font-size: 10pt; margin-bottom: 16px; }
+  .summary { background: #f7f7f8; border: 1px solid #ddd; padding: 12px; margin-bottom: 20px; }
+  .summary-total { font-size: 14pt; font-weight: bold; color: #1f1f1f; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; font-size: 10pt; }
+  th { background: #f4f4f6; font-weight: bold; }
+  td.num { text-align: right; font-family: monospace; }
+  .section-title { font-weight: bold; font-size: 12pt; margin: 20px 0 8px; color: #1f1f1f; border-left: 3px solid #2a6cd1; padding-left: 8px; }
+  .optional-note { font-size: 9pt; color: #777; margin-bottom: 8px; }
+  .totals-table { width: 50%; margin-left: auto; }
+  .totals-table td { font-size: 11pt; }
+  .totals-table tr.grand td { background: #e7f0fb; font-weight: bold; font-size: 12pt; }
+  .notes { background: #fafbfc; padding: 12px; border-left: 3px solid #ddd; font-size: 10pt; white-space: pre-wrap; margin-top: 16px; }
+  .hanko { margin-top: 24px; text-align: right; }
+  .hanko-box { display: inline-block; width: 60px; height: 60px; border: 2px solid #c00; border-radius: 50%; color: #c00; text-align: center; line-height: 56px; font-size: 9pt; }
+  .footer { margin-top: 32px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; color: #999; display: flex; justify-content: space-between; }
+  .draft-watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 100pt; color: rgba(200, 0, 0, 0.15); font-weight: bold; pointer-events: none; z-index: -1; }
+  .invoice-no { font-size: 9pt; color: #555; }
+</style>
+</head>
+<body>
+
+{{#if isDraft}}
+<div class="draft-watermark">DRAFT</div>
+{{/if}}
+
+<div class="header">
+  <div>
+    <div class="company">藤和建設株式会社</div>
+    <div class="company-info">
+      〒XXX-XXXX 東京都XX区XXX-XX-XX<br>
+      TEL: 03-XXXX-XXXX / FAX: 03-XXXX-XXXX<br>
+      Email: info@towa-kensetsu.example.com
+    </div>
+    {{#if quote.qualifiedInvoiceNumber}}
+    <div class="invoice-no">登録番号: {{quote.qualifiedInvoiceNumber}}</div>
+    {{/if}}
+  </div>
+  <div class="quote-meta">
+    <div class="quote-number">{{quote.quoteNumber}}</div>
+    {{#if (eq quote.versionNo 1)}}
+    {{else}}
+    <div style="font-size: 9pt; color: #888;">v{{quote.versionNo}}</div>
+    {{/if}}
+    <div class="quote-date">発行日: {{quote.issuedAtFormatted}}</div>
+    {{#if quote.validUntil}}
+    <div class="quote-date">有効期限: {{date quote.validUntil}}</div>
+    {{/if}}
+  </div>
+</div>
+
+<div class="title">御 見 積 書</div>
+
+<div class="counter-party">{{quote.counterPartyName}} 様</div>
+<div class="greeting">下記の通り御見積申し上げます。何卒ご検討の程宜しくお願い申し上げます。</div>
+
+<div class="summary">
+  <div class="summary-total">御見積金額: {{jpy quote.amountTotal}} (税込)</div>
+</div>
+
+<div class="section-title">見積明細</div>
+{{#if requiredLines.length}}
+<table>
+  <thead>
+    <tr>
+      <th style="width: 5%;">No</th>
+      <th style="width: 35%;">項目名</th>
+      <th style="width: 25%;">仕様</th>
+      <th style="width: 8%;">数量</th>
+      <th style="width: 7%;">単位</th>
+      <th style="width: 10%;">単価</th>
+      <th style="width: 10%;">金額</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each requiredLines}}
+    <tr>
+      <td>{{addOne @index}}</td>
+      <td>
+        {{itemName}}
+        {{#if category}}<div style="font-size: 8pt; color: #888;">{{category}}</div>{{/if}}
+      </td>
+      <td>{{description}}</td>
+      <td class="num">{{quantity}}</td>
+      <td>{{unit}}</td>
+      <td class="num">{{jpy unitPrice}}</td>
+      <td class="num">{{jpy amount}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{else}}
+<p style="text-align: center; color: #888;">(明細項目なし)</p>
+{{/if}}
+
+<table class="totals-table">
+  <tr>
+    <td>小計</td>
+    <td class="num">{{jpy quote.amountSubtotal}}</td>
+  </tr>
+  <tr>
+    <td>消費税</td>
+    <td class="num">{{jpy quote.amountTax}}</td>
+  </tr>
+  <tr class="grand">
+    <td>合計 (税込)</td>
+    <td class="num">{{jpy quote.amountTotal}}</td>
+  </tr>
+</table>
+
+{{#if optionalLines.length}}
+<div class="section-title">オプション項目 (税抜)</div>
+<div class="optional-note">※ オプション項目は上記合計には含まれません。</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 5%;">No</th>
+      <th style="width: 35%;">項目名</th>
+      <th style="width: 25%;">仕様</th>
+      <th style="width: 8%;">数量</th>
+      <th style="width: 7%;">単位</th>
+      <th style="width: 10%;">単価</th>
+      <th style="width: 10%;">金額</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each optionalLines}}
+    <tr>
+      <td>{{addOne @index}}</td>
+      <td>{{itemName}}</td>
+      <td>{{description}}</td>
+      <td class="num">{{quantity}}</td>
+      <td>{{unit}}</td>
+      <td class="num">{{jpy unitPrice}}</td>
+      <td class="num">{{jpy amount}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+<table class="totals-table">
+  <tr>
+    <td>オプション小計</td>
+    <td class="num">{{jpy optionalSubtotal}}</td>
+  </tr>
+</table>
+{{/if}}
+
+{{#if quote.notes}}
+<div class="section-title">備考</div>
+<div class="notes">{{quote.notes}}</div>
+{{/if}}
+
+<div class="hanko">
+  <div class="hanko-box">印</div>
+</div>
+
+<div class="footer">
+  <div>発行日時: {{generatedAt}}</div>
+  <div>藤和建設 施工管理システム</div>
+</div>
+
+</body>
+</html>
