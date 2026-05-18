@@ -81,8 +81,11 @@ export function AuditLogsListPage(): JSX.Element {
       title: t('audit.columns.action'),
       dataIndex: 'action',
       key: 'action',
-      width: 220,
-      render: (v: string) => <Tag color="blue">{v}</Tag>,
+      width: 240,
+      render: (v: string) => {
+        const label = t(`audit.actions.${v}`, { defaultValue: v });
+        return <Tag color="blue">{label}</Tag>;
+      },
     },
     {
       title: t('audit.columns.entity'),
@@ -91,7 +94,12 @@ export function AuditLogsListPage(): JSX.Element {
       render: (_, row) =>
         row.entityType ? (
           <div className="text-xs">
-            <span className="text-zinc-500">{row.entityType}:</span>{' '}
+            <span className="text-zinc-500">
+              {t(`audit.entities.${row.entityType}`, {
+                defaultValue: row.entityType,
+              })}
+              :
+            </span>{' '}
             <span className="font-mono">{row.entityId?.slice(0, 8)}</span>
           </div>
         ) : (
