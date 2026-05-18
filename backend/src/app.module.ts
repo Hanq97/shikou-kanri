@@ -1,9 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
+import { AftercareModule } from './modules/aftercare/aftercare.module';
 import { AuthModule } from './modules/auth';
 import { CustomerModule } from './modules/customer/customer.module';
 import { NotificationModule } from './modules/notification';
@@ -29,11 +31,13 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
       maxListeners: 20,
       verboseMemoryLeak: false,
     }),
+    ScheduleModule.forRoot(),
     NotificationModule,
     AuthModule,
     CustomerModule,
     ProjectModule,
     QuoteModule,
+    AftercareModule,
   ],
   controllers: [AppController],
   providers: [

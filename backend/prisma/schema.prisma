@@ -164,6 +164,13 @@ model User {
   unitPricesCreated UnitPrice[]     @relation("UnitPriceCreator")
   unitPricesUpdated UnitPrice[]     @relation("UnitPriceUpdater")
 
+  // F6 relations
+  maintenanceSchedulesCreated MaintenanceSchedule[] @relation("MaintenanceScheduleCreator")
+  maintenanceSchedulesUpdated MaintenanceSchedule[] @relation("MaintenanceScheduleUpdater")
+  aftercareRecordsCreated     AftercareRecord[]     @relation("AftercareRecordCreator")
+  aftercareRecordsUpdated     AftercareRecord[]     @relation("AftercareRecordUpdater")
+  aftercareRecordsHandled     AftercareRecord[]     @relation("AftercareRecordHandler")
+
   @@map("users")
   @@index([status])
   @@index([role, status])
@@ -264,10 +271,11 @@ model Customer {
   createdById String?   @map("created_by") @db.Uuid
   updatedById String?   @map("updated_by") @db.Uuid
 
-  createdBy  User?      @relation("CustomerCreator", fields: [createdById], references: [id])
-  updatedBy  User?      @relation("CustomerUpdater", fields: [updatedById], references: [id])
-  properties Property[]
-  projects   Project[]
+  createdBy        User?             @relation("CustomerCreator", fields: [createdById], references: [id])
+  updatedBy        User?             @relation("CustomerUpdater", fields: [updatedById], references: [id])
+  properties       Property[]
+  projects         Project[]
+  aftercareRecords AftercareRecord[]
 
   @@map("customers")
   @@index([phone])
@@ -294,10 +302,12 @@ model Property {
   createdById String?   @map("created_by") @db.Uuid
   updatedById String?   @map("updated_by") @db.Uuid
 
-  customer  Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  createdBy User?     @relation("PropertyCreator", fields: [createdById], references: [id])
-  updatedBy User?     @relation("PropertyUpdater", fields: [updatedById], references: [id])
-  projects  Project[]
+  customer             Customer              @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  createdBy            User?                 @relation("PropertyCreator", fields: [createdById], references: [id])
+  updatedBy            User?                 @relation("PropertyUpdater", fields: [updatedById], references: [id])
+  projects             Project[]
+  maintenanceSchedules MaintenanceSchedule[]
+  aftercareRecords     AftercareRecord[]
 
   @@map("properties")
   @@index([customerId, deletedAt])
@@ -514,4 +524,102 @@ model UnitPrice {
 
   @@map("unit_prices")
   @@index([category, isActive])
+}
+
+// =============================================================================
+// F6 — Aftercare (点検・アフター対応)
+// =============================================================================
+
+enum MaintenanceScheduleType {
+  one_year
+  three_year
+  five_year
+  ten_year
+  custom
+}
+
+enum MaintenanceScheduleStatus {
+  pending
+  notified
+  overdue
+  completed
+  cancelled
+}
+
+enum AftercareRecordType {
+  inspection
+  repair
+  inquiry
+  complaint
+  other
+}
+
+enum AftercareRecordStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+model MaintenanceSchedule {
+  id                 String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId         String                    @map("property_id") @db.Uuid
+  scheduleType       MaintenanceScheduleType   @map("schedule_type")
+  scheduledDate      DateTime                  @map("scheduled_date") @db.Date
+  status             MaintenanceScheduleStatus @default(pending)
+  notifiedAt         DateTime?                 @map("notified_at") @db.Timestamptz(6)
+  completedAt        DateTime?                 @map("completed_at") @db.Timestamptz(6)
+  completedRecordId  String?                   @map("completed_record_id") @db.Uuid
+  notes              String?                   @db.Text
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  property        Property         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  completedRecord AftercareRecord? @relation("ScheduleCompletedBy", fields: [completedRecordId], references: [id], onDelete: SetNull)
+  createdBy       User?            @relation("MaintenanceScheduleCreator", fields: [createdById], references: [id])
+  updatedBy       User?            @relation("MaintenanceScheduleUpdater", fields: [updatedById], references: [id])
+  aftercareRecords AftercareRecord[] @relation("ScheduleRecords")
+
+  @@map("maintenance_schedules")
+  @@index([propertyId, scheduledDate])
+  @@index([status, scheduledDate])
+  @@index([scheduledDate])
+}
+
+model AftercareRecord {
+  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerId      String                @map("customer_id") @db.Uuid
+  propertyId      String?               @map("property_id") @db.Uuid
+  scheduleId      String?               @map("schedule_id") @db.Uuid
+  recordType      AftercareRecordType   @map("record_type")
+  status          AftercareRecordStatus @default(open)
+  occurredAt      DateTime              @map("occurred_at") @db.Date
+  title           String                @db.VarChar(200)
+  description     String                @db.Text
+  handledById     String?               @map("handled_by") @db.Uuid
+  resolvedAt      DateTime?             @map("resolved_at") @db.Timestamptz(6)
+  resolutionNotes String?               @map("resolution_notes") @db.Text
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdById String?   @map("created_by") @db.Uuid
+  updatedById String?   @map("updated_by") @db.Uuid
+
+  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  property            Property?            @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  schedule            MaintenanceSchedule? @relation("ScheduleRecords", fields: [scheduleId], references: [id], onDelete: SetNull)
+  handledBy           User?                @relation("AftercareRecordHandler", fields: [handledById], references: [id])
+  createdBy           User?                @relation("AftercareRecordCreator", fields: [createdById], references: [id])
+  updatedBy           User?                @relation("AftercareRecordUpdater", fields: [updatedById], references: [id])
+  completedSchedules  MaintenanceSchedule[] @relation("ScheduleCompletedBy")
+
+  @@map("aftercare_records")
+  @@index([customerId, occurredAt(sort: Desc)])
+  @@index([propertyId, occurredAt(sort: Desc)])
+  @@index([status, occurredAt])
 }

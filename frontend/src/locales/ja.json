@@ -54,7 +54,50 @@
     "sidebarOpen": "メニューを開く",
     "notifications": "通知",
     "language": "言語",
-    "unitPrices": "単価マスタ"
+    "unitPrices": "単価マスタ",
+    "aftercare": "アフター"
+  },
+  "aftercare": {
+    "none": "なし",
+    "overdueByDays": "{{days}}日経過",
+    "dueInDays": "あと{{days}}日",
+    "list": {
+      "title": "OB顧客アフター管理",
+      "searchPlaceholder": "氏名/カナ/電話で検索",
+      "dateFrom": "予定日 開始",
+      "dateTo": "予定日 終了",
+      "overdueOnly": "未対応のみ",
+      "today": "今日",
+      "propertyCount": "物件数",
+      "nextMaintenance": "次回点検",
+      "openRecords": "未対応"
+    },
+    "schedules": {
+      "title": "点検スケジュール",
+      "scheduledDate": "予定日",
+      "type": "種別",
+      "status": "ステータス",
+      "property": "物件",
+      "markCompleted": "完了",
+      "confirmComplete": "このスケジュールを完了にしますか?",
+      "confirmCancel": "このスケジュールをキャンセルしますか?",
+      "completedSuccess": "完了にしました",
+      "completedFailed": "完了化に失敗しました",
+      "cancelledSuccess": "キャンセルしました",
+      "cancelledFailed": "キャンセルに失敗しました"
+    },
+    "scheduleStatus": {
+      "pending": "予定",
+      "notified": "通知済",
+      "overdue": "期限超過",
+      "completed": "完了",
+      "cancelled": "キャンセル"
+    },
+    "batch": {
+      "run": "バッチ実行",
+      "success": "完了: 通知={{notified}}件, メール送信={{sent}}件, 期限超過={{overdue}}件",
+      "failed": "バッチ実行に失敗しました"
+    }
   },
   "userMenu": {
     "profile": "プロフィール設定",
