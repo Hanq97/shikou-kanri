@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>点検時期のお知らせ</title>
+  </head>
+  <body
+    style="font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif; color: #1f2937; line-height: 1.7; max-width: 600px; margin: 0 auto; padding: 24px;"
+  >
+    <h2 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 8px;">
+      【{{typeLabel}}点検のお知らせ】
+    </h2>
+
+    <p>{{customerName}} 様</p>
+
+    <p>平素より大変お世話になっております。藤和建設株式会社でございます。</p>
+
+    <p>
+      下記の物件につきまして、 <strong>{{typeLabel}}点検</strong> の時期が近づいておりますのでご連絡いたします。
+    </p>
+
+    <table
+      role="presentation"
+      style="width: 100%; border-collapse: collapse; margin: 16px 0; background: #f9fafb; border: 1px solid #e5e7eb;"
+    >
+      <tr>
+        <th
+          style="text-align: left; padding: 8px 12px; background: #e5e7eb; width: 35%; border-bottom: 1px solid #d1d5db;"
+        >
+          物件住所
+        </th>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #d1d5db;">{{propertyAddress}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left; padding: 8px 12px; background: #e5e7eb; border-bottom: 1px solid #d1d5db;">
+          引渡日
+        </th>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #d1d5db;">{{handoverDate}}</td>
+      </tr>
+      <tr>
+        <th style="text-align: left; padding: 8px 12px; background: #e5e7eb;">点検予定日</th>
+        <td style="padding: 8px 12px;">
+          <strong style="color: #0f766e;">{{scheduledDate}}</strong>
+          （本日より{{daysUntil}}日後）
+        </td>
+      </tr>
+    </table>
+
+    <p>
+      ご都合の良い日時を本メールにご返信、もしくはお電話にてご連絡くださいますよう、お願い申し上げます。
+    </p>
+
+    <p>
+      何卒よろしくお願い申し上げます。
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin-top: 32px;" />
+    <p style="color: #6b7280; font-size: 12px;">
+      藤和建設株式会社<br />
+      アフターサポート担当<br />
+      ※本メールは施工管理システムから自動送信されています。
+    </p>
+  </body>
+</html>

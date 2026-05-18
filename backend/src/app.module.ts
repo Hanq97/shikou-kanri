@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
@@ -30,6 +31,7 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
       maxListeners: 20,
       verboseMemoryLeak: false,
     }),
+    ScheduleModule.forRoot(),
     NotificationModule,
     AuthModule,
     CustomerModule,
