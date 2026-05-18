@@ -15,6 +15,7 @@ import {
   User,
   UserCircle,
   Users,
+  Wrench,
 } from 'lucide-react';
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +23,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-type NavKey = 'home' | 'projects' | 'estimates' | 'customers' | 'users' | 'unitPrices';
+type NavKey =
+  | 'home'
+  | 'projects'
+  | 'estimates'
+  | 'customers'
+  | 'aftercare'
+  | 'users'
+  | 'unitPrices';
 
 interface NavDef {
   key: NavKey;
@@ -44,6 +52,12 @@ const NAV_DEFS: NavDef[] = [
     key: 'estimates',
     to: '/estimates',
     icon: <FileText size={18} />,
+    roles: ['system_admin', 'manager', 'employee'],
+  },
+  {
+    key: 'aftercare',
+    to: '/aftercare/ob-customers',
+    icon: <Wrench size={18} />,
     roles: ['system_admin', 'manager', 'employee'],
   },
   {

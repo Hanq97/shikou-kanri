@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { UnitPricesListPage } from '@/features/admin/pages/UnitPricesListPage';
 import { UsersListPage } from '@/features/admin/pages/UsersListPage';
+import { ObCustomersListPage } from '@/features/aftercare/pages/ObCustomersListPage';
+import { SchedulesListPage } from '@/features/aftercare/pages/SchedulesListPage';
 import { AcceptInvitePage } from '@/features/auth/pages/AcceptInvitePage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
@@ -219,6 +221,28 @@ export const router = createBrowserRouter([
       <AuthGuard>
         <RoleGuard roles={['system_admin', 'manager', 'employee']}>
           <QuoteFormPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+
+  // F6: Aftercare
+  {
+    path: '/aftercare/ob-customers',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin', 'manager', 'employee']}>
+          <ObCustomersListPage />
+        </RoleGuard>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: '/aftercare/schedules',
+    element: (
+      <AuthGuard>
+        <RoleGuard roles={['system_admin', 'manager', 'employee']}>
+          <SchedulesListPage />
         </RoleGuard>
       </AuthGuard>
     ),

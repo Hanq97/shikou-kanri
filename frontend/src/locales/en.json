@@ -54,7 +54,50 @@
     "sidebarOpen": "Open menu",
     "notifications": "Notifications",
     "language": "Language",
-    "unitPrices": "Unit prices"
+    "unitPrices": "Unit prices",
+    "aftercare": "Aftercare"
+  },
+  "aftercare": {
+    "none": "None",
+    "overdueByDays": "{{days}} days overdue",
+    "dueInDays": "in {{days}} days",
+    "list": {
+      "title": "OB Customer Aftercare",
+      "searchPlaceholder": "Search name / kana / phone",
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
+      "overdueOnly": "Overdue only",
+      "today": "Today",
+      "propertyCount": "Properties",
+      "nextMaintenance": "Next maintenance",
+      "openRecords": "Open"
+    },
+    "schedules": {
+      "title": "Maintenance Schedules",
+      "scheduledDate": "Scheduled date",
+      "type": "Type",
+      "status": "Status",
+      "property": "Property",
+      "markCompleted": "Complete",
+      "confirmComplete": "Mark this schedule as completed?",
+      "confirmCancel": "Cancel this schedule?",
+      "completedSuccess": "Marked as completed",
+      "completedFailed": "Failed to complete",
+      "cancelledSuccess": "Cancelled",
+      "cancelledFailed": "Failed to cancel"
+    },
+    "scheduleStatus": {
+      "pending": "Pending",
+      "notified": "Notified",
+      "overdue": "Overdue",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "batch": {
+      "run": "Run batch",
+      "success": "Done: notified={{notified}}, emails={{sent}}, marked overdue={{overdue}}",
+      "failed": "Batch failed"
+    }
   },
   "userMenu": {
     "profile": "Profile settings",

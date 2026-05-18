@@ -54,7 +54,50 @@
     "sidebarOpen": "Mở menu",
     "notifications": "Thông báo",
     "language": "Ngôn ngữ",
-    "unitPrices": "Đơn giá"
+    "unitPrices": "Đơn giá",
+    "aftercare": "Bảo trì"
+  },
+  "aftercare": {
+    "none": "Không có",
+    "overdueByDays": "Quá hạn {{days}} ngày",
+    "dueInDays": "Còn {{days}} ngày",
+    "list": {
+      "title": "Quản lý bảo trì khách hàng OB",
+      "searchPlaceholder": "Tìm tên / kana / SĐT",
+      "dateFrom": "Từ ngày",
+      "dateTo": "Đến ngày",
+      "overdueOnly": "Chỉ quá hạn",
+      "today": "Hôm nay",
+      "propertyCount": "Bất động sản",
+      "nextMaintenance": "Kiểm tra tiếp",
+      "openRecords": "Đang xử lý"
+    },
+    "schedules": {
+      "title": "Lịch kiểm tra bảo trì",
+      "scheduledDate": "Ngày dự kiến",
+      "type": "Loại",
+      "status": "Trạng thái",
+      "property": "Bất động sản",
+      "markCompleted": "Hoàn thành",
+      "confirmComplete": "Đánh dấu lịch này hoàn thành?",
+      "confirmCancel": "Hủy lịch này?",
+      "completedSuccess": "Đã đánh dấu hoàn thành",
+      "completedFailed": "Thao tác thất bại",
+      "cancelledSuccess": "Đã hủy",
+      "cancelledFailed": "Hủy thất bại"
+    },
+    "scheduleStatus": {
+      "pending": "Chờ",
+      "notified": "Đã gửi thông báo",
+      "overdue": "Quá hạn",
+      "completed": "Hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "batch": {
+      "run": "Chạy batch",
+      "success": "Xong: thông báo={{notified}}, gửi email={{sent}}, quá hạn={{overdue}}",
+      "failed": "Batch thất bại"
+    }
   },
   "userMenu": {
     "profile": "Hồ sơ cá nhân",
