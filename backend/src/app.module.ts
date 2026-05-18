@@ -4,6 +4,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
+import { AftercareModule } from './modules/aftercare/aftercare.module';
 import { AuthModule } from './modules/auth';
 import { CustomerModule } from './modules/customer/customer.module';
 import { NotificationModule } from './modules/notification';
@@ -34,6 +35,7 @@ import { TraceMiddleware } from './shared/observability/trace.middleware';
     CustomerModule,
     ProjectModule,
     QuoteModule,
+    AftercareModule,
   ],
   controllers: [AppController],
   providers: [
