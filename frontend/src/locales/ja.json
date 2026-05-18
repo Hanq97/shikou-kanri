@@ -55,7 +55,22 @@
     "notifications": "通知",
     "language": "言語",
     "unitPrices": "単価マスタ",
-    "aftercare": "アフター"
+    "aftercare": "アフター",
+    "auditLogs": "監査ログ"
+  },
+  "audit": {
+    "title": "監査ログ",
+    "system": "システム",
+    "searchPlaceholder": "アクション/担当者で検索",
+    "filterAction": "アクション絞り込み",
+    "columns": {
+      "occurredAt": "日時",
+      "actor": "担当者",
+      "action": "アクション",
+      "entity": "対象",
+      "ip": "IPアドレス",
+      "changes": "変更内容"
+    }
   },
   "aftercare": {
     "none": "なし",

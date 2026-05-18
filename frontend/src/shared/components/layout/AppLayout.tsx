@@ -4,6 +4,7 @@ import {
   Briefcase,
   FileText,
   HardHat,
+  History,
   Home,
   KeyRound,
   LogOut,
@@ -30,7 +31,8 @@ type NavKey =
   | 'customers'
   | 'aftercare'
   | 'users'
-  | 'unitPrices';
+  | 'unitPrices'
+  | 'auditLogs';
 
 interface NavDef {
   key: NavKey;
@@ -71,6 +73,12 @@ const NAV_DEFS: NavDef[] = [
     to: '/admin/users',
     icon: <ShieldCheck size={18} />,
     roles: ['system_admin', 'manager'],
+  },
+  {
+    key: 'auditLogs',
+    to: '/admin/audit-logs',
+    icon: <History size={18} />,
+    roles: ['system_admin'],
   },
 ];
 

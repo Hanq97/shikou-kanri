@@ -55,7 +55,22 @@
     "notifications": "Notifications",
     "language": "Language",
     "unitPrices": "Unit prices",
-    "aftercare": "Aftercare"
+    "aftercare": "Aftercare",
+    "auditLogs": "Audit logs"
+  },
+  "audit": {
+    "title": "Audit Logs",
+    "system": "System",
+    "searchPlaceholder": "Search action / actor",
+    "filterAction": "Filter by action",
+    "columns": {
+      "occurredAt": "When",
+      "actor": "Actor",
+      "action": "Action",
+      "entity": "Target",
+      "ip": "IP",
+      "changes": "Changes"
+    }
   },
   "aftercare": {
     "none": "None",

@@ -55,7 +55,22 @@
     "notifications": "Thông báo",
     "language": "Ngôn ngữ",
     "unitPrices": "Đơn giá",
-    "aftercare": "Bảo trì"
+    "aftercare": "Bảo trì",
+    "auditLogs": "Nhật ký kiểm toán"
+  },
+  "audit": {
+    "title": "Nhật ký kiểm toán",
+    "system": "Hệ thống",
+    "searchPlaceholder": "Tìm action / người dùng",
+    "filterAction": "Lọc theo action",
+    "columns": {
+      "occurredAt": "Thời điểm",
+      "actor": "Người dùng",
+      "action": "Action",
+      "entity": "Đối tượng",
+      "ip": "IP",
+      "changes": "Thay đổi"
+    }
   },
   "aftercare": {
     "none": "Không có",
