@@ -11,6 +11,7 @@ export interface CreateInvitationInput {
   role: UserRole;
   expiresAt: Date;
   invitedById: string;
+  projectId?: string | null;
 }
 
 @Injectable()

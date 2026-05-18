@@ -18,7 +18,9 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { AuthenticatedUser, RequestContext } from '../../auth/domain/types';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
+import { InvitationsService } from '../../auth/services/invitations.service';
 import { AddMemberDto } from '../dto/add-member.dto';
+import { InviteWorkerDto } from '../dto/invite-worker.dto';
 import { UpdateMemberRoleDto } from '../dto/update-member-role.dto';
 import { ProjectMembersService } from '../services/project-members.service';
 
@@ -33,7 +35,31 @@ function buildCtx(req: Request): RequestContext {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('projects/:projectId/members')
 export class ProjectMembersController {
-  constructor(private readonly service: ProjectMembersService) {}
+  constructor(
+    private readonly service: ProjectMembersService,
+    private readonly invitations: InvitationsService,
+  ) {}
+
+  @Post('invite-worker')
+  @Roles('system_admin', 'manager', 'employee')
+  async inviteWorker(
+    @Param('projectId', new ParseUUIDPipe()) projectId: string,
+    @Body() dto: InviteWorkerDto,
+    @Req() req: Request,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    const inv = await this.invitations.sendInvitation(
+      {
+        email: dto.email,
+        role: 'invited',
+        name: dto.name,
+        projectId,
+      },
+      user,
+      buildCtx(req),
+    );
+    return { invitation: inv, message: '招待メールを送信しました。' };
+  }
 
   @Get()
   @Roles('system_admin', 'manager', 'employee', 'invited')

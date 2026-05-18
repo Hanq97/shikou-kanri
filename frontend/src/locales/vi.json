@@ -60,6 +60,19 @@
     "backups": "Sao lưu",
     "migration": "Di chuyển dữ liệu"
   },
+  "chat": {
+    "empty": "Chưa có tin nhắn",
+    "composePlaceholder": "Nhập tin nhắn... (Enter để gửi)",
+    "sendFailed": "Gửi thất bại",
+    "attachmentTooLarge": "File quá lớn (giới hạn {{mb}}MB)",
+    "readBy": "Đã đọc {{count}}"
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "empty": "Không có thông báo",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "viewAll": "Xem tất cả"
+  },
   "audit": {
     "title": "Nhật ký kiểm toán",
     "system": "Hệ thống",
@@ -758,7 +771,8 @@
       "overview": "Tổng quan",
       "members": "Thành viên",
       "folders": "Thư mục",
-      "quotes": "Báo giá"
+      "quotes": "Báo giá",
+      "chat": "Chat"
     },
     "form": {
       "createTitle": "Tạo dự án mới",
@@ -864,7 +878,16 @@
         "role": "Vai trò",
         "joined": "Ngày tham gia"
       },
-      "self": "(bạn)"
+      "self": "(bạn)",
+      "inviteWorker": {
+        "button": "Mời thợ",
+        "title": "Mời thợ / nhà thầu phụ",
+        "desc": "Gửi link mời qua email. Khi họ chấp nhận, hệ thống tự động thêm vào dự án này.",
+        "email": "Email",
+        "nameOptional": "Tên (tùy chọn)",
+        "send": "Gửi lời mời",
+        "success": "Đã gửi lời mời"
+      }
     }
   },
   "quote": {

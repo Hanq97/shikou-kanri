@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { App, Button, Dropdown, Empty, Select, Spin, type MenuProps } from 'antd';
 import dayjs from 'dayjs';
-import { MoreVertical, Plus, User as UserIcon } from 'lucide-react';
+import { Mail, MoreVertical, Plus, User as UserIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { extractApiError } from '@/shared/api/client';
@@ -14,6 +14,7 @@ import { usersApi } from '@/shared/api/users.api';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { AddMemberModal } from './AddMemberModal';
+import { InviteWorkerModal } from './InviteWorkerModal';
 
 const ROLES: ProjectMemberRole[] = ['owner', 'contributor', 'inspector', 'invited_worker'];
 
@@ -29,6 +30,7 @@ export function ProjectMembersTab({ projectId, projectOwnerId, canManage }: Prop
   const { message, modal } = App.useApp();
   const qc = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const { data: members, isLoading } = useQuery({
     queryKey: ['projects', projectId, 'members'],
@@ -106,7 +108,10 @@ export function ProjectMembersTab({ projectId, projectOwnerId, canManage }: Prop
   return (
     <div>
       {canManage && (
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end gap-2 mb-4">
+          <Button icon={<Mail size={14} />} onClick={() => setInviteOpen(true)}>
+            {t('project.members.inviteWorker.button')}
+          </Button>
           <Button type="primary" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>
             {t('project.members.addButton')}
           </Button>
@@ -208,6 +213,15 @@ export function ProjectMembersTab({ projectId, projectOwnerId, canManage }: Prop
           setAddOpen(false);
           qc.invalidateQueries({ queryKey: ['projects', projectId, 'members'] });
           qc.invalidateQueries({ queryKey: ['projects', 'detail', projectId] });
+        }}
+      />
+
+      <InviteWorkerModal
+        open={inviteOpen}
+        projectId={projectId}
+        onClose={() => setInviteOpen(false)}
+        onSuccess={() => {
+          qc.invalidateQueries({ queryKey: ['projects', projectId, 'members'] });
         }}
       />
     </div>

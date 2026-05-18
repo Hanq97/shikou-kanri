@@ -38,6 +38,7 @@ export interface CreateInvitationInput {
   email: string;
   role: UserRole;
   name?: string;
+  projectId?: string;
 }
 
 @Injectable()
@@ -97,6 +98,7 @@ export class InvitationsService {
           role: input.role,
           expiresAt,
           invitedById: inviter.id,
+          projectId: input.projectId ?? null,
         },
         tx,
       );

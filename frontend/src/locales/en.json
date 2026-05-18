@@ -60,6 +60,19 @@
     "backups": "Backups",
     "migration": "Data migration"
   },
+  "chat": {
+    "empty": "No messages yet",
+    "composePlaceholder": "Type a message... (Enter to send)",
+    "sendFailed": "Send failed",
+    "attachmentTooLarge": "File too large (limit {{mb}}MB)",
+    "readBy": "Read by {{count}}"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAllRead": "Mark all read",
+    "viewAll": "View all"
+  },
   "audit": {
     "title": "Audit Logs",
     "system": "System",
@@ -758,7 +771,8 @@
       "overview": "Overview",
       "members": "Members",
       "folders": "Folders",
-      "quotes": "Quotes"
+      "quotes": "Quotes",
+      "chat": "Chat"
     },
     "form": {
       "createTitle": "New project",
@@ -864,7 +878,16 @@
         "role": "Role",
         "joined": "Joined"
       },
-      "self": "(you)"
+      "self": "(you)",
+      "inviteWorker": {
+        "button": "Invite worker",
+        "title": "Invite contractor / worker",
+        "desc": "Send an invitation link by email. Once they accept, they will be auto-added as project member.",
+        "email": "Email",
+        "nameOptional": "Name (optional)",
+        "send": "Send invite",
+        "success": "Invitation sent"
+      }
     }
   },
   "quote": {

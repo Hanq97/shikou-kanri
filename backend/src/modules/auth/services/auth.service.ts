@@ -573,6 +573,25 @@ export class AuthService {
         data: { usedAt: new Date() },
       });
 
+      // If invitation is project-scoped, auto-add as project member
+      if (invitation.projectId) {
+        await tx.projectMember.upsert({
+          where: {
+            projectId_userId: {
+              projectId: invitation.projectId,
+              userId: user.id,
+            },
+          },
+          create: {
+            projectId: invitation.projectId,
+            userId: user.id,
+            roleOnProject:
+              invitation.role === 'invited' ? 'invited_worker' : 'contributor',
+          },
+          update: { revokedAt: null },
+        });
+      }
+
       await this.audit.logInvitationAccepted(invitation.id, user.id, ctx, tx);
 
       const pair = await this.tokens.issueTokenPair(

@@ -60,6 +60,19 @@
     "backups": "バックアップ",
     "migration": "データ移行"
   },
+  "chat": {
+    "empty": "まだメッセージがありません",
+    "composePlaceholder": "メッセージを入力... (Enter で送信)",
+    "sendFailed": "送信に失敗しました",
+    "attachmentTooLarge": "ファイルが大きすぎます（上限 {{mb}}MB）",
+    "readBy": "既読 {{count}}名"
+  },
+  "notifications": {
+    "title": "通知",
+    "empty": "通知はありません",
+    "markAllRead": "全て既読にする",
+    "viewAll": "すべて表示"
+  },
   "audit": {
     "title": "監査ログ",
     "system": "システム",
@@ -758,7 +771,8 @@
       "overview": "概要",
       "members": "メンバー",
       "folders": "フォルダ",
-      "quotes": "見積"
+      "quotes": "見積",
+      "chat": "チャット"
     },
     "form": {
       "createTitle": "案件を新規作成",
@@ -864,7 +878,16 @@
         "role": "役割",
         "joined": "参加日"
       },
-      "self": "（あなた）"
+      "self": "（あなた）",
+      "inviteWorker": {
+        "button": "外部招待",
+        "title": "職人・協力業者を招待",
+        "desc": "メールアドレスに招待リンクを送信します。受け取った方がアカウント作成すると、自動的にこの案件のメンバーになります。",
+        "email": "メールアドレス",
+        "nameOptional": "氏名（任意）",
+        "send": "招待を送信",
+        "success": "招待メールを送信しました"
+      }
     }
   },
   "quote": {

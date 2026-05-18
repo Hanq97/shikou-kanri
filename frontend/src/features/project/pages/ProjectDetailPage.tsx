@@ -11,6 +11,7 @@ import { AppLayout } from '@/shared/components/layout/AppLayout';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { mapErrorMessage } from '@/shared/utils/error-mapper';
 import { formatJpy } from '@/shared/utils/format';
+import { ChatTab } from '@/features/chat/components/ChatTab';
 import { ProjectQuotesTab } from '@/features/quote/components/ProjectQuotesTab';
 import { ChangeStatusModal } from '../components/ChangeStatusModal';
 import { FolderListTab } from '../components/FolderListTab';
@@ -290,6 +291,11 @@ export function ProjectDetailPage(): JSX.Element {
               key: 'quotes',
               label: t('project.tabs.quotes'),
               children: <ProjectQuotesTab projectId={project.id} />,
+            },
+            {
+              key: 'chat',
+              label: t('project.tabs.chat'),
+              children: <ChatTab projectId={project.id} />,
             },
           ]}
         />
